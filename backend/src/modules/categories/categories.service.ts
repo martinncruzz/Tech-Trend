@@ -1,26 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dtos/create-category.dto';
-import { UpdateCategoryDto } from './dtos/update-category.dto';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
+import { PaginationDto } from '../shared/dtos';
+import { PrismaService } from 'src/database/prisma.service';
+import { handleDBExceptions } from '../shared/helpers';
 
 @Injectable()
 export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  private readonly logger = new Logger('CategoriesService');
+
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async createCategory(createCategoryDto: CreateCategoryDto) {
+    try {
+      const category = await this.prismaService.category.create({
+        data: createCategoryDto,
+      });
+
+      return category;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async getAllCategories(paginationDto: PaginationDto) {
+    const { page = 1, limit = 10 } = paginationDto;
+
+    const categories = await this.prismaService.category.findMany({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return categories;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async getCategoryById(id: string) {
+    const category = await this.prismaService.category.findFirst({
+      where: { category_id: id },
+    });
+
+    if (!category)
+      throw new NotFoundException(`Category with id "${id}" not found`);
+
+    return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async updateCategory(id: string, updateCategoryDto: UpdateCategoryDto) {
+    await this.getCategoryById(id);
+
+    try {
+      const category = await this.prismaService.category.update({
+        where: { category_id: id },
+        data: {
+          ...updateCategoryDto,
+          updatedAt: new Date(),
+        },
+      });
+
+      return category;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async deleteCategory(id: string) {
+    await this.getCategoryById(id);
+
+    try {
+      await this.prismaService.category.delete({
+        where: { category_id: id },
+      });
+
+      return true;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 }
