@@ -13,11 +13,11 @@ export class ProductsService {
 
   async createProduct(createProductDto: CreateProductDto) {
     try {
-      const newProduct = await this.prismaService.product.create({
+      const product = await this.prismaService.product.create({
         data: createProductDto,
       });
 
-      return newProduct;
+      return product;
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
