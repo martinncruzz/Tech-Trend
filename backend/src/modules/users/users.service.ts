@@ -37,7 +37,10 @@ export class UsersService {
     try {
       const user = await this.prismaService.user.update({
         where: { user_id: id },
-        data: updateUserDto,
+        data: {
+          ...updateUserDto,
+          updatedAt: new Date(),
+        },
       });
 
       return user;
