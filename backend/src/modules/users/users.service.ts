@@ -1,26 +1,62 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { UpdateUserDto } from './dtos';
+import { PaginationDto } from '../shared/dtos';
+import { PrismaService } from 'src/database/prisma.service';
+import { handleDBExceptions } from '../shared/helpers';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  private readonly logger = new Logger('UsersService');
+
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async getAllUsers(paginationDto: PaginationDto) {
+    const { page = 1, limit = 10 } = paginationDto;
+
+    const users = await this.prismaService.user.findMany({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return users;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async getUserById(id: string) {
+    const user = await this.prismaService.user.findFirst({
+      where: { user_id: id },
+    });
+
+    if (!user) throw new NotFoundException(`User with id "${id}" not found`);
+
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    await this.getUserById(id);
+
+    try {
+      const user = await this.prismaService.user.update({
+        where: { user_id: id },
+        data: updateUserDto,
+      });
+
+      return user;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async deleteUser(id: string) {
+    await this.getUserById(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    try {
+      await this.prismaService.user.delete({
+        where: { user_id: id },
+      });
+
+      return true;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 }
