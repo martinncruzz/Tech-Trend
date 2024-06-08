@@ -20,30 +20,30 @@ model User {
   password  String
   role      ValidRoles[]
   createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  updatedAt DateTime?
 }
 
 model Product {
-  product_id  String   @id @default(uuid())
+  product_id  String    @id @default(uuid())
   name        String
   description String
   price       Float
   stock       Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
 }
 
 model Category {
-  category_id String   @id @default(uuid())
+  category_id String    @id @default(uuid())
   name        String
   description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
 }
 
 model ShoppingCart {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   total     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 }
