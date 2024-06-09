@@ -1,34 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { ValidRoles } from '@prisma/client';
+
+import { Auth, GetUser } from './decorators';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dtos/create-auth.dto';
-import { UpdateAuthDto } from './dtos/update-auth.dto';
+import { LoginUserDto, RegisterUserDto } from './dtos';
+import { User } from '../users/entities';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @Post('register')
+  registerUser(@Body() registerUserDto: RegisterUserDto) {
+    return this.authService.registerUser(registerUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Post('login')
+  loginUser(@Body() loginUserDto: LoginUserDto) {
+    return this.authService.loginUser(loginUserDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Get('check-status')
+  @Auth(ValidRoles.user)
+  checkAuthStatus(@GetUser() user: User) {
+    return this.authService.checkAuthStatus(user);
   }
 }

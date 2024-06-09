@@ -1,26 +1,77 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dtos/create-auth.dto';
-import { UpdateAuthDto } from './dtos/update-auth.dto';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ValidRoles } from '@prisma/client';
+
+import { BcryptAdapter } from 'src/config';
+import { handleDBExceptions } from '../shared/helpers';
+import { JwtPayload } from './interfaces';
+import { LoginUserDto, RegisterUserDto } from './dtos';
+import { PrismaService } from 'src/database/prisma.service';
+import { User } from '../users/entities';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  private readonly logger = new Logger('AuthService');
+
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async registerUser(registerUserDto: RegisterUserDto) {
+    try {
+      const { email, password, ...userData } = registerUserDto;
+
+      const user = await this.prismaService.user.create({
+        data: {
+          ...userData,
+          email: email.toLowerCase(),
+          password: BcryptAdapter.hash(password),
+          roles: [ValidRoles.user],
+        },
+      });
+
+      return user;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async loginUser(loginUserDto: LoginUserDto) {
+    const user = await this.getUserByEmail(loginUserDto.email);
+
+    if (!user) throw new BadRequestException(`Incorrect email or password`);
+
+    const isMatching = BcryptAdapter.compare(
+      loginUserDto.password,
+      user.password,
+    );
+
+    if (!isMatching)
+      throw new BadRequestException(`Incorrect email or password`);
+
+    const token = this.generateToken({ user_id: user.user_id });
+
+    return {
+      token,
+      userRoles: user.roles,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  checkAuthStatus(user: User) {
+    return user;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  private async getUserByEmail(email: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { email: email },
+    });
+
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  private generateToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 }
