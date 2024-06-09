@@ -1,9 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreateProductDto } from './dtos/create-product.dto';
-import { UpdateProductDto } from './dtos/update-product.dto';
-import { PrismaService } from 'src/database/prisma.service';
-import { PaginationDto } from '../shared/dtos';
+
+import { CreateProductDto, UpdateProductDto } from './dtos';
 import { handleDBExceptions } from '../shared/helpers';
+import { PaginationDto } from '../shared/dtos';
+import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class ProductsService {
@@ -35,7 +35,7 @@ export class ProductsService {
   }
 
   async getProductById(id: string) {
-    const product = await this.prismaService.product.findFirst({
+    const product = await this.prismaService.product.findUnique({
       where: { product_id: id },
     });
 

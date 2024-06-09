@@ -1,8 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+
 import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
+import { handleDBExceptions } from '../shared/helpers';
 import { PaginationDto } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
-import { handleDBExceptions } from '../shared/helpers';
 
 @Injectable()
 export class CategoriesService {
@@ -34,7 +35,7 @@ export class CategoriesService {
   }
 
   async getCategoryById(id: string) {
-    const category = await this.prismaService.category.findFirst({
+    const category = await this.prismaService.category.findUnique({
       where: { category_id: id },
     });
 

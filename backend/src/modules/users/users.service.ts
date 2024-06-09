@@ -1,8 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { UpdateUserDto } from './dtos';
+
+import { handleDBExceptions } from '../shared/helpers';
 import { PaginationDto } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
-import { handleDBExceptions } from '../shared/helpers';
+import { UpdateUserDto } from './dtos';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +23,7 @@ export class UsersService {
   }
 
   async getUserById(id: string) {
-    const user = await this.prismaService.user.findFirst({
+    const user = await this.prismaService.user.findUnique({
       where: { user_id: id },
     });
 
