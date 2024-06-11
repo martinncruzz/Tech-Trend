@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  font-family: "Onest", system-ui, sans-serif;
+  scroll-behavior: smooth;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.active-link {
+  text-decoration: underline;
+}
