@@ -8,7 +8,7 @@ import {
 
 export class RegisterUserDto {
   @IsString()
-  @MinLength(5)
+  @MinLength(2)
   fullname: string;
 
   @IsString()
