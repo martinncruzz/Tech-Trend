@@ -82,6 +82,7 @@
         <div
           class="hs-dropdown-menu transition-[opacity,margin] duration-[0.1ms] sm:duration-[150ms] hs-dropdown-open:opacity-100 opacity-0 sm:w-auto hidden z-10 sm:shadow-md rounded-lg p-2 bg-neutral-800 border-neutral-700 divide-neutral-700 before:absolute top-full sm:border before:-top-5 before:start-0 before:w-full before:h-5 mt-3"
         >
+          @if (!isLoggedIn()) {
           <a
             class="flex items-center gap-x-2 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-cyan-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300"
             routerLink="auth/register"
@@ -127,11 +128,13 @@
               <path d="M21 12h-13l3 -3" />
               <path d="M11 15l-3 -3" />
             </svg>
-            Login
+            Log in
           </a>
+          } @else {
           <a
             class="flex items-center gap-x-2 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-cyan-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300"
-            href="#"
+            routerLink=""
+            (click)="logout()"
           >
             <svg
               width="20"
@@ -151,8 +154,9 @@
               <path d="M9 12h12l-3 -3" />
               <path d="M18 15l3 -3" />
             </svg>
-            Logout
+            Log out
           </a>
+          }
         </div>
       </div>
 
@@ -324,6 +328,7 @@
           <div
             class="hs-dropdown-menu transition-[opacity,margin] duration-[0.1ms] sm:duration-[150ms] hs-dropdown-open:opacity-100 opacity-0 sm:w-auto hidden z-10 sm:shadow-md rounded-lg p-2 bg-neutral-800 border-neutral-700 divide-neutral-700 before:absolute top-full sm:border before:-top-5 before:start-0 before:w-full before:h-5 mt-3"
           >
+            @if (!isLoggedIn()) {
             <a
               class="flex items-center gap-x-2 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-cyan-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300"
               routerLink="auth/register"
@@ -369,11 +374,13 @@
                 <path d="M21 12h-13l3 -3" />
                 <path d="M11 15l-3 -3" />
               </svg>
-              Login
+              Log in
             </a>
+            } @else {
             <a
               class="flex items-center gap-x-2 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-cyan-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300"
-              href="#"
+              routerLink=""
+              (click)="logout()"
             >
               <svg
                 width="20"
@@ -393,8 +400,9 @@
                 <path d="M9 12h12l-3 -3" />
                 <path d="M18 15l3 -3" />
               </svg>
-              Logout
+              Log out
             </a>
+            }
           </div>
         </div>
       </div>
