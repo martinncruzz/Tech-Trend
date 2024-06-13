@@ -8,7 +8,7 @@
     style="aspect-ratio: 400/300; object-fit: cover"
   />
   <div class="p-4 space-y-2 flex-1">
-    <h3 class="text-lg font-semibold">{{ product().name }}</h3>
+    <h3 class="text-lg font-semibold line-clamp-1">{{ product().name }}</h3>
     <p class="text-gray-400 line-clamp-2">
       {{ product().description }}
     </p>
@@ -20,15 +20,51 @@
     </div>
   </div>
   <div class="p-4 mt-auto">
-    <div class="flex gap-2">
+    <div class="flex flex-wrap 2xl:flex-nowrap gap-2">
       <button
         [routerLink]="['details', product().name]"
-        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 w-full bg-gray-800 border-gray-700 text-gray-50 hover:bg-gray-700"
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 gap-x-2 w-full bg-gray-800 border-gray-700 text-gray-50 hover:bg-gray-700"
       >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="icon icon-tabler icons-tabler-outline icon-tabler-eye"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+          <path
+            d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"
+          />
+        </svg>
         View Details</button
       ><button
-        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 w-full bg-gray-800 border-gray-700 text-gray-50 hover:bg-gray-700"
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 gap-x-2 w-full bg-gray-800 border-gray-700 text-gray-50 hover:bg-gray-700"
       >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart-plus"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+          <path d="M12.5 17h-6.5v-14h-2" />
+          <path d="M6 5l14 1l-.86 6.017m-2.64 .983h-10.5" />
+          <path d="M16 19h6" />
+          <path d="M19 16v6" />
+        </svg>
         Add to Cart
       </button>
     </div>
