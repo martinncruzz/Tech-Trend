@@ -19,9 +19,13 @@ export class AuthService {
   ) {}
 
   async registerUser(registerUserDto: RegisterUserDto) {
-    try {
-      const { email, password, ...userData } = registerUserDto;
+    const { email, password, ...userData } = registerUserDto;
 
+    const user = await this.getUserByEmail(email);
+
+    if (user) throw new BadRequestException('Email already registered');
+
+    try {
       const user = await this.prismaService.user.create({
         data: {
           ...userData,
