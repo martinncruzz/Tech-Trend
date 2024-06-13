@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-
 import { Router, Event, NavigationEnd } from '@angular/router';
 
 import { IStaticMethods } from 'preline/preline';
@@ -11,6 +9,8 @@ declare global {
   }
 }
 
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -19,7 +19,7 @@ declare global {
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  constructor(private router: Router) {}
+  private readonly router = inject(Router);
 
   ngOnInit() {
     this.router.events.subscribe((event: Event) => {
