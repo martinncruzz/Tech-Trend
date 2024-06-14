@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
+
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'main-layout',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent],
+  imports: [RouterModule, HeaderComponent, FooterComponent],
   templateUrl: './main-layout.component.html',
-  styles: ``
+  styles: ``,
 })
-export class MainLayoutComponent {
-
-}
+export class MainLayoutComponent {}
