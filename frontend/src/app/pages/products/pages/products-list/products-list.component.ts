@@ -15,13 +15,14 @@ import { Category } from '../../../../core/interfaces/categories';
 export class ProductsListComponent {
   public products = signal<Product[]>([
     {
+      product_id: 'abc',
       name: 'Mechanical Gaming Keyboard',
       description:
         'RGB backlit mechanical keyboard with customizable keys and durable switches.',
       price: 99.99,
       stock: 50,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
       name: 'UltraWide Gaming Monitor',
@@ -29,8 +30,9 @@ export class ProductsListComponent {
         '34-inch curved ultrawide monitor with 144Hz refresh rate and 1ms response time.',
       price: 499.99,
       stock: 30,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      product_id: '',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
       name: 'Gaming Laptop',
@@ -38,8 +40,9 @@ export class ProductsListComponent {
         'High-performance gaming laptop with Intel i7 processor, 16GB RAM, and NVIDIA RTX 3070.',
       price: 1499.99,
       stock: 20,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      product_id: '',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
       name: 'Gaming Mouse',
@@ -47,8 +50,9 @@ export class ProductsListComponent {
         'Ergonomic gaming mouse with 16000 DPI sensor and customizable RGB lighting.',
       price: 59.99,
       stock: 100,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      product_id: '',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
       name: 'Gaming Headset',
@@ -56,8 +60,9 @@ export class ProductsListComponent {
         'Surround sound gaming headset with noise-cancelling microphone and comfortable ear pads.',
       price: 79.99,
       stock: 75,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      product_id: '',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
       name: 'Gaming Chair',
@@ -65,8 +70,9 @@ export class ProductsListComponent {
         'Ergonomic gaming chair with lumbar support and adjustable armrests.',
       price: 199.99,
       stock: 40,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      product_id: '',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
       name: 'Gaming Desk',
@@ -74,8 +80,9 @@ export class ProductsListComponent {
         'Spacious gaming desk with cable management and RGB lighting.',
       price: 299.99,
       stock: 15,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      product_id: '',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
       name: 'Gaming Controller',
@@ -83,17 +90,19 @@ export class ProductsListComponent {
         'Wireless gaming controller compatible with PC and consoles.',
       price: 49.99,
       stock: 60,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      product_id: '',
+      createdAt: new Date(),
+      updatedAt: null,
     },
     {
+      product_id: '',
       name: 'External Gaming Hard Drive',
       description:
         '2TB external hard drive optimized for gaming with fast read/write speeds.',
       price: 129.99,
       stock: 45,
-      image:
-        'https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg',
+      createdAt: new Date(),
+      updatedAt: null,
     },
   ]);
 
