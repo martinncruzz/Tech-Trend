@@ -90,7 +90,7 @@
 
 <div
   id="application-sidebar"
-  class="hs-overlay [--auto-close:lg] hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform w-64 hidden fixed inset-y-0 start-0 z-[60] border-e lg:block lg:translate-x-0 lg:end-auto lg:bottom-0 bg-neutral-800 border-neutral-700"
+  class="hs-overlay [--auto-close:lg] hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform w-60 hidden fixed inset-y-0 start-0 z-[60] border-e lg:block lg:translate-x-0 lg:end-auto lg:bottom-0 bg-neutral-800 border-neutral-700"
 >
   <div class="px-8 pt-4">
     <a
@@ -276,8 +276,12 @@
             <li>
               <a
                 class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-700 text-neutral-400 hover:text-neutral-300"
-                routerLink="product-form"
-                routerLinkActive="bg-neutral-700 text-white"
+                routerLink="product-form/new-product"
+                [ngClass]="{
+                  'bg-neutral-700 text-white': currentRoute().startsWith(
+                    '/admin/product-form'
+                  )
+                }"
               >
                 <svg
                   width="24"
@@ -298,7 +302,7 @@
                   <path d="M16 19h6" />
                   <path d="M19 16v6" />
                 </svg>
-                Create
+                Form
               </a>
             </li>
           </ul>
@@ -397,8 +401,12 @@
             <li>
               <a
                 class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-700 text-neutral-400 hover:text-neutral-300"
-                routerLink="category-form"
-                routerLinkActive="bg-neutral-700 text-white"
+                routerLink="category-form/new-category"
+                [ngClass]="{
+                  'bg-neutral-700 text-white': currentRoute().startsWith(
+                    '/admin/category-form'
+                  )
+                }"
               >
                 <svg
                   width="24"
@@ -419,7 +427,7 @@
                   <path d="M16 19h6" />
                   <path d="M19 16v6" />
                 </svg>
-                Create
+                Form
               </a>
             </li>
           </ul>
@@ -482,6 +490,6 @@
   </nav>
 </div>
 
-<div class="w-full lg:ps-64">
+<div class="w-full lg:ps-60">
   <router-outlet />
 </div>
