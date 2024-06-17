@@ -5,6 +5,7 @@ interface EnvVars {
   PORT: number;
 
   FRONTEND_URL: string;
+  BACKEND_URL: string;
 
   DATABASE_URL: string;
 
@@ -16,6 +17,7 @@ const envsSchema = joi
     PORT: joi.number().required(),
 
     FRONTEND_URL: joi.string().required(),
+    BACKEND_URL: joi.string().required(),
 
     DATABASE_URL: joi.string().required(),
 
@@ -33,6 +35,7 @@ export const envs = {
   PORT: envVars.PORT,
 
   FRONTEND_URL: envVars.FRONTEND_URL,
+  BACKEND_URL: envVars.BACKEND_URL,
 
   DATABASE_URL: envVars.DATABASE_URL,
 
