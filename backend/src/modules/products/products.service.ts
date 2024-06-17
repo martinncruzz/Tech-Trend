@@ -4,6 +4,7 @@ import { CreateProductDto, UpdateProductDto } from './dtos';
 import { handleDBExceptions } from '../shared/helpers';
 import { PaginationDto } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
+import { envs } from 'src/config';
 
 @Injectable()
 export class ProductsService {
@@ -26,12 +27,29 @@ export class ProductsService {
   async getAllProducts(paginationDto: PaginationDto) {
     const { page = 1, limit = 10 } = paginationDto;
 
-    const products = await this.prismaService.product.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const [total, products] = await this.prismaService.$transaction([
+      this.prismaService.product.count(),
+      this.prismaService.product.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
 
-    return products;
+    const next =
+      limit * page >= total
+        ? null
+        : `${envs.BACKEND_URL}/products?page=${page + 1}&limit=${limit}`;
+    const prev =
+      page - 1 === 0
+        ? null
+        : `${envs.BACKEND_URL}/products?page=${page - 1}&limit=${limit}`;
+
+    return {
+      next,
+      prev,
+      products,
+    };
   }
 
   async getProductById(id: string) {
