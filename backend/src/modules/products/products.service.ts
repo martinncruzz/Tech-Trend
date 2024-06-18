@@ -1,10 +1,20 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 
-import { CreateProductDto, UpdateProductDto } from './dtos';
-import { handleDBExceptions } from '../shared/helpers';
-import { PaginationDto } from '../shared/dtos';
+import { Prisma } from '@prisma/client';
+
+import {
+  buildPaginationResponse,
+  getBaseUrl,
+  handleDBExceptions,
+} from '../shared/helpers';
+import { CreateProductDto, ProductFilters, UpdateProductDto } from './dtos';
 import { PrismaService } from 'src/database/prisma.service';
-import { envs } from 'src/config';
+import { ResourceType } from '../shared/interfaces/pagination';
 
 @Injectable()
 export class ProductsService {
@@ -24,32 +34,34 @@ export class ProductsService {
     }
   }
 
-  async getAllProducts(paginationDto: PaginationDto) {
-    const { page = 1, limit = 10 } = paginationDto;
+  async getAllProducts(params: ProductFilters) {
+    const { page = 1, limit = 10 } = params;
+
+    this.validateFilters(params);
+
+    const orderBy = this.buildOrderBy(params);
+    const where = this.buildWhere(params);
 
     const [total, products] = await this.prismaService.$transaction([
       this.prismaService.product.count(),
       this.prismaService.product.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy,
+        where,
         skip: (page - 1) * limit,
         take: limit,
       }),
     ]);
 
-    const next =
-      limit * page >= total
-        ? null
-        : `${envs.BACKEND_URL}/products?page=${page + 1}&limit=${limit}`;
-    const prev =
-      page - 1 === 0
-        ? null
-        : `${envs.BACKEND_URL}/products?page=${page - 1}&limit=${limit}`;
+    const baseUrl = getBaseUrl(ResourceType.products);
+    const paginationResponse = buildPaginationResponse({
+      page,
+      limit,
+      total,
+      baseUrl,
+      items: products,
+    });
 
-    return {
-      next,
-      prev,
-      products,
-    };
+    return paginationResponse;
   }
 
   async getProductById(id: string) {
@@ -90,5 +102,43 @@ export class ProductsService {
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
+  }
+
+  private validateFilters(params: ProductFilters): void {
+    if (params.priceAsc && params.priceDesc)
+      throw new BadRequestException(
+        `It is not possible to filter by priceAsc and priceDesc at the same time`,
+      );
+
+    if (params.stockAsc && params.stockDesc)
+      throw new BadRequestException(
+        `It is not possible to filter by stockAsc and stockDesc at the same time`,
+      );
+  }
+
+  private buildOrderBy(
+    params: ProductFilters,
+  ): Prisma.ProductOrderByWithAggregationInput[] {
+    const orderBy: Prisma.ProductOrderByWithAggregationInput[] = [];
+
+    if (params.updatedAt) orderBy.push({ updatedAt: 'desc' });
+    if (params.priceAsc) orderBy.push({ price: 'asc' });
+    if (params.priceDesc) orderBy.push({ price: 'desc' });
+    if (params.stockAsc) orderBy.push({ stock: 'asc' });
+    if (params.stockDesc) orderBy.push({ stock: 'desc' });
+
+    if (orderBy.length === 0) orderBy.push({ createdAt: 'desc' });
+
+    return orderBy;
+  }
+
+  private buildWhere(params: ProductFilters): Prisma.ProductWhereInput {
+    const where: Prisma.ProductWhereInput = {};
+
+    if (params.name)
+      where.name = { contains: params.name, mode: 'insensitive' };
+    if (params.updatedAt) where.updatedAt = { not: null };
+
+    return where;
   }
 }
