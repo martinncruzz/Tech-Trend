@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { Prisma } from '@prisma/client';
 
@@ -15,6 +10,7 @@ import {
 import { CreateProductDto, ProductFilters, UpdateProductDto } from './dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
+import { SortBy } from './interfaces';
 
 @Injectable()
 export class ProductsService {
@@ -36,8 +32,6 @@ export class ProductsService {
 
   async getAllProducts(params: ProductFilters) {
     const { page = 1, limit = 10 } = params;
-
-    this.validateFilters(params);
 
     const orderBy = this.buildOrderBy(params);
     const where = this.buildWhere(params);
@@ -104,30 +98,34 @@ export class ProductsService {
     }
   }
 
-  private validateFilters(params: ProductFilters): void {
-    if (params.priceAsc && params.priceDesc)
-      throw new BadRequestException(
-        `It is not possible to filter by priceAsc and priceDesc at the same time`,
-      );
-
-    if (params.stockAsc && params.stockDesc)
-      throw new BadRequestException(
-        `It is not possible to filter by stockAsc and stockDesc at the same time`,
-      );
-  }
-
   private buildOrderBy(
     params: ProductFilters,
-  ): Prisma.ProductOrderByWithAggregationInput[] {
-    const orderBy: Prisma.ProductOrderByWithAggregationInput[] = [];
+  ): Prisma.ProductOrderByWithAggregationInput {
+    let orderBy: Prisma.ProductOrderByWithAggregationInput = {};
 
-    if (params.priceAsc) orderBy.push({ price: 'asc' });
-    if (params.priceDesc) orderBy.push({ price: 'desc' });
-    if (params.stockAsc) orderBy.push({ stock: 'asc' });
-    if (params.stockDesc) orderBy.push({ stock: 'desc' });
-    if (params.updatedAt) orderBy.push({ updatedAt: 'desc' });
-
-    if (orderBy.length === 0) orderBy.push({ createdAt: 'desc' });
+    switch (params.sortBy) {
+      case SortBy.NEWEST:
+        orderBy = { createdAt: 'desc' };
+        break;
+      case SortBy.OLDEST:
+        orderBy = { createdAt: 'asc' };
+        break;
+      case SortBy.LAST_UPDATED:
+        orderBy = { updatedAt: 'desc' };
+        break;
+      case SortBy.PRICE_ASC:
+        orderBy = { price: 'asc' };
+        break;
+      case SortBy.PRICE_DESC:
+        orderBy = { price: 'desc' };
+        break;
+      case SortBy.STOCK_ASC:
+        orderBy = { stock: 'asc' };
+        break;
+      case SortBy.STOCK_DESC:
+        orderBy = { stock: 'desc' };
+        break;
+    }
 
     return orderBy;
   }
@@ -135,9 +133,9 @@ export class ProductsService {
   private buildWhere(params: ProductFilters): Prisma.ProductWhereInput {
     const where: Prisma.ProductWhereInput = {};
 
-    if (params.name)
-      where.name = { contains: params.name, mode: 'insensitive' };
-    if (params.updatedAt) where.updatedAt = { not: null };
+    if (params.search)
+      where.name = { contains: params.search, mode: 'insensitive' };
+    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
 
     return where;
   }
