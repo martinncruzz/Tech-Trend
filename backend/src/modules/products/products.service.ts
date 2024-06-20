@@ -43,7 +43,7 @@ export class ProductsService {
     const where = this.buildWhere(params);
 
     const [total, products] = await this.prismaService.$transaction([
-      this.prismaService.product.count(),
+      this.prismaService.product.count({ where }),
       this.prismaService.product.findMany({
         orderBy,
         where,
@@ -121,11 +121,11 @@ export class ProductsService {
   ): Prisma.ProductOrderByWithAggregationInput[] {
     const orderBy: Prisma.ProductOrderByWithAggregationInput[] = [];
 
-    if (params.updatedAt) orderBy.push({ updatedAt: 'desc' });
     if (params.priceAsc) orderBy.push({ price: 'asc' });
     if (params.priceDesc) orderBy.push({ price: 'desc' });
     if (params.stockAsc) orderBy.push({ stock: 'asc' });
     if (params.stockDesc) orderBy.push({ stock: 'desc' });
+    if (params.updatedAt) orderBy.push({ updatedAt: 'desc' });
 
     if (orderBy.length === 0) orderBy.push({ createdAt: 'desc' });
 
