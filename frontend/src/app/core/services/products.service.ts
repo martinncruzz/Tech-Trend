@@ -2,7 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
-import { Product, ProductForm } from '../interfaces/products';
+import {
+  GetAllProductsResponse,
+  Product,
+  ProductFilters,
+  ProductForm,
+} from '../interfaces/products';
+import { Pagination } from '../interfaces/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +20,15 @@ export class ProductsService {
   constructor() {}
 
   public getAllProducts(
-    page: number = 1,
-    limit: number = 10
-  ): Observable<Product[]> {
+    { page, limit }: Pagination,
+    filters: ProductFilters
+  ): Observable<GetAllProductsResponse> {
+    const filtersQuery = this.getFiltersQuery(filters);
+
     return this.http
-      .get<Product[]>(`${this.backendUrl}/products?page=${page}&limit=${limit}`)
+      .get<GetAllProductsResponse>(
+        `${this.backendUrl}/products?page=${page}&limit=${limit}${filtersQuery}`
+      )
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
@@ -47,5 +57,14 @@ export class ProductsService {
     return this.http
       .delete<boolean>(`${this.backendUrl}/products/${id}`)
       .pipe(catchError((err) => throwError(() => err.error.message)));
+  }
+
+  private getFiltersQuery(filters: ProductFilters): string {
+    let filtersQuery = ``;
+
+    if (filters.search) filtersQuery += `&search=${filters.search}`;
+    if (filters.sortBy) filtersQuery += `&sortBy=${filters.sortBy}`;
+
+    return filtersQuery;
   }
 }
