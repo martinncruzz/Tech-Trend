@@ -5,15 +5,18 @@ import { Observable, catchError, throwError } from 'rxjs';
 import {
   GetAllProductsResponse,
   Product,
-  ProductFilters,
   ProductForm,
 } from '../interfaces/products';
 import { Pagination } from '../interfaces/pagination';
+import { Filters } from '../interfaces/filters';
+import { FiltersService } from './filters.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductsService {
+  private readonly filtersService = inject(FiltersService);
+
   private readonly backendUrl = environment.BACKEND_URL;
   private readonly http = inject(HttpClient);
 
@@ -21,9 +24,9 @@ export class ProductsService {
 
   public getAllProducts(
     { page, limit }: Pagination,
-    filters: ProductFilters
+    filters: Filters
   ): Observable<GetAllProductsResponse> {
-    const filtersQuery = this.getFiltersQuery(filters);
+    const filtersQuery = this.filtersService.getFiltersQuery(filters);
 
     return this.http
       .get<GetAllProductsResponse>(
@@ -57,14 +60,5 @@ export class ProductsService {
     return this.http
       .delete<boolean>(`${this.backendUrl}/products/${id}`)
       .pipe(catchError((err) => throwError(() => err.error.message)));
-  }
-
-  private getFiltersQuery(filters: ProductFilters): string {
-    let filtersQuery = ``;
-
-    if (filters.search) filtersQuery += `&search=${filters.search}`;
-    if (filters.sortBy) filtersQuery += `&sortBy=${filters.sortBy}`;
-
-    return filtersQuery;
   }
 }
