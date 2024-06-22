@@ -1,9 +1,16 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
-import { handleDBExceptions } from '../shared/helpers';
-import { PaginationDto } from '../shared/dtos';
+import {
+  buildPaginationResponse,
+  getBaseUrl,
+  handleDBExceptions,
+} from '../shared/helpers';
+import { Filters } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
+import { ResourceType } from '../shared/interfaces/pagination';
+import { Prisma } from '@prisma/client';
+import { SortBy } from '../products/interfaces';
 
 @Injectable()
 export class CategoriesService {
@@ -23,15 +30,32 @@ export class CategoriesService {
     }
   }
 
-  async getAllCategories(paginationDto: PaginationDto) {
-    const { page = 1, limit = 10 } = paginationDto;
+  async getAllCategories(params: Filters) {
+    const { page = 1, limit = 10 } = params;
 
-    const categories = await this.prismaService.category.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
+    const orderBy = this.buildOrderBy(params);
+    const where = this.buildWhere(params);
+
+    const [total, categories] = await this.prismaService.$transaction([
+      this.prismaService.category.count({ where }),
+      this.prismaService.category.findMany({
+        orderBy,
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    const baseUrl = getBaseUrl(ResourceType.categories);
+    const paginationResponse = buildPaginationResponse({
+      page,
+      limit,
+      total,
+      baseUrl,
+      items: categories,
     });
 
-    return categories;
+    return paginationResponse;
   }
 
   async getCategoryById(id: string) {
@@ -75,5 +99,35 @@ export class CategoriesService {
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
+  }
+
+  private buildOrderBy(
+    params: Filters,
+  ): Prisma.CategoryOrderByWithAggregationInput {
+    let orderBy: Prisma.CategoryOrderByWithAggregationInput = {};
+
+    switch (params.sortBy) {
+      case SortBy.NEWEST:
+        orderBy = { createdAt: 'desc' };
+        break;
+      case SortBy.OLDEST:
+        orderBy = { createdAt: 'asc' };
+        break;
+      case SortBy.LAST_UPDATED:
+        orderBy = { updatedAt: 'desc' };
+        break;
+    }
+
+    return orderBy;
+  }
+
+  private buildWhere(params: Filters): Prisma.CategoryWhereInput {
+    const where: Prisma.CategoryWhereInput = {};
+
+    if (params.search)
+      where.name = { contains: params.search, mode: 'insensitive' };
+    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
+
+    return where;
   }
 }
