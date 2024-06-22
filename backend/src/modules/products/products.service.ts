@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Prisma } from '@prisma/client';
 
@@ -19,6 +24,13 @@ export class ProductsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createProduct(createProductDto: CreateProductDto) {
+    const productExists = await this.getProductByName(createProductDto.name);
+
+    if (productExists)
+      throw new BadRequestException(
+        `Product with the name "${createProductDto.name}" already registered`,
+      );
+
     try {
       const product = await this.prismaService.product.create({
         data: createProductDto,
@@ -70,7 +82,16 @@ export class ProductsService {
   }
 
   async updateProduct(id: string, updateProductDto: UpdateProductDto) {
-    await this.getProductById(id);
+    const currentProduct = await this.getProductById(id);
+
+    if (updateProductDto.name !== currentProduct.name) {
+      const productExists = await this.getProductByName(updateProductDto.name);
+
+      if (productExists)
+        throw new BadRequestException(
+          `Product with the name "${updateProductDto.name}" already registered`,
+        );
+    }
 
     try {
       const product = await this.prismaService.product.update({
@@ -96,6 +117,14 @@ export class ProductsService {
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
+  }
+
+  private async getProductByName(name: string) {
+    const product = await this.prismaService.product.findUnique({
+      where: { name },
+    });
+
+    return product;
   }
 
   private buildOrderBy(
