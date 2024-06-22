@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
@@ -23,6 +23,10 @@ export class ProductsListComponent implements OnInit {
 
   public products = signal<Product[]>([]);
 
+  public paginationButtons = computed(() =>
+    this.paginationService.paginationButtons()
+  );
+
   ngOnInit(): void {
     this.paginationService.setPagination(1, 9);
     this.filtersService.resetFilters();
@@ -42,5 +46,11 @@ export class ProductsListComponent implements OnInit {
         },
         error: (err) => console.log(err),
       });
+  }
+
+  public updatePage(value: number): void {
+    this.paginationService.updatePage(value);
+    window.scrollTo({ top: 0 });
+    this.getAllProducts();
   }
 }
