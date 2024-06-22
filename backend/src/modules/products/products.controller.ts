@@ -10,8 +10,9 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 
-import { CreateProductDto, ProductFilters, UpdateProductDto } from './dtos';
+import { CreateProductDto, UpdateProductDto } from './dtos';
 import { ProductsService } from './products.service';
+import { Filters } from '../shared/dtos';
 
 @Controller('products')
 export class ProductsController {
@@ -23,7 +24,7 @@ export class ProductsController {
   }
 
   @Get()
-  getAllProducts(@Query() params: ProductFilters) {
+  getAllProducts(@Query() params: Filters) {
     return this.productsService.getAllProducts(params);
   }
 

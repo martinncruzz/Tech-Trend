@@ -12,10 +12,11 @@ import {
   getBaseUrl,
   handleDBExceptions,
 } from '../shared/helpers';
-import { CreateProductDto, ProductFilters, UpdateProductDto } from './dtos';
+import { CreateProductDto, UpdateProductDto } from './dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { SortBy } from './interfaces';
+import { Filters } from '../shared/dtos';
 
 @Injectable()
 export class ProductsService {
@@ -42,7 +43,7 @@ export class ProductsService {
     }
   }
 
-  async getAllProducts(params: ProductFilters) {
+  async getAllProducts(params: Filters) {
     const { page = 1, limit = 10 } = params;
 
     const orderBy = this.buildOrderBy(params);
@@ -128,7 +129,7 @@ export class ProductsService {
   }
 
   private buildOrderBy(
-    params: ProductFilters,
+    params: Filters,
   ): Prisma.ProductOrderByWithAggregationInput {
     let orderBy: Prisma.ProductOrderByWithAggregationInput = {};
 
@@ -159,7 +160,7 @@ export class ProductsService {
     return orderBy;
   }
 
-  private buildWhere(params: ProductFilters): Prisma.ProductWhereInput {
+  private buildWhere(params: Filters): Prisma.ProductWhereInput {
     const where: Prisma.ProductWhereInput = {};
 
     if (params.search)
