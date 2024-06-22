@@ -43,7 +43,10 @@ export class CategoriesDashboardComponent implements OnInit {
 
   public getAllCategories(): void {
     this.categoriesService
-      .getAllCategories(this.paginationService.pagination(), this.filter())
+      .getAllCategories(
+        this.paginationService.pagination(),
+        this.filtersService.filter()
+      )
       .subscribe({
         next: ({ next, prev, items }) => {
           this.categories.set(items);
