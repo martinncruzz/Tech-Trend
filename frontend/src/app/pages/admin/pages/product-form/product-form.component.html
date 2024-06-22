@@ -1,0 +1,294 @@
+<section class="min-h-screen w-full max-w-lg mx-auto p-6">
+  <div
+    class="mt-7 rounded-xl shadow-sm bg-neutral-900 border border-neutral-700"
+  >
+    <div class="p-4 sm:p-7">
+      <div class="text-center">
+        <h1 class="block text-2xl font-bold">
+          {{ currentProduct() ? "Edit Product" : "Create Product" }}
+        </h1>
+      </div>
+      <div class="mt-5">
+        <form [formGroup]="productForm">
+          <div class="grid gap-y-4">
+            <div>
+              <label
+                for="product-name"
+                class="block text-sm mb-2"
+                [ngClass]="{
+                  'text-red-500 ': isInvalidField('name') || errorMessage()
+                }"
+                >Name</label
+              >
+              <input
+                type="text"
+                id="product-name"
+                name="product-name"
+                formControlName="name"
+                placeholder="Logitech G203"
+                class="py-3 px-4 block w-full rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                [ngClass]="{
+                  'text-red-500 border-red-500':
+                    isInvalidField('name') || errorMessage()
+                }"
+              />
+
+              @if (isInvalidField('name')) {
+              <span class="block mt-2 text-sm text-red-500">
+                {{ getFieldError("name") }}
+              </span>
+              }
+            </div>
+
+            <div>
+              <label
+                for="description"
+                class="block text-sm mb-2"
+                [ngClass]="{
+                  'text-red-500 ':
+                    isInvalidField('description') || errorMessage()
+                }"
+                >Description</label
+              >
+              <textarea
+                id="description"
+                name="description"
+                formControlName="description"
+                class="py-3 px-4 block w-full border rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                rows="4"
+                placeholder="The Logitech G203 is a wired gaming mouse with 8,000 DPI, 6 programmable buttons, and customizable RGB lighting..."
+                [ngClass]="{
+                  'text-red-500 border-red-500':
+                    isInvalidField('description') || errorMessage()
+                }"
+              ></textarea>
+
+              @if (isInvalidField('description')) {
+              <span class="block mt-2 text-sm text-red-500">
+                {{ getFieldError("description") }}
+              </span>
+              }
+            </div>
+
+            <div>
+              <div
+                class="py-2 px-3 border rounded-lg bg-neutral-900 border-neutral-700"
+                [ngClass]="{
+                  'border-red-500': isInvalidField('price') || errorMessage()
+                }"
+                data-hs-input-number=""
+              >
+                <div class="w-full flex justify-between items-center gap-x-5">
+                  <div class="grow">
+                    <label
+                      for="price"
+                      class="block text-xs text-neutral-400"
+                      [ngClass]="{
+                        'text-red-500 ':
+                          isInvalidField('price') || errorMessage()
+                      }"
+                    >
+                      Price
+                    </label>
+                    <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      formControlName="price"
+                      class="w-full p-0 bg-transparent border-0 focus:ring-0"
+                      [ngClass]="{
+                        'text-red-500':
+                          isInvalidField('price') || errorMessage()
+                      }"
+                      data-hs-input-number-input=""
+                    />
+                  </div>
+                  <div class="flex justify-end items-center gap-x-1.5">
+                    <button
+                      (click)="updateNumberFormValue('price', -1)"
+                      type="button"
+                      class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
+                      data-hs-input-number-decrement=""
+                    >
+                      <svg
+                        class="flex-shrink-0 size-3.5"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12h14"></path>
+                      </svg>
+                    </button>
+                    <button
+                      (click)="updateNumberFormValue('price', 1)"
+                      type="button"
+                      class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
+                      data-hs-input-number-increment=""
+                    >
+                      <svg
+                        class="flex-shrink-0 size-3.5"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              @if (isInvalidField('price')) {
+              <span class="block mt-2 text-sm text-red-500">
+                {{ getFieldError("price") }}
+              </span>
+              }
+            </div>
+
+            <div>
+              <div
+                class="py-2 px-3 border rounded-lg bg-neutral-900 border-neutral-700"
+                data-hs-input-number=""
+                [ngClass]="{
+                  'border-red-500': isInvalidField('stock') || errorMessage()
+                }"
+              >
+                <div class="w-full flex justify-between items-center gap-x-5">
+                  <div class="grow">
+                    <label
+                      for="stock"
+                      class="block text-xs text-neutral-400"
+                      [ngClass]="{
+                        'text-red-500':
+                          isInvalidField('stock') || errorMessage()
+                      }"
+                    >
+                      Stock
+                    </label>
+                    <input
+                      type="number"
+                      id="stock"
+                      name="stock"
+                      formControlName="stock"
+                      class="w-full p-0 bg-transparent border-0 focus:ring-0"
+                      [ngClass]="{
+                        'text-red-500':
+                          isInvalidField('stock') || errorMessage()
+                      }"
+                      data-hs-input-number-input=""
+                    />
+                  </div>
+                  <div class="flex justify-end items-center gap-x-1.5">
+                    <button
+                      (click)="updateNumberFormValue('stock', -1)"
+                      type="button"
+                      class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
+                      data-hs-input-number-decrement=""
+                    >
+                      <svg
+                        class="flex-shrink-0 size-3.5"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12h14"></path>
+                      </svg>
+                    </button>
+                    <button
+                      (click)="updateNumberFormValue('stock', 1)"
+                      type="button"
+                      class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
+                      data-hs-input-number-increment=""
+                    >
+                      <svg
+                        class="flex-shrink-0 size-3.5"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              @if (isInvalidField('stock')) {
+              <span class="block mt-2 text-sm text-red-500">
+                {{ getFieldError("stock") }}
+              </span>
+              }
+            </div>
+
+            <!-- <div class="">
+              <label for="image" class="block text-sm mb-2">Image</label>
+              <input
+                type="file"
+                name="image"
+                id="image"
+                class="block w-full border shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-neutral-400 file:border-0 file:me-4 file:py-3 file:px-4 file:bg-neutral-700 file:text-neutral-400"
+              />
+            </div> -->
+
+            @if (!currentProduct()) {
+            <button
+              [disabled]="productForm.invalid"
+              (click)="createProduct()"
+              type="submit"
+              class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
+              [ngClass]="{ 'bg-red-600': errorMessage() }"
+            >
+              @if (productForm.valid && !errorMessage()) {
+              <span
+                class="absolute h-0 w-0 bg-blue-600 transition-all duration-300 group-hover:h-56 group-hover:w-full"
+              ></span>
+              }
+
+              <span class="relative">Create</span>
+            </button>
+
+            } @else {
+            <button
+              [disabled]="productForm.invalid"
+              (click)="updateProduct()"
+              type="submit"
+              class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
+              [ngClass]="{ 'bg-red-600': errorMessage() }"
+            >
+              @if (productForm.valid && !errorMessage()) {
+              <span
+                class="absolute h-0 w-0 bg-yellow-600 transition-all duration-300 group-hover:h-56 group-hover:w-full"
+              ></span>
+              }
+
+              <span class="relative">Edit</span>
+            </button>
+            } @if (errorMessage()) {
+            <p class="block text-center text-red-500">{{ errorMessage() }}</p>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
