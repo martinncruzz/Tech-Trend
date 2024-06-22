@@ -19,6 +19,8 @@ export class ValidatorsService {
       switch (key) {
         case 'required':
           return `${titleCaseField} is required`;
+        case 'min':
+          return `Invalid value`;
         case 'minlength':
           return `Minimum ${errors['minlength'].requiredLength} characters `;
         case 'pattern':
