@@ -1,6 +1,6 @@
 import { SortBy } from './sort-by.enum';
 
-export interface ProductFilters {
+export interface Filters {
   search?: string;
   sortBy?: SortBy;
 }
