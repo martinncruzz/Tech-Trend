@@ -1,0 +1,113 @@
+<section class="min-h-screen w-full max-w-lg mx-auto p-6">
+  <div
+    class="mt-7 rounded-xl shadow-sm bg-neutral-900 border border-neutral-700"
+  >
+    <div class="p-4 sm:p-7">
+      <div class="text-center">
+        <h1 class="block text-2xl font-bold">
+          {{ currentCategory() ? "Edit Category" : "Create Category" }}
+        </h1>
+      </div>
+      <div class="mt-5">
+        <form [formGroup]="categoryForm">
+          <div class="grid gap-y-4">
+            <div>
+              <label
+                for="category-name"
+                class="block text-sm mb-2"
+                [ngClass]="{
+                  'text-red-500 ': isInvalidField('name') || errorMessage()
+                }"
+                >Name</label
+              >
+              <input
+                type="text"
+                id="category-name"
+                name="category-name"
+                formControlName="name"
+                placeholder="Keyboards"
+                class="py-3 px-4 block w-full rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                [ngClass]="{
+                  'text-red-500 border-red-500':
+                    isInvalidField('name') || errorMessage()
+                }"
+              />
+
+              @if (isInvalidField('name')) {
+              <span class="block mt-2 text-sm text-red-500">
+                {{ getFieldError("name") }}
+              </span>
+              }
+            </div>
+
+            <div>
+              <label
+                for="description"
+                class="block text-sm mb-2"
+                [ngClass]="{
+                  'text-red-500 ':
+                    isInvalidField('description') || errorMessage()
+                }"
+                >Description</label
+              >
+              <textarea
+                id="description"
+                name="description"
+                formControlName="description"
+                class="py-3 px-4 block w-full border rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                rows="4"
+                placeholder="Discover a variety of high-quality keyboards designed for both everyday typing and advanced gaming..."
+                [ngClass]="{
+                  'text-red-500 border-red-500':
+                    isInvalidField('description') || errorMessage()
+                }"
+              ></textarea>
+
+              @if (isInvalidField('description')) {
+              <span class="block mt-2 text-sm text-red-500">
+                {{ getFieldError("description") }}
+              </span>
+              }
+            </div>
+            @if (!currentCategory()) {
+            <button
+              [disabled]="categoryForm.invalid"
+              (click)="createCategory()"
+              type="submit"
+              class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
+              [ngClass]="{ 'bg-red-600': errorMessage() }"
+            >
+              @if (categoryForm.valid && !errorMessage()) {
+              <span
+                class="absolute h-0 w-0 bg-blue-600 transition-all duration-300 group-hover:h-56 group-hover:w-full"
+              ></span>
+              }
+
+              <span class="relative">Create</span>
+            </button>
+
+            } @else {
+            <button
+              [disabled]="categoryForm.invalid"
+              (click)="updateCategory()"
+              type="submit"
+              class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
+              [ngClass]="{ 'bg-red-600': errorMessage() }"
+            >
+              @if (categoryForm.valid && !errorMessage()) {
+              <span
+                class="absolute h-0 w-0 bg-yellow-600 transition-all duration-300 group-hover:h-56 group-hover:w-full"
+              ></span>
+              }
+
+              <span class="relative">Edit</span>
+            </button>
+            } @if (errorMessage()) {
+            <p class="block text-center text-red-500">{{ errorMessage() }}</p>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
