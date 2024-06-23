@@ -36,6 +36,12 @@ export class CategoriesService {
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
+  public getCategoryById(id: string): Observable<Category> {
+    return this.http
+      .get<Category>(`${this.backendUrl}/categories/${id}`)
+      .pipe(catchError((err) => throwError(() => err.error.message)));
+  }
+
   public createCategory(categoryForm: CategoryForm): Observable<Category> {
     return this.http
       .post<Category>(`${this.backendUrl}/categories`, categoryForm)
