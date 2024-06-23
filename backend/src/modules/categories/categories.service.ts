@@ -1,4 +1,10 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
 import {
@@ -9,7 +15,6 @@ import {
 import { Filters } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
-import { Prisma } from '@prisma/client';
 import { SortBy } from '../products/interfaces';
 
 @Injectable()
@@ -19,6 +24,13 @@ export class CategoriesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createCategory(createCategoryDto: CreateCategoryDto) {
+    const categoryExists = await this.getCategoryByName(createCategoryDto.name);
+
+    if (categoryExists)
+      throw new BadRequestException(
+        `Category with the name "${createCategoryDto.name}" already registered`,
+      );
+
     try {
       const category = await this.prismaService.category.create({
         data: createCategoryDto,
@@ -70,7 +82,18 @@ export class CategoriesService {
   }
 
   async updateCategory(id: string, updateCategoryDto: UpdateCategoryDto) {
-    await this.getCategoryById(id);
+    const currentCategory = await this.getCategoryById(id);
+
+    if (updateCategoryDto.name !== currentCategory.name) {
+      const categoryExists = await this.getCategoryByName(
+        updateCategoryDto.name,
+      );
+
+      if (categoryExists)
+        throw new BadRequestException(
+          `Category with the name "${updateCategoryDto.name}" already registered`,
+        );
+    }
 
     try {
       const category = await this.prismaService.category.update({
@@ -99,6 +122,14 @@ export class CategoriesService {
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
+  }
+
+  private async getCategoryByName(name: string) {
+    const category = await this.prismaService.category.findUnique({
+      where: { name },
+    });
+
+    return category;
   }
 
   private buildOrderBy(
