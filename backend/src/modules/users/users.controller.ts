@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -10,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { PaginationDto } from '../shared/dtos';
+import { Filters } from '../shared/dtos';
 import { UpdateUserDto } from './dtos';
 import { UsersService } from './users.service';
 
@@ -19,8 +18,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  getAllUsers(@Query() paginationDto: PaginationDto) {
-    return this.usersService.getAllUsers(paginationDto);
+  getAllUsers(@Query() params: Filters) {
+    return this.usersService.getAllUsers(params);
   }
 
   @Get(':id')

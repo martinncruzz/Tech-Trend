@@ -1,8 +1,16 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
-import { handleDBExceptions } from '../shared/helpers';
-import { PaginationDto } from '../shared/dtos';
+import {
+  buildPaginationResponse,
+  getBaseUrl,
+  handleDBExceptions,
+} from '../shared/helpers';
+import { Prisma } from '@prisma/client';
+
+import { Filters } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
+import { ResourceType } from '../shared/interfaces/pagination';
+import { SortBy } from '../products/interfaces';
 import { UpdateUserDto } from './dtos';
 
 @Injectable()
@@ -11,15 +19,32 @@ export class UsersService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAllUsers(paginationDto: PaginationDto) {
-    const { page = 1, limit = 10 } = paginationDto;
+  async getAllUsers(params: Filters) {
+    const { page = 1, limit = 10 } = params;
 
-    const users = await this.prismaService.user.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
+    const orderBy = this.buildOrderBy(params);
+    const where = this.buildWhere(params);
+
+    const [total, users] = await this.prismaService.$transaction([
+      this.prismaService.user.count({ where }),
+      this.prismaService.user.findMany({
+        orderBy,
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    const baseUrl = getBaseUrl(ResourceType.users);
+    const paginationResponse = buildPaginationResponse({
+      page,
+      limit,
+      total,
+      baseUrl,
+      items: users,
     });
 
-    return users;
+    return paginationResponse;
   }
 
   async getUserById(id: string) {
@@ -62,5 +87,35 @@ export class UsersService {
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
+  }
+
+  private buildOrderBy(
+    params: Filters,
+  ): Prisma.UserOrderByWithAggregationInput {
+    let orderBy: Prisma.UserOrderByWithAggregationInput = {};
+
+    switch (params.sortBy) {
+      case SortBy.NEWEST:
+        orderBy = { createdAt: 'desc' };
+        break;
+      case SortBy.OLDEST:
+        orderBy = { createdAt: 'asc' };
+        break;
+      case SortBy.LAST_UPDATED:
+        orderBy = { updatedAt: 'desc' };
+        break;
+    }
+
+    return orderBy;
+  }
+
+  private buildWhere(params: Filters): Prisma.UserWhereInput {
+    const where: Prisma.UserWhereInput = {};
+
+    if (params.search)
+      where.fullname = { contains: params.search, mode: 'insensitive' };
+    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
+
+    return where;
   }
 }
