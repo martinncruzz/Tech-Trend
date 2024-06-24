@@ -1,0 +1,658 @@
+<div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:py-14 mx-auto">
+  <div class="flex flex-col">
+    <div class="-m-1.5 overflow-x-auto">
+      <div class="p-1.5 min-w-full inline-block align-middle">
+        <div
+          class="border rounded-xl shadow-sm overflow-hidden bg-neutral-900 border-neutral-700"
+        >
+          <div
+            class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-neutral-700"
+          >
+            <div class="md:w-1/4">
+              <h2 class="text-xl font-semibold text-neutral-200">Users</h2>
+              <p class="text-sm text-neutral-400">
+                Filter users, edit and more.
+              </p>
+            </div>
+
+            <div class="sm:col-span-1 md:w-2/4">
+              <label for="product-search" class="sr-only">Search</label>
+              <div class="relative">
+                <shared-search-input
+                  (onSearch)="searchCategory($event)"
+                  label="product-search"
+                  styles="py-2 px-3 ps-11 block w-full border rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                />
+                <div
+                  class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-4"
+                >
+                  <svg
+                    class="flex-shrink-0 size-4 text-neutral-500"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="sm:col-span-2 md:w-1/4">
+              <div class="flex sm:justify-end">
+                <div
+                  class="hs-dropdown [--placement:bottom-right] relative inline-block"
+                >
+                  <button
+                    id="hs-as-table-table-filters-dropdown"
+                    type="button"
+                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
+                  >
+                    <svg
+                      class="flex-shrink-0 size-3.5"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M7 12h10" />
+                      <path d="M10 18h4" />
+                    </svg>
+                    Filters
+                  </button>
+                  <div
+                    class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden divide-y min-w-48 z-10 shadow-md rounded-lg p-2 mt-2 divide-neutral-700 bg-neutral-800 border border-neutral-700"
+                    aria-labelledby="hs-as-table-table-filters-dropdown"
+                  >
+                    <div class="py-2 first:pt-0 last:pb-0">
+                      <span
+                        class="block py-2 px-3 text-xs font-medium uppercase text-neutral-600"
+                      >
+                        Filters
+                      </span>
+                      <div class="flex flex-col gap-1">
+                        <a
+                          [ngClass]="{
+                            'bg-neutral-700 text-white':
+                              filter().sortBy === sortBy.NEWEST
+                          }"
+                          (click)="applyFilter(sortBy.NEWEST)"
+                          class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 text-neutral-400 hover:bg-neutral-700 hover:text-white cursor-pointer"
+                        >
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-clock-up flex-shrink-0 size-5"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M20.983 12.548a9 9 0 1 0 -8.45 8.436" />
+                            <path d="M19 22v-6" />
+                            <path d="M22 19l-3 -3l-3 3" />
+                            <path d="M12 7v5l2.5 2.5" />
+                          </svg>
+                          Newest
+                        </a>
+                        <a
+                          [ngClass]="{
+                            'bg-neutral-700 text-white':
+                              filter().sortBy === sortBy.OLDEST
+                          }"
+                          (click)="applyFilter(sortBy.OLDEST)"
+                          class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 text-neutral-400 hover:bg-neutral-700 hover:text-white cursor-pointer"
+                        >
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-clock-down flex-shrink-0 size-5"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M20.984 12.535a9 9 0 1 0 -8.431 8.448" />
+                            <path d="M12 7v5l3 3" />
+                            <path d="M19 16v6" />
+                            <path d="M22 19l-3 3l-3 -3" />
+                          </svg>
+                          Oldest
+                        </a>
+                        <a
+                          [ngClass]="{
+                            'bg-neutral-700 text-white':
+                              filter().sortBy === sortBy.LAST_UPDATED
+                          }"
+                          (click)="applyFilter(sortBy.LAST_UPDATED)"
+                          class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 text-neutral-400 hover:bg-neutral-700 hover:text-white cursor-pointer"
+                        >
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-pencil-up flex-shrink-0 size-5"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path
+                              d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"
+                            />
+                            <path d="M13.5 6.5l4 4" />
+                            <path d="M19 22v-6" />
+                            <path d="M22 19l-3 -3l-3 3" />
+                          </svg>
+                          Last Updated
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <table class="min-w-full divide-y divide-neutral-700">
+            <thead class="bg-neutral-800">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span
+                      class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
+                    >
+                      Email
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span
+                      class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
+                    >
+                      FullName
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span
+                      class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
+                    >
+                      Address
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span
+                      class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
+                    >
+                      Created At
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span
+                      class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
+                    >
+                      Updated At
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span
+                      class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
+                    >
+                      Actions
+                    </span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-neutral-700">
+              @for (user of users(); track $index) {
+              <tr class="bg-neutral-900">
+                <td class="size-px whitespace-nowrap align-top p-6">
+                  <span class="text-sm font-semibold text-neutral-200">{{
+                    user.email
+                  }}</span>
+                </td>
+                <td class="size-px whitespace-nowrap align-top p-6">
+                  <span class="text-sm text-neutral-400">{{
+                    user.fullname
+                  }}</span>
+                </td>
+                <td class="size-px whitespace-nowrap align-top p-6">
+                  <span class="text-sm text-neutral-400">{{
+                    user.address
+                  }}</span>
+                </td>
+                <td class="size-px whitespace-nowrap align-top p-6">
+                  <span class="text-sm text-neutral-400">{{
+                    user.createdAt | date : "MMMM d y, hh:mm a"
+                  }}</span>
+                </td>
+                <td class="size-px whitespace-nowrap align-top p-6">
+                  <span class="text-sm text-neutral-400">{{
+                    user.updatedAt
+                      ? (user.updatedAt | date : "MMMM d y, hh:mm a")
+                      : "Not updated"
+                  }}</span>
+                </td>
+
+                <td class="size-px whitespace-nowrap align-top p-6">
+                  <div class="flex gap-x-2">
+                    <button
+                      class="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-yellow-500 px-6 font-medium duration-500"
+                      data-hs-overlay="#hs-edit-user-modal"
+                      (click)="getUserById(user)"
+                    >
+                      <div
+                        class="translate-x-0 opacity-100 transition group-hover:-translate-x-[150%] group-hover:opacity-0"
+                      >
+                        Edit
+                      </div>
+                      <div
+                        class="absolute translate-x-[150%] opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path
+                            d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"
+                          />
+                          <path d="M13.5 6.5l4 4" />
+                        </svg>
+                      </div>
+                    </button>
+
+                    <button
+                      class="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-red-500 px-6 font-medium duration-500"
+                      data-hs-overlay="#hs-delete-user-modal"
+                      (click)="this.currentUser.set(user)"
+                    >
+                      <div
+                        class="translate-x-0 opacity-100 transition group-hover:-translate-x-[150%] group-hover:opacity-0"
+                      >
+                        Delete
+                      </div>
+                      <div
+                        class="absolute translate-x-[150%] opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="icon icon-tabler icons-tabler-outline icon-tabler-trash"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M4 7l16 0" />
+                          <path d="M10 11l0 6" />
+                          <path d="M14 11l0 6" />
+                          <path
+                            d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                          />
+                          <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+
+          <div
+            class="px-6 py-4 gap-3 flex md:justify-end border-t border-neutral-700"
+          >
+            <div>
+              <div class="inline-flex gap-x-2">
+                <button
+                  (click)="updatePage(-1)"
+                  [disabled]="!paginationButtons().prev"
+                  type="button"
+                  class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
+                >
+                  <svg
+                    class="flex-shrink-0 size-4"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                  Prev
+                </button>
+
+                <button
+                  (click)="updatePage(1)"
+                  [disabled]="!paginationButtons().next"
+                  type="button"
+                  class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
+                >
+                  Next
+                  <svg
+                    class="flex-shrink-0 size-4"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  id="hs-edit-user-modal"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto"
+>
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto"
+  >
+    <div
+      class="relative border rounded-xl shadow-sm bg-neutral-900 border-neutral-800"
+    >
+      <div class="absolute top-2 end-2">
+        <button
+          type="button"
+          class="flex justify-center items-center size-7 text-sm font-semibold rounded-lg border disabled:opacity-50 disabled:pointer-events-none border-transparent hover:bg-neutral-700"
+          data-hs-overlay="#hs-edit-user-modal"
+          (click)="resetForm()"
+        >
+          <span class="sr-only">Close</span>
+          <svg
+            class="flex-shrink-0 size-4"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 sm:p-7">
+        <div class="text-center">
+          <h1 class="block text-2xl font-bold">Edit User</h1>
+        </div>
+
+        <div class="mt-5">
+          <!-- Form -->
+          <form [formGroup]="updateUserForm" (ngSubmit)="updateUser()">
+            <div class="grid gap-y-4">
+              <div>
+                <label
+                  for="fullname"
+                  class="block text-sm mb-2"
+                  [ngClass]="{
+                    'text-red-500': isInvalidField('fullname') || errorMessage()
+                  }"
+                  >Fullname</label
+                >
+                <input
+                  type="text"
+                  id="fullname"
+                  name="fullname"
+                  formControlName="fullname"
+                  autocomplete="name"
+                  placeholder="John Doe"
+                  class="py-3 px-4 block w-full rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                  [ngClass]="{
+                    'text-red-500 border-red-500':
+                      isInvalidField('fullname') || errorMessage()
+                  }"
+                />
+
+                @if (isInvalidField('fullname')) {
+                <span class="block mt-2 text-sm text-red-500">
+                  {{ getFieldError("fullname") }}
+                </span>
+                }
+              </div>
+
+              <div>
+                <label
+                  for="address"
+                  class="block text-sm mb-2"
+                  [ngClass]="{
+                    'text-red-500': isInvalidField('address') || errorMessage()
+                  }"
+                  >Address</label
+                >
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  formControlName="address"
+                  autocomplete="street-address"
+                  placeholder="Spain, Madrid"
+                  class="py-3 px-4 block w-full rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                  [ngClass]="{
+                    'text-red-500 border-red-500':
+                      isInvalidField('address') || errorMessage()
+                  }"
+                />
+
+                @if (isInvalidField('address')) {
+                <span class="block mt-2 text-sm text-red-500">
+                  {{ getFieldError("address") }}
+                </span>
+                }
+              </div>
+
+              <div>
+                <label
+                  for="email"
+                  class="block text-sm mb-2"
+                  [ngClass]="{
+                    'text-red-500': isInvalidField('email') || errorMessage()
+                  }"
+                  >Email</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  formControlName="email"
+                  autocomplete="email"
+                  placeholder="johndoe@example.com"
+                  class="py-3 px-4 block w-full rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                  [ngClass]="{
+                    'text-red-500 border-red-500':
+                      isInvalidField('email') || errorMessage()
+                  }"
+                />
+
+                @if (isInvalidField('email')) {
+                <span class="block mt-2 text-sm text-red-500">
+                  {{ getFieldError("email") }}
+                </span>
+                }
+              </div>
+
+              <button
+                [disabled]="updateUserForm.invalid"
+                type="submit"
+                class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
+                [ngClass]="{ 'bg-red-600': errorMessage() }"
+                data-hs-overlay="#hs-edit-user-modal"
+              >
+                @if (updateUserForm.valid && !errorMessage()) {
+                <span
+                  class="absolute h-0 w-0 bg-yellow-500 transition-all duration-300 group-hover:h-56 group-hover:w-full"
+                ></span>
+                }
+
+                <span class="relative">Edit</span>
+              </button>
+
+              <div class="text-center">
+                @if (errorMessage()) {
+                <p class="text-red-500">{{ errorMessage() }}</p>
+                }
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  id="hs-delete-user-modal"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto"
+>
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all md:max-w-2xl md:w-full m-3 md:mx-auto"
+  >
+    <div
+      class="relative flex flex-col bg-white border shadow-sm rounded-xl overflow-hidden dark:bg-neutral-900 dark:border-neutral-800"
+    >
+      <div class="absolute top-2 end-2">
+        <button
+          type="button"
+          class="flex justify-center items-center size-7 text-sm font-semibold rounded-lg border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:border-transparent dark:hover:bg-neutral-700"
+          data-hs-overlay="#hs-delete-user-modal"
+        >
+          <span class="sr-only">Close</span>
+          <svg
+            class="flex-shrink-0 size-4"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-10 overflow-y-auto">
+        <div class="flex gap-x-4 md:gap-x-7">
+          <span
+            class="flex-shrink-0 inline-flex justify-center items-center size-[46px] sm:w-[62px] sm:h-[62px] rounded-full border-4 border-red-50 bg-red-100 text-red-500 dark:bg-red-700 dark:border-red-600 dark:text-red-100"
+          >
+            <svg
+              class="flex-shrink-0 size-5"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+              />
+            </svg>
+          </span>
+
+          <div class="grow">
+            <h3
+              class="mb-2 text-xl font-bold text-gray-800 dark:text-neutral-200"
+            >
+              Delete User
+            </h3>
+            <p class="text-gray-500 dark:text-neutral-500">
+              Are you sure you want to delete this user? This action cannot be
+              undone. If you proceed, all data associated with this user will be
+              permanently removed.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="flex justify-end items-center gap-x-2 py-3 px-4 bg-gray-50 border-t dark:bg-neutral-950 dark:border-neutral-800"
+      >
+        <button
+          type="button"
+          class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-800"
+          data-hs-overlay="#hs-delete-user-modal"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="deleteUser()"
+          class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none"
+          data-hs-overlay="#hs-delete-user-modal"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

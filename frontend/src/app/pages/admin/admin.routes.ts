@@ -5,6 +5,7 @@ import { ProductsDashboardComponent } from './pages/products-dashboard/products-
 import { ProductFormComponent } from './pages/product-form/product-form.component';
 import { CategoriesDashboardComponent } from './pages/categories-dashboard/categories-dashboard.component';
 import { CategoryFormComponent } from './pages/category-form/category-form.component';
+import { UsersDashboardComponent } from './pages/users-dashboard/users-dashboard.component';
 
 export const ADMIN_ROUTES: Routes = [
   { path: 'dashboard', component: DashboardComponent },
@@ -14,5 +15,6 @@ export const ADMIN_ROUTES: Routes = [
   { path: 'categories-dashboard', component: CategoriesDashboardComponent },
   { path: 'category-form/new-category', component: CategoryFormComponent },
   { path: 'category-form/edit/:id', component: CategoryFormComponent },
+  { path: 'users-dashboard', component: UsersDashboardComponent },
   { path: '**', redirectTo: 'dashboard' },
 ];
