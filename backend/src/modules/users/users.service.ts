@@ -113,7 +113,7 @@ export class UsersService {
     const where: Prisma.UserWhereInput = {};
 
     if (params.search)
-      where.fullname = { contains: params.search, mode: 'insensitive' };
+      where.email = { contains: params.search, mode: 'insensitive' };
     if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
 
     return where;
