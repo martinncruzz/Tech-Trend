@@ -56,7 +56,7 @@ export class CategoriesDashboardComponent implements OnInit {
       });
   }
 
-  public deleteProduct(): void {
+  public deleteCategory(): void {
     this.categoriesService
       .deleteCategory(this.currentCategory()!.category_id)
       .subscribe({
