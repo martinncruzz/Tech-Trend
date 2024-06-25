@@ -31,7 +31,8 @@ export class FeaturedProductsComponent implements OnInit {
     this.productsService
       .getAllProducts(
         this.paginationService.pagination(),
-        this.filtersService.filter()
+        this.filtersService.filter(),
+        true
       )
       .subscribe({
         next: ({ items }) => {
