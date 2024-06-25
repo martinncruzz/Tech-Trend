@@ -253,27 +253,15 @@
           <div
             class="hs-dropdown-menu transition-[opacity,margin] duration-[0.1ms] sm:duration-[150ms] hs-dropdown-open:opacity-100 opacity-0 sm:w-48 hidden z-10 sm:shadow-md rounded-lg p-2 bg-neutral-800 sm:border border-neutral-700 divide-neutral-700 before:absolute top-full before:-top-5 before:start-0 before:w-full before:h-5 mt-3"
           >
+            @for (category of categories(); track $index) {
             <a
               class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-cyan-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300"
               [routerLink]="['products']"
-              [queryParams]="{ category: '1' }"
+              [queryParams]="{ category: category.category_id }"
             >
-              Category 1
+              {{ category.name }}
             </a>
-            <a
-              class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-cyan-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300"
-              [routerLink]="['products']"
-              [queryParams]="{ category: '2' }"
-            >
-              Category 2
-            </a>
-            <a
-              class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm focus:ring-2 focus:ring-cyan-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300"
-              [routerLink]="['products']"
-              [queryParams]="{ category: '3' }"
-            >
-              Category 3
-            </a>
+            }
           </div>
         </div>
 
