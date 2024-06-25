@@ -15,7 +15,7 @@ import {
 import { Filters } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
-import { SortBy } from '../products/interfaces';
+import { SortBy } from '../shared/interfaces/filters';
 
 @Injectable()
 export class CategoriesService {

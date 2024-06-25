@@ -15,8 +15,8 @@ import {
 import { CreateProductDto, UpdateProductDto } from './dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
-import { SortBy } from './interfaces';
 import { Filters } from '../shared/dtos';
+import { SortBy } from '../shared/interfaces/filters';
 
 @Injectable()
 export class ProductsService {
