@@ -17,80 +17,109 @@
           {{ currentProduct()?.description }}
         </p>
       </div>
-      <div class="grid gap-2">
+      <div class="grid gap-4">
         <div class="flex items-center justify-between">
           <span class="text-2xl font-bold">{{
             currentProduct()?.price | currency
           }}</span>
           <span class="text-green-500 font-medium">In Stock</span>
         </div>
-        <div
-          class="my-2 py-2 px-3 rounded-lg bg-neutral-900 border-neutral-700"
-          data-hs-input-number=""
-        >
-          <div class="w-full flex justify-between items-center gap-x-5">
-            <div class="grow">
-              <span class="block text-xs text-neutral-400">
-                Select quantity
-              </span>
-              <input
-                class="w-full p-0 bg-transparent border-0 focus:ring-0"
-                type="text"
-                id="product-quantity"
-                value="1"
-                data-hs-input-number-input=""
-              />
-            </div>
-            <div class="flex justify-end items-center gap-x-1.5">
-              <button
-                type="button"
-                class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
-                data-hs-input-number-decrement=""
-              >
-                <svg
-                  class="flex-shrink-0 size-3.5"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+
+        <form [formGroup]="quantityForm">
+          <div
+            class="py-2 px-3 rounded-lg bg-neutral-900 border-neutral-700"
+            data-hs-input-number=""
+            [ngClass]="{
+              'border-red-500 border ':
+                isInvalidField('quantity') || errorMessage()
+            }"
+          >
+            <div class="w-full flex justify-between items-center gap-x-5">
+              <div class="grow">
+                <label
+                  for="quantity"
+                  class="block text-xs text-neutral-400"
+                  [ngClass]="{
+                    'text-red-500': isInvalidField('quantity') || errorMessage()
+                  }"
                 >
-                  <path d="M5 12h14"></path>
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
-                data-hs-input-number-increment=""
-              >
-                <svg
-                  class="flex-shrink-0 size-3.5"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  Quantity
+                </label>
+                <input
+                  type="number"
+                  id="quantity"
+                  name="quantity"
+                  formControlName="quantity"
+                  class="w-full p-0 bg-transparent border-0 focus:ring-0"
+                  [ngClass]="{
+                    'text-red-500': isInvalidField('quantity') || errorMessage()
+                  }"
+                  data-hs-input-number-input=""
+                />
+              </div>
+              <div class="flex justify-end items-center gap-x-1.5">
+                <button
+                  (click)="updateNumberFormValue('quantity', -1)"
+                  type="button"
+                  class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
+                  data-hs-input-number-decrement=""
                 >
-                  <path d="M5 12h14"></path>
-                  <path d="M12 5v14"></path>
-                </svg>
-              </button>
+                  <svg
+                    class="flex-shrink-0 size-3.5"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14"></path>
+                  </svg>
+                </button>
+                <button
+                  (click)="updateNumberFormValue('quantity', 1)"
+                  type="button"
+                  class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
+                  data-hs-input-number-increment=""
+                >
+                  <svg
+                    class="flex-shrink-0 size-3.5"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="M12 5v14"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+          @if (isInvalidField('quantity')) {
+          <span class="block mt-2 text-sm text-red-500">
+            {{ getFieldError("quantity") }}
+          </span>
+          }
+        </form>
+
         <button
-          class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium"
+          [disabled]="quantityForm.invalid"
+          class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
+          [ngClass]="{ 'bg-red-600': errorMessage() }"
         >
+          @if (quantityForm.valid && !errorMessage()) {
           <span
             class="absolute h-0 w-0 bg-neutral-900 transition-all duration-300 group-hover:h-56 group-hover:w-full"
-          ></span
-          ><span class="relative flex gap-x-2 items-center"
+          ></span>
+          }
+          <span class="relative flex gap-x-2 items-center"
             ><svg
               width="20"
               height="20"
