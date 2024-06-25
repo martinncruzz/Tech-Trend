@@ -14,10 +14,10 @@
     >
       @for (product of products(); track $index) {
       <div
-        class="bg-gray-950 rounded-lg shadow-lg hover:shadow-xl transition-all"
+        class="bg-gray-950 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all"
       >
         <a
-          class="block hover:scale-105 transition-all"
+          class="block"
           [routerLink]="['products/details', product.product_id]"
         >
           <img
@@ -29,7 +29,9 @@
             style="aspect-ratio: 300 / 200; object-fit: cover"
           />
           <div class="p-4">
-            <h3 class="text-lg font-semibold line-clamp-1">{{ product.name }}</h3>
+            <h3 class="text-lg font-semibold line-clamp-1">
+              {{ product.name }}
+            </h3>
             <p class="text-gray-400 text-sm line-clamp-2">
               {{ product.description }}
             </p>
