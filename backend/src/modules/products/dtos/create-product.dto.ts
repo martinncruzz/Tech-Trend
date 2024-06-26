@@ -2,6 +2,7 @@ import {
   IsNumber,
   IsPositive,
   IsString,
+  IsUUID,
   Min,
   MinLength,
 } from 'class-validator';
@@ -24,4 +25,9 @@ export class CreateProductDto {
   @Min(1)
   @IsPositive()
   stock: number;
+
+  @IsString()
+  @MinLength(1)
+  @IsUUID()
+  category_id: string;
 }

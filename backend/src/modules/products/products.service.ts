@@ -16,12 +16,16 @@ import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from './dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { SortBy } from '../shared/interfaces/filters';
+import { CategoriesService } from '../categories/categories.service';
 
 @Injectable()
 export class ProductsService {
   private readonly logger = new Logger('ProductsService');
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly categoriesService: CategoriesService,
+  ) {}
 
   async createProduct(createProductDto: CreateProductDto) {
     const productExists = await this.getProductByName(createProductDto.name);
@@ -30,6 +34,8 @@ export class ProductsService {
       throw new BadRequestException(
         `Product with the name "${createProductDto.name}" already registered`,
       );
+
+    await this.categoriesService.getCategoryById(createProductDto.category_id);
 
     try {
       const product = await this.prismaService.product.create({
