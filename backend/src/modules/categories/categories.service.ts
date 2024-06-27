@@ -24,12 +24,7 @@ export class CategoriesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createCategory(createCategoryDto: CreateCategoryDto) {
-    const categoryExists = await this.getCategoryByName(createCategoryDto.name);
-
-    if (categoryExists)
-      throw new BadRequestException(
-        `Category with the name "${createCategoryDto.name}" already registered`,
-      );
+    await this.getCategoryByName(createCategoryDto.name);
 
     try {
       const category = await this.prismaService.category.create({
@@ -73,6 +68,7 @@ export class CategoriesService {
   async getCategoryById(id: string) {
     const category = await this.prismaService.category.findUnique({
       where: { category_id: id },
+      include: { products: true },
     });
 
     if (!category)
@@ -84,16 +80,8 @@ export class CategoriesService {
   async updateCategory(id: string, updateCategoryDto: UpdateCategoryDto) {
     const currentCategory = await this.getCategoryById(id);
 
-    if (updateCategoryDto.name !== currentCategory.name) {
-      const categoryExists = await this.getCategoryByName(
-        updateCategoryDto.name,
-      );
-
-      if (categoryExists)
-        throw new BadRequestException(
-          `Category with the name "${updateCategoryDto.name}" already registered`,
-        );
-    }
+    if (updateCategoryDto.name !== currentCategory.name)
+      await this.getCategoryByName(updateCategoryDto.name);
 
     try {
       const category = await this.prismaService.category.update({
@@ -128,6 +116,11 @@ export class CategoriesService {
     const category = await this.prismaService.category.findUnique({
       where: { name },
     });
+
+    if (category)
+      throw new BadRequestException(
+        `Category with the name "${name}" already registered`,
+      );
 
     return category;
   }
