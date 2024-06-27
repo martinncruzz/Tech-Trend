@@ -8,18 +8,30 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 
 import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from './dtos';
 import { ProductsService } from './products.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { fileFilter } from '../shared/helpers';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  createProduct(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.createProduct(createProductDto);
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: fileFilter,
+    }),
+  )
+  createProduct(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.productsService.createProduct(createProductDto, file);
   }
 
   @Get()
@@ -33,11 +45,17 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: fileFilter,
+    }),
+  )
   updateProduct(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.productsService.updateProduct(id, updateProductDto);
+    return this.productsService.updateProduct(id, updateProductDto, file);
   }
 
   @Delete(':id')

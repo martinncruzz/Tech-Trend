@@ -17,6 +17,7 @@ import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { SortBy } from '../shared/interfaces/filters';
 import { CategoriesService } from '../categories/categories.service';
+import { UploaderService } from '../shared/services/uploader/uploader.service';
 
 @Injectable()
 export class ProductsService {
@@ -25,21 +26,27 @@ export class ProductsService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly categoriesService: CategoriesService,
+    private readonly uploaderService: UploaderService,
   ) {}
 
-  async createProduct(createProductDto: CreateProductDto) {
-    const productExists = await this.getProductByName(createProductDto.name);
-
-    if (productExists)
-      throw new BadRequestException(
-        `Product with the name "${createProductDto.name}" already registered`,
-      );
-
+  async createProduct(
+    createProductDto: CreateProductDto,
+    file: Express.Multer.File,
+  ) {
+    if (!file)
+      throw new BadRequestException(`Image is required to create a product`);
+    await this.getProductByName(createProductDto.name);
     await this.categoriesService.getCategoryById(createProductDto.category_id);
+
+    const fileUploaded = await this.uploaderService.uploadFile(file);
 
     try {
       const product = await this.prismaService.product.create({
-        data: createProductDto,
+        data: {
+          ...createProductDto,
+          image_url: fileUploaded.secure_url,
+          image_id: fileUploaded.public_id,
+        },
       });
 
       return product;
@@ -87,18 +94,25 @@ export class ProductsService {
     return product;
   }
 
-  async updateProduct(id: string, updateProductDto: UpdateProductDto) {
+  async updateProduct(
+    id: string,
+    updateProductDto: UpdateProductDto,
+    file?: Express.Multer.File,
+  ) {
     const currentProduct = await this.getProductById(id);
 
-    if (updateProductDto.name !== currentProduct.name) {
-      const productExists = await this.getProductByName(updateProductDto.name);
+    if (updateProductDto.name && updateProductDto.name !== currentProduct.name)
+      await this.getProductByName(updateProductDto.name);
 
-      if (productExists)
-        throw new BadRequestException(
-          `Product with the name "${updateProductDto.name}" already registered`,
-        );
+    if (file) {
+      const updatedFile = await this.uploaderService.updateFile(
+        file,
+        currentProduct.image_id,
+      );
+
+      updateProductDto.image_url = updatedFile.secure_url;
+      updateProductDto.image_id = updatedFile.public_id;
     }
-
     try {
       const product = await this.prismaService.product.update({
         where: { product_id: id },
@@ -112,7 +126,8 @@ export class ProductsService {
   }
 
   async deleteProduct(id: string) {
-    await this.getProductById(id);
+    const product = await this.getProductById(id);
+    await this.uploaderService.deleteFile(product.image_id);
 
     try {
       await this.prismaService.product.delete({
@@ -121,6 +136,7 @@ export class ProductsService {
 
       return true;
     } catch (error) {
+      console.log(error);
       handleDBExceptions(error, this.logger);
     }
   }
@@ -129,6 +145,11 @@ export class ProductsService {
     const product = await this.prismaService.product.findUnique({
       where: { name },
     });
+
+    if (product)
+      throw new BadRequestException(
+        `Product with the name "${product.name}" already registered`,
+      );
 
     return product;
   }
