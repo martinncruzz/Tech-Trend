@@ -21,7 +21,7 @@
           [routerLink]="['products/details', product.product_id]"
         >
           <img
-            src="https://i.pinimg.com/736x/3a/25/d3/3a25d33a558629a16b66510ac3ace6c4.jpg"
+            [src]="product.image_url"
             width="300"
             height="200"
             [alt]="product.name"
