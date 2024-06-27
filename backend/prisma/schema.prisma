@@ -31,6 +31,8 @@ model Product {
   stock       Int
   category_id String
   category    Category  @relation(fields: [category_id], references: [category_id])
+  image_url   String
+  image_id    String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime?
 }
