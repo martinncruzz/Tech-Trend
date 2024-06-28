@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 
 import { Prisma } from '@prisma/client';
@@ -25,6 +27,7 @@ export class ProductsService {
 
   constructor(
     private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => CategoriesService))
     private readonly categoriesService: CategoriesService,
     private readonly uploaderService: UploaderService,
   ) {}
@@ -136,7 +139,6 @@ export class ProductsService {
 
       return true;
     } catch (error) {
-      console.log(error);
       handleDBExceptions(error, this.logger);
     }
   }

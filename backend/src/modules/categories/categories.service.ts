@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
@@ -16,12 +18,17 @@ import { Filters } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { SortBy } from '../shared/interfaces/filters';
+import { ProductsService } from '../products/products.service';
 
 @Injectable()
 export class CategoriesService {
   private readonly logger = new Logger('CategoriesService');
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => ProductsService))
+    private readonly productsService: ProductsService,
+  ) {}
 
   async createCategory(createCategoryDto: CreateCategoryDto) {
     await this.getCategoryByName(createCategoryDto.name);
@@ -99,9 +106,17 @@ export class CategoriesService {
   }
 
   async deleteCategory(id: string) {
-    await this.getCategoryById(id);
+    const category = await this.getCategoryById(id);
 
     try {
+      if (category.products.length > 0) {
+        await Promise.all(
+          category.products.map((product) =>
+            this.productsService.deleteProduct(product.product_id),
+          ),
+        );
+      }
+
       await this.prismaService.category.delete({
         where: { category_id: id },
       });

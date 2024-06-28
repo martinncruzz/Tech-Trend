@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 import { PrismaModule } from 'src/database/prisma.module';
 import { ProductsController } from './products.controller';
@@ -7,8 +7,9 @@ import { CategoriesModule } from '../categories/categories.module';
 import { SharedModule } from '../shared/shared.module';
 
 @Module({
-  imports: [PrismaModule, CategoriesModule, SharedModule],
+  imports: [PrismaModule, forwardRef(() => CategoriesModule), SharedModule],
   controllers: [ProductsController],
   providers: [ProductsService],
+  exports: [ProductsService],
 })
 export class ProductsModule {}
