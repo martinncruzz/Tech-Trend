@@ -375,7 +375,7 @@
             <tbody class="divide-y divide-neutral-700">
               @for (product of products(); track $index) {
               <tr class="bg-neutral-900">
-                <td class="size-px whitespace-nowrap align-top p-6">
+                <td class="h-px align-top p-6">
                   <div class="flex items-center gap-x-4">
                     <img
                       class="flex-shrink-0 size-[38px] rounded-lg"
@@ -407,13 +407,13 @@
                 </td>
                 <td class="size-px whitespace-nowrap align-top p-6">
                   <span class="text-sm text-neutral-400">{{
-                    product.createdAt | date : "MMMM d y, hh:mm a"
+                    product.createdAt | date : "MM/dd/y, hh:mm a"
                   }}</span>
                 </td>
                 <td class="size-px whitespace-nowrap align-top p-6">
                   <span class="text-sm text-neutral-400">{{
                     product.updatedAt
-                      ? (product.updatedAt | date : "MMMM d y, hh:mm a")
+                      ? (product.updatedAt | date : "MM/dd/y, hh:mm a")
                       : "Not updated"
                   }}</span>
                 </td>
