@@ -43,6 +43,7 @@ export class UsersDashboardComponent implements OnInit {
 
   public users = signal<User[]>([]);
   public currentUser = signal<User | undefined>(undefined);
+  public processing = signal<boolean>(false);
 
   public paginationButtons = computed<PaginationButtons>(() =>
     this.paginationService.paginationButtons()
@@ -99,17 +100,25 @@ export class UsersDashboardComponent implements OnInit {
   }
 
   public updateUser(): void {
+    this.processing.update(() => true);
     this.usersService
       .updateUser(this.updateUserForm.value, this.currentUser()!.user_id)
       .subscribe({
-        next: () => this.getAllUsers(),
+        next: () => {
+          this.getAllUsers();
+          this.processing.update(() => false);
+        },
         error: (error) => this.errorMessage.set(error),
       });
   }
 
   public deleteUser(): void {
+    this.processing.update(() => true);
     this.usersService.deleteUser(this.currentUser()!.user_id).subscribe({
-      next: () => this.getAllUsers(),
+      next: () => {
+        this.getAllUsers();
+        this.processing.update(() => false);
+      },
       error: (error) => console.log(error),
     });
   }

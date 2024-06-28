@@ -25,6 +25,7 @@ export class CategoriesDashboardComponent implements OnInit {
 
   public categories = signal<Category[]>([]);
   public currentCategory = signal<Category | undefined>(undefined);
+  public processing = signal<boolean>(false);
 
   public paginationButtons = computed<PaginationButtons>(() =>
     this.paginationService.paginationButtons()
@@ -57,10 +58,14 @@ export class CategoriesDashboardComponent implements OnInit {
   }
 
   public deleteCategory(): void {
+    this.processing.update(() => true);
     this.categoriesService
       .deleteCategory(this.currentCategory()!.category_id)
       .subscribe({
-        next: () => this.getAllCategories(),
+        next: () => {
+          this.getAllCategories();
+          this.processing.update(() => false);
+        },
         error: (err) => console.log(err),
       });
   }
