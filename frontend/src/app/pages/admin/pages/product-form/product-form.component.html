@@ -95,7 +95,7 @@
                       id="price"
                       name="price"
                       formControlName="price"
-                      class="w-full p-0 bg-transparent border-0 focus:ring-0"
+                      class="w-full p-0 bg-transparent border-0 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none disabled:text-neutral-400"
                       [ngClass]="{
                         'text-red-500':
                           isInvalidField('price') || errorMessage()
@@ -105,6 +105,7 @@
                   </div>
                   <div class="flex justify-end items-center gap-x-1.5">
                     <button
+                      [disabled]="productForm.disabled"
                       (click)="updateNumberFormValue('price', -1)"
                       type="button"
                       class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
@@ -125,6 +126,7 @@
                       </svg>
                     </button>
                     <button
+                      [disabled]="productForm.disabled"
                       (click)="updateNumberFormValue('price', 1)"
                       type="button"
                       class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
@@ -180,7 +182,7 @@
                       id="stock"
                       name="stock"
                       formControlName="stock"
-                      class="w-full p-0 bg-transparent border-0 focus:ring-0"
+                      class="w-full p-0 bg-transparent border-0 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none disabled:text-neutral-400"
                       [ngClass]="{
                         'text-red-500':
                           isInvalidField('stock') || errorMessage()
@@ -190,6 +192,7 @@
                   </div>
                   <div class="flex justify-end items-center gap-x-1.5">
                     <button
+                      [disabled]="productForm.disabled"
                       (click)="updateNumberFormValue('stock', -1)"
                       type="button"
                       class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
@@ -210,6 +213,7 @@
                       </svg>
                     </button>
                     <button
+                      [disabled]="productForm.disabled"
                       (click)="updateNumberFormValue('stock', 1)"
                       type="button"
                       class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
@@ -240,19 +244,75 @@
               }
             </div>
 
-            <!-- <div class="">
-              <label for="image" class="block text-sm mb-2">Image</label>
+            <div>
+              <label
+                for="file"
+                class="block text-sm mb-2"
+                [ngClass]="{
+                  'text-red-500': isInvalidField('file') || errorMessage()
+                }"
+                >Image</label
+              >
               <input
                 type="file"
-                name="image"
-                id="image"
+                accept="image/*"
+                name="file"
+                id="file"
+                formControlName="file"
+                (change)="getFile($event)"
                 class="block w-full border shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-neutral-400 file:border-0 file:me-4 file:py-3 file:px-4 file:bg-neutral-700 file:text-neutral-400"
+                [ngClass]="{
+                  'text-red-500 border-red-500':
+                    isInvalidField('file') || errorMessage()
+                }"
               />
-            </div> -->
+
+              @if (isInvalidField('file')) {
+              <span class="block mt-2 text-sm text-red-500">
+                {{ getFieldError("file") }}
+              </span>
+              }
+            </div>
+
+            <div>
+              <label
+                for="category_id"
+                class="block text-sm mb-2"
+                [ngClass]="{
+                  'text-red-500':
+                    isInvalidField('category_id') || errorMessage()
+                }"
+                >Category</label
+              >
+              <select
+                name="category_id"
+                id="category_id"
+                formControlName="category_id"
+                class="py-3 px-4 border pe-9 block w-full rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
+                [ngClass]="{
+                  'text-red-500 border-red-500':
+                    isInvalidField('category_id') || errorMessage()
+                }"
+              >
+                <option disabled value="">Select a category</option>
+                @for (category of categories(); track $index) {
+
+                <option class="text-neutral-400" [value]="category.category_id">
+                  {{ category.name }}
+                </option>
+                }
+              </select>
+
+              @if (isInvalidField('category_id')) {
+              <span class="block mt-2 text-sm text-red-500">
+                Category is required
+              </span>
+              }
+            </div>
 
             @if (!currentProduct()) {
             <button
-              [disabled]="productForm.invalid"
+              [disabled]="productForm.invalid || productForm.disabled"
               (click)="createProduct()"
               type="submit"
               class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
@@ -269,7 +329,7 @@
 
             } @else {
             <button
-              [disabled]="productForm.invalid"
+              [disabled]="productForm.invalid || productForm.disabled"
               (click)="updateProduct()"
               type="submit"
               class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"

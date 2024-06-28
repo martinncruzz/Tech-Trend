@@ -44,16 +44,13 @@ export class ProductsService {
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
-  public createProduct(productForm: ProductForm): Observable<Product> {
+  public createProduct(productForm: FormData): Observable<Product> {
     return this.http
       .post<Product>(`${this.backendUrl}/products`, productForm)
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
-  public updateProduct(
-    productForm: ProductForm,
-    id: string
-  ): Observable<Product> {
+  public updateProduct(productForm: FormData, id: string): Observable<Product> {
     return this.http
       .patch<Product>(`${this.backendUrl}/products/${id}`, productForm)
       .pipe(catchError((err) => throwError(() => err.error.message)));
