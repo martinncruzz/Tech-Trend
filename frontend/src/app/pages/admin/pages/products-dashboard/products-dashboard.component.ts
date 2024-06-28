@@ -26,6 +26,7 @@ export class ProductsDashboardComponent implements OnInit {
 
   public products = signal<Product[]>([]);
   public currentProduct = signal<Product | undefined>(undefined);
+  public processing = signal<boolean>(false);
 
   public paginationButtons = computed<PaginationButtons>(() =>
     this.paginationService.paginationButtons()
@@ -58,10 +59,14 @@ export class ProductsDashboardComponent implements OnInit {
   }
 
   public deleteProduct(): void {
+    this.processing.update(() => true);
     this.productsService
       .deleteProduct(this.currentProduct()!.product_id)
       .subscribe({
-        next: () => this.getAllProducts(),
+        next: () => {
+          this.getAllProducts();
+          this.processing.update(() => false);
+        },
         error: (err) => console.log(err),
       });
   }

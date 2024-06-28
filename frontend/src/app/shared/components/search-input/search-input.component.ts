@@ -10,6 +10,7 @@ import { Component, input, output } from '@angular/core';
 export class SearchInputComponent {
   public styles = input.required<string>();
   public label = input.required<string>();
+  public disabled = input<boolean>();
 
   public onSearch = output<string>();
 

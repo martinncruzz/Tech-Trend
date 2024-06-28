@@ -19,6 +19,7 @@
               <label for="product-search" class="sr-only">Search</label>
               <div class="relative">
                 <shared-search-input
+                  [disabled]="processing()"
                   (onSearch)="searchProduct($event)"
                   label="product-search"
                   styles="py-2 px-3 ps-11 block w-full border rounded-lg text-sm focus:border-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-neutral-400 placeholder-neutral-500 focus:ring-neutral-600"
@@ -50,6 +51,7 @@
                   class="hs-dropdown [--placement:bottom-right] relative inline-block"
                 >
                   <button
+                    [disabled]="processing()"
                     id="hs-as-table-table-filters-dropdown"
                     type="button"
                     class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
@@ -420,12 +422,13 @@
 
                 <td class="size-px whitespace-nowrap align-top p-6">
                   <div class="flex gap-x-2">
-                    <a
+                    <button
+                      [disabled]="processing()"
                       [routerLink]="[
                         '../product-form/edit',
                         product.product_id
                       ]"
-                      class="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-yellow-500 px-6 font-medium duration-500"
+                      class="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-yellow-500 px-6 font-medium duration-500 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <div
                         class="translate-x-0 opacity-100 transition group-hover:-translate-x-[150%] group-hover:opacity-0"
@@ -453,10 +456,11 @@
                           <path d="M13.5 6.5l4 4" />
                         </svg>
                       </div>
-                    </a>
+                    </button>
 
                     <button
-                      class="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-red-500 px-6 font-medium duration-500"
+                      [disabled]="processing()"
+                      class="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-red-500 px-6 font-medium duration-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       data-hs-overlay="#hs-delete-product-modal"
                       (click)="this.currentProduct.set(product)"
                     >
@@ -504,7 +508,7 @@
               <div class="inline-flex gap-x-2">
                 <button
                   (click)="updatePage(-1)"
-                  [disabled]="!paginationButtons().prev"
+                  [disabled]="!paginationButtons().prev || processing()"
                   type="button"
                   class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
                 >
@@ -526,7 +530,7 @@
 
                 <button
                   (click)="updatePage(1)"
-                  [disabled]="!paginationButtons().next"
+                  [disabled]="!paginationButtons().next || processing()"
                   type="button"
                   class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
                 >
