@@ -1,3 +1,7 @@
+interface Category {
+  name: string;
+}
+
 export interface Product {
   product_id: string;
   name: string;
@@ -9,4 +13,5 @@ export interface Product {
   image_id: string;
   createdAt: Date;
   updatedAt: Date | null;
+  category: Category;
 }
