@@ -254,9 +254,41 @@
                   }}</span>
                 </td>
                 <td class="size-px whitespace-nowrap align-top p-6">
-                  <span class="text-sm font-semibold text-neutral-200">{{
-                    category.products.length
-                  }}</span>
+                  <button
+                    (click)="getProductsByCategory(category)"
+                    [disabled]="processing()"
+                    class="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-blue-500 px-6 font-medium duration-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                    data-hs-overlay="#review-products-modal"
+                  >
+                    <div
+                      class="translate-x-0 opacity-100 transition group-hover:-translate-x-[150%] group-hover:opacity-0"
+                    >
+                      Review
+                    </div>
+                    <div
+                      class="absolute translate-x-[150%] opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"
+                    >
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-eye-search"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path
+                          d="M12 18c-.328 0 -.652 -.017 -.97 -.05c-3.172 -.332 -5.85 -2.315 -8.03 -5.95c2.4 -4 5.4 -6 9 -6c3.465 0 6.374 1.853 8.727 5.558"
+                        />
+                        <path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                        <path d="M20.2 20.2l1.8 1.8" />
+                      </svg>
+                    </div>
+                  </button>
                 </td>
                 <td class="size-px whitespace-nowrap align-top p-6">
                   <span class="text-sm text-neutral-400">{{
@@ -493,6 +525,74 @@
         >
           Delete
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  id="review-products-modal"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto"
+>
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-5xl sm:w-full m-3 sm:mx-auto"
+  >
+    <div
+      class="relative flex flex-col bg-white shadow-lg rounded-xl dark:bg-neutral-900"
+    >
+      <div class="absolute top-2 end-2">
+        <button
+          type="button"
+          class="flex justify-center items-center size-7 text-sm font-semibold rounded-lg border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:border-transparent dark:hover:bg-neutral-700"
+          data-hs-overlay="#review-products-modal"
+        >
+          <span class="sr-only">Close</span>
+          <svg
+            class="flex-shrink-0 size-4"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-14 text-center overflow-y-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-10 sm:pt-0">
+          @for (product of products(); track $index) {
+          <div
+            class="flex flex-col border shadow-sm rounded-xl bg-neutral-900 border-neutral-700 shadow-neutral-700/70"
+          >
+            <img
+              [src]="product.image_url"
+              [alt]="product.name"
+              class="w-full h-48 object-cover rounded-t-lg"
+              style="aspect-ratio: 400/300; object-fit: cover"
+            />
+            <div class="p-4 md:p-5">
+              <h3 class="text-lg font-bold line-clamp-1">{{ product.name }}</h3>
+              <p class="mt-1 text-neutral-400 line-clamp-2">
+                {{ product.description }}
+              </p>
+              <p class="mt-5 text-xs text-neutral-500">
+                {{
+                  product.updatedAt
+                    ? 'Last update:' + (product.updatedAt | date : "MM/dd/y, hh:mm a")
+                    : "Not updated"
+                }}
+              </p>
+            </div>
+          </div>
+          }
+        </div>
       </div>
     </div>
   </div>

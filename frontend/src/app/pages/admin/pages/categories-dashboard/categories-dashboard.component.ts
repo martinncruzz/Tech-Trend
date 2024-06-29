@@ -6,10 +6,12 @@ import {
   CategoriesService,
   FiltersService,
   PaginationService,
+  ProductsService,
 } from '../../../../core/services';
 import { PaginationButtons } from '../../../../core/interfaces/pagination';
 import { Category } from '../../../../core/interfaces/categories';
 import { SortBy } from '../../../../core/interfaces/filters';
+import { Product } from '../../../../core/interfaces/products';
 
 @Component({
   selector: 'admin-categories-dashboard',
@@ -20,10 +22,12 @@ import { SortBy } from '../../../../core/interfaces/filters';
 })
 export class CategoriesDashboardComponent implements OnInit {
   private readonly categoriesService = inject(CategoriesService);
+  private readonly productsService = inject(ProductsService);
   private readonly paginationService = inject(PaginationService);
   private readonly filtersService = inject(FiltersService);
 
   public categories = signal<Category[]>([]);
+  public products = signal<Product[]>([]);
   public currentCategory = signal<Category | undefined>(undefined);
   public processing = signal<boolean>(false);
 
@@ -40,6 +44,21 @@ export class CategoriesDashboardComponent implements OnInit {
     this.paginationService.setPagination(1, 5);
     this.filtersService.resetFilters();
     this.getAllCategories();
+  }
+
+  public getProductsByCategory(category: Category): void {
+    this.productsService
+      .getAllProducts(
+        { page: 1, limit: 9 },
+        { sortBy: SortBy.NEWEST },
+        category.category_id
+      )
+      .subscribe({
+        next: ({ items }) => {
+          this.products.set(items);
+        },
+        error: (err) => console.log(err),
+      });
   }
 
   public getAllCategories(): void {
