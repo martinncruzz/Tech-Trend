@@ -71,6 +71,7 @@ export class ProductsService {
         where,
         skip: (page - 1) * limit,
         take: limit,
+        include: { category: { select: { name: true } } },
       }),
     ]);
 
@@ -193,6 +194,7 @@ export class ProductsService {
 
     if (params.search)
       where.name = { contains: params.search, mode: 'insensitive' };
+    if (params.categoryId) where.category_id = params.categoryId;
     if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
     if (params.status) where.stock = { gt: 0 };
 
