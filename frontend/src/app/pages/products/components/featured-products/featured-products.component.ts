@@ -32,6 +32,7 @@ export class FeaturedProductsComponent implements OnInit {
       .getAllProducts(
         this.paginationService.pagination(),
         this.filtersService.filter(),
+        undefined,
         true
       )
       .subscribe({
