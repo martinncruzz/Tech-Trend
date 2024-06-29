@@ -31,11 +31,17 @@ export class FiltersService {
     this.filter.update((currentFilter) => ({ ...currentFilter, search }));
   }
 
-  public getFiltersQuery(filters: Filters): string {
+  public getFiltersQuery(
+    filters: Filters,
+    categoryId?: string,
+    status?: boolean
+  ): string {
     let filtersQuery = ``;
 
     if (filters.search) filtersQuery += `&search=${filters.search}`;
     if (filters.sortBy) filtersQuery += `&sortBy=${filters.sortBy}`;
+    if (categoryId) filtersQuery += `&categoryId=${categoryId}`;
+    if (status) filtersQuery += `&status=available`;
 
     return filtersQuery;
   }

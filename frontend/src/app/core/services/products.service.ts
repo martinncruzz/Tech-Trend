@@ -25,16 +25,19 @@ export class ProductsService {
   public getAllProducts(
     { page, limit }: Pagination,
     filters: Filters,
+    categoryId?: string,
     status?: boolean
   ): Observable<GetAllProductsResponse> {
-    const filtersQuery = this.filtersService.getFiltersQuery(filters);
-
-    const url = status
-      ? `${this.backendUrl}/products?page=${page}&limit=${limit}${filtersQuery}&status=available`
-      : `${this.backendUrl}/products?page=${page}&limit=${limit}${filtersQuery}`;
+    const filtersQuery = this.filtersService.getFiltersQuery(
+      filters,
+      categoryId,
+      status
+    );
 
     return this.http
-      .get<GetAllProductsResponse>(url)
+      .get<GetAllProductsResponse>(
+        `${this.backendUrl}/products?page=${page}&limit=${limit}${filtersQuery}`
+      )
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
