@@ -57,6 +57,7 @@ export class CategoriesService {
         where,
         skip: (page - 1) * limit,
         take: limit,
+        include: { products: true },
       }),
     ]);
 
