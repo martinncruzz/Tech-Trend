@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { filter, mergeMap, tap } from 'rxjs';
 
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { Product } from '../../../../core/interfaces/products';
@@ -21,6 +22,8 @@ import { SortBy } from '../../../../core/interfaces/filters';
   styles: ``,
 })
 export class ProductsListComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
+
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly paginationService = inject(PaginationService);
@@ -36,6 +39,7 @@ export class ProductsListComponent implements OnInit {
   ]);
   public products = signal<Product[]>([]);
   public categories = signal<Category[]>([]);
+  public currentCategory = signal<string | undefined>(undefined);
 
   public paginationButtons = computed(() =>
     this.paginationService.paginationButtons()
@@ -45,15 +49,29 @@ export class ProductsListComponent implements OnInit {
     this.filtersService.resetFilters();
     this.paginationService.setPagination(1, 9);
     this.getAllCategories();
-    this.getAllProducts();
+
+    this.activatedRoute.queryParams
+      .pipe(
+        tap(({ category }) => {
+          if (!category) {
+            this.currentCategory.update(() => undefined);
+            this.getAllProducts();
+          }
+        }),
+        filter(({ category }) => !!category),
+        mergeMap(({ category }) =>
+          this.categoriesService.getCategoryById(category)
+        )
+      )
+      .subscribe((category) => {
+        this.currentCategory.update(() => category.category_id);
+        this.getAllProducts();
+      });
   }
 
   public getAllCategories(): void {
     this.categoriesService
-      .getAllCategories(
-        this.paginationService.pagination(),
-        this.filtersService.filter()
-      )
+      .getAllCategories({ page: 1, limit: 10 }, {})
       .subscribe({
         next: ({ items }) => {
           this.categories.set(items);
@@ -67,6 +85,7 @@ export class ProductsListComponent implements OnInit {
       .getAllProducts(
         this.paginationService.pagination(),
         this.filtersService.filter(),
+        this.currentCategory(),
         true
       )
       .subscribe({
@@ -87,6 +106,16 @@ export class ProductsListComponent implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     const filter = selectElement.value as SortBy;
     this.filtersService.applyFilter(filter, { page: 1, limit: 9 });
+    this.getAllProducts();
+  }
+
+  public applyCategoryFilter(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+
+    if (selectElement.value === 'all')
+      this.currentCategory.update(() => undefined);
+    else this.currentCategory.update(() => selectElement.value);
+
     this.getAllProducts();
   }
 
