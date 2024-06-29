@@ -347,17 +347,7 @@
                     <span
                       class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
                     >
-                      Created At
-                    </span>
-                  </div>
-                </th>
-
-                <th scope="col" class="px-6 py-3 text-start">
-                  <div class="flex items-center gap-x-2">
-                    <span
-                      class="text-xs font-semibold uppercase tracking-wide text-neutral-200"
-                    >
-                      Updated At
+                      Category
                     </span>
                   </div>
                 </th>
@@ -409,14 +399,7 @@
                 </td>
                 <td class="size-px whitespace-nowrap align-top p-6">
                   <span class="text-sm text-neutral-400">{{
-                    product.createdAt | date : "MM/dd/y, hh:mm a"
-                  }}</span>
-                </td>
-                <td class="size-px whitespace-nowrap align-top p-6">
-                  <span class="text-sm text-neutral-400">{{
-                    product.updatedAt
-                      ? (product.updatedAt | date : "MM/dd/y, hh:mm a")
-                      : "Not updated"
+                    product.category.name
                   }}</span>
                 </td>
 
