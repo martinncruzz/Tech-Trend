@@ -8,5 +8,5 @@ export class User {
   password: string;
   roles: ValidRoles[];
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: Date | null;
 }
