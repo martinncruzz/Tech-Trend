@@ -14,6 +14,13 @@ export const routes: Routes = [
           import('./pages/home/home.component').then((c) => c.HomeComponent),
       },
       {
+        path: 'shopping-cart',
+        loadComponent: () =>
+          import('./pages/shopping-carts/shopping-carts.component').then(
+            (c) => c.ShoppingCartsComponent
+          ),
+      },
+      {
         path: 'auth',
         loadChildren: () =>
           import('./pages/auth/auth.routes').then((r) => r.AUTH_ROUTES),
