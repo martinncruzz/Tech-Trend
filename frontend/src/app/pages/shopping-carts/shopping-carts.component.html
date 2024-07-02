@@ -1,264 +1,40 @@
 <div class="min-h-screen p-8">
-  <div class="container mx-auto max-w-4xl">
+  <div class="container mx-auto max-w-4xl flex flex-col items-center">
     <h1 class="text-3xl font-bold mb-6">My products</h1>
-    <div class="bg-[#0c141c] rounded-lg p-6 shadow-lg">
-      <div class="grid gap-4">
-        <div class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4">
-          <img
-            src="/placeholder.svg"
-            alt="Acme Circles T-Shirt"
-            width="64"
-            height="64"
-            class="rounded-md"
-            style="aspect-ratio: 64/64; object-fit: cover"
+    @if (!shoppingCart()?.products?.length) {
+    <div class="p-4 bg-gray-900 rounded-lg w-full max-w-2xl">
+      <p class="text-center text-gray-400">Your cart is currently empty</p>
+    </div>
+    } @else {
+    <div class="bg-[#0c141c] rounded-lg p-8 shadow-lg w-full">
+      <div class="flex flex-col gap-8">
+        <div class="grid gap-8 md:gap-4">
+          @for (productItem of shoppingCart()?.products; track $index) {
+          <shopping-carts-cart-item
+            [productItem]="productItem"
+            (newQuantity)="updateProductQuantity($event)"
+            (productToRemoveFromCart)="getProductToRemoveFromCart($event)"
+            (productRemovalConfirmation)="removeProductFromCart($event)"
           />
-          <div>
-            <h3 class="font-medium">Acme Circles T-Shirt</h3>
-            <p class="text-gray-400">
-              $<!-- -->19.99<!-- -->
-              x
-              <!-- -->2<!-- -->
-              = $<!-- -->39.98
-            </p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M5 12h14"></path>
-              </svg></button
-            ><span>2</span
-            ><button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M5 12h14"></path>
-                <path d="M12 5v14"></path>
-              </svg>
-            </button>
-          </div>
-          <div>
-            <button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M3 6h18"></path>
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-              </svg>
-            </button>
-          </div>
+          }
         </div>
-        <div class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4">
-          <img
-            src="/placeholder.svg"
-            alt="Sunset Shades Sunglasses"
-            width="64"
-            height="64"
-            class="rounded-md"
-            style="aspect-ratio: 64/64; object-fit: cover"
-          />
-          <div>
-            <h3 class="font-medium">Sunset Shades Sunglasses</h3>
-            <p class="text-gray-400">
-              $<!-- -->29.99<!-- -->
-              x
-              <!-- -->1<!-- -->
-              = $<!-- -->29.99
-            </p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-              disabled=""
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M5 12h14"></path>
-              </svg></button
-            ><span>1</span
-            ><button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M5 12h14"></path>
-                <path d="M12 5v14"></path>
-              </svg>
-            </button>
-          </div>
-          <div>
-            <button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M3 6h18"></path>
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4">
-          <img
-            src="/placeholder.svg"
-            alt="Cool Breeze Portable Fan"
-            width="64"
-            height="64"
-            class="rounded-md"
-            style="aspect-ratio: 64/64; object-fit: cover"
-          />
-          <div>
-            <h3 class="font-medium">Cool Breeze Portable Fan</h3>
-            <p class="text-gray-400">
-              $<!-- -->14.99<!-- -->
-              x
-              <!-- -->1<!-- -->
-              = $<!-- -->14.99
-            </p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-              disabled=""
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M5 12h14"></path>
-              </svg></button
-            ><span>1</span
-            ><button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M5 12h14"></path>
-                <path d="M12 5v14"></path>
-              </svg>
-            </button>
-          </div>
-          <div>
-            <button
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M3 6h18"></path>
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        data-orientation="horizontal"
-        role="none"
-        class="shrink-0 bg-border h-[1px] w-full my-6"
-      ></div>
-      <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold">Total: $<!-- -->84.96</h2>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8"
+
+        <hr class="border-white" />
+
+        <div
+          class="flex flex-col md:flex-row gap-4 justify-between items-center"
         >
-          Proceed to Checkout
-        </button>
+          <h2 class="text-2xl font-bold">
+            Total: {{ shoppingCart()?.total | currency }}
+          </h2>
+          <button
+            class="inline-flex border hover:bg-gray-50 hover:text-gray-900 items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8"
+          >
+            Proceed to payment
+          </button>
+        </div>
       </div>
     </div>
+    }
   </div>
 </div>
