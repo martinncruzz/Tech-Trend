@@ -19,6 +19,8 @@ export class ValidatorsService {
       switch (key) {
         case 'required':
           return `${titleCaseField} is required`;
+        case 'max':
+          return `Quantity cannot exceed available stock (${errors['max'].max})`;
         case 'min':
           return `Invalid value`;
         case 'minlength':
