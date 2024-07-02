@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { AddProductToCartDto, UpdateProductQuantityInCartDto } from './dtos';
 import { User } from '../users/entities';
@@ -17,6 +19,7 @@ export class ShoppingCartsService {
 
   constructor(
     private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => ProductsService))
     private readonly productsService: ProductsService,
   ) {}
 

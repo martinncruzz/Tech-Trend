@@ -6,7 +6,11 @@ import { ProductsModule } from '../products/products.module';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => AuthModule), ProductsModule],
+  imports: [
+    PrismaModule,
+    forwardRef(() => AuthModule),
+    forwardRef(() => ProductsModule),
+  ],
   controllers: [ShoppingCartsController],
   providers: [ShoppingCartsService],
   exports: [ShoppingCartsService],
