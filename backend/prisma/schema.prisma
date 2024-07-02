@@ -13,28 +13,30 @@ enum ValidRoles {
 }
 
 model User {
-  user_id   String       @id @default(uuid())
-  fullname  String
-  address   String
-  email     String       @unique
-  password  String
-  roles     ValidRoles[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime?
+  user_id      String        @id @default(uuid())
+  fullname     String
+  address      String
+  email        String        @unique
+  password     String
+  roles        ValidRoles[]
+  shoppingCart ShoppingCart?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?
 }
 
 model Product {
-  product_id  String    @id @default(uuid())
-  name        String    @unique
-  description String
-  price       Float
-  stock       Int
-  category_id String
-  category    Category  @relation(fields: [category_id], references: [category_id])
-  image_url   String
-  image_id    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime?
+  product_id   String                 @id @default(uuid())
+  name         String                 @unique
+  description  String
+  price        Float
+  stock        Int
+  category_id  String
+  category     Category               @relation(fields: [category_id], references: [category_id])
+  image_url    String
+  image_id     String
+  shoppingCart ShoppingCartProducts[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime?
 }
 
 model Category {
@@ -47,8 +49,24 @@ model Category {
 }
 
 model ShoppingCart {
-  id        String    @id @default(uuid())
-  total     Float
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
+  shopping_cart_id String                 @id @default(uuid())
+  total            Float
+  user_id          String                 @unique
+  user             User                   @relation(fields: [user_id], references: [user_id])
+  products         ShoppingCartProducts[]
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime?
+}
+
+model ShoppingCartProducts {
+  shopping_cart_id String
+  shoppingCart     ShoppingCart @relation(fields: [shopping_cart_id], references: [shopping_cart_id])
+
+  product_id String
+  product    Product @relation(fields: [product_id], references: [product_id])
+
+  quantity Int
+  subtotal Int
+
+  @@id([shopping_cart_id, product_id])
 }
