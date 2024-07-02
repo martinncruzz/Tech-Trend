@@ -55,7 +55,11 @@
       id="products-list"
     >
       @for (product of products(); track $index) {
-      <products-product-card [product]="product" />
+      <products-product-card
+        [productsInCart]="productIdsInCart()"
+        [product]="product"
+        (cartUpdate)="updateCart($event)"
+      />
       }
     </div>
 

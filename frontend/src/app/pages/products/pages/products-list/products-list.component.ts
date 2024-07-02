@@ -9,10 +9,15 @@ import {
   FiltersService,
   PaginationService,
   ProductsService,
+  ShoppingCartsService,
 } from '../../../../core/services';
 import { Category } from '../../../../core/interfaces/categories';
 import { SearchInputComponent } from '../../../../shared/components/search-input/search-input.component';
 import { SortBy } from '../../../../core/interfaces/filters';
+import {
+  GetShoppingCartResponse,
+  ShoppingCartForm,
+} from '../../../../core/interfaces/shopping-carts';
 
 @Component({
   selector: 'products-products-list',
@@ -26,6 +31,7 @@ export class ProductsListComponent implements OnInit {
 
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
+  private readonly shoppingCartsService = inject(ShoppingCartsService);
   private readonly paginationService = inject(PaginationService);
   private readonly filtersService = inject(FiltersService);
 
@@ -40,6 +46,11 @@ export class ProductsListComponent implements OnInit {
   public products = signal<Product[]>([]);
   public categories = signal<Category[]>([]);
   public currentCategory = signal<string | undefined>(undefined);
+
+  public shoppingCart = signal<GetShoppingCartResponse | undefined>(undefined);
+  public productIdsInCart = computed(() =>
+    this.shoppingCartsService.productIdsInCart()
+  );
 
   public paginationButtons = computed(() =>
     this.paginationService.paginationButtons()
@@ -67,6 +78,8 @@ export class ProductsListComponent implements OnInit {
         this.currentCategory.update(() => category.category_id);
         this.getAllProducts();
       });
+
+    this.getUserShoppingCart();
   }
 
   public getAllCategories(): void {
@@ -95,6 +108,31 @@ export class ProductsListComponent implements OnInit {
         },
         error: (err) => console.log(err),
       });
+  }
+
+  public getUserShoppingCart(): void {
+    this.shoppingCartsService.getUserShoppingCart().subscribe({
+      next: (shoppingCart) => {
+        this.shoppingCart.set(shoppingCart);
+      },
+      error: (error) => console.log(error),
+    });
+  }
+
+  public updateCart(shoppingCartForm: ShoppingCartForm): void {
+    const { product_id, quantity } = shoppingCartForm;
+
+    if (quantity > 0) {
+      this.shoppingCartsService.addProductToCart(shoppingCartForm).subscribe({
+        next: () => this.getUserShoppingCart(),
+        error: (error) => console.log(error),
+      });
+    } else {
+      this.shoppingCartsService.removeProductFromCart(product_id).subscribe({
+        next: () => this.getUserShoppingCart(),
+        error: (error) => console.log(error),
+      });
+    }
   }
 
   public searchProduct(query: string): void {
