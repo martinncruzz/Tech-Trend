@@ -13,12 +13,15 @@ import {
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
 import { Filters } from '../shared/dtos';
+import { Auth } from '../auth/decorators';
+import { ValidRoles } from '@prisma/client';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @Auth(ValidRoles.admin)
   createCategory(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.createCategory(createCategoryDto);
   }
@@ -34,6 +37,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @Auth(ValidRoles.admin)
   updateCategory(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -42,6 +46,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @Auth(ValidRoles.admin)
   deleteCategory(@Param('id', ParseUUIDPipe) id: string) {
     return this.categoriesService.deleteCategory(id);
   }

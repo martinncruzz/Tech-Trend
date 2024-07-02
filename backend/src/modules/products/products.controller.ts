@@ -16,12 +16,15 @@ import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from './dtos';
 import { ProductsService } from './products.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileFilter } from '../shared/helpers';
+import { Auth } from '../auth/decorators';
+import { ValidRoles } from '@prisma/client';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @Auth(ValidRoles.admin)
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: fileFilter,
@@ -45,6 +48,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @Auth(ValidRoles.admin)
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: fileFilter,
@@ -59,6 +63,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Auth(ValidRoles.admin)
   deleteProduct(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.deleteProduct(id);
   }
