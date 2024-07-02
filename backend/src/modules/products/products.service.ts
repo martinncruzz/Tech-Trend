@@ -144,6 +144,15 @@ export class ProductsService {
     }
   }
 
+  async validateProduct(id: string, quantity: number) {
+    const product = await this.getProductById(id);
+
+    if (product.stock < quantity)
+      throw new BadRequestException(`Quantity cannot exceed available stock`);
+
+    return product;
+  }
+
   private async getProductByName(name: string) {
     const product = await this.prismaService.product.findUnique({
       where: { name },
