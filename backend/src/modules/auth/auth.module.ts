@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
@@ -7,10 +7,13 @@ import { AuthService } from './auth.service';
 import { envs } from 'src/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaModule } from 'src/database/prisma.module';
+import { ShoppingCartsModule } from '../shopping-carts/shopping-carts.module';
 
 @Module({
   imports: [
     PrismaModule,
+
+    forwardRef(() => ShoppingCartsModule),
 
     PassportModule.register({
       defaultStrategy: 'jwt',
