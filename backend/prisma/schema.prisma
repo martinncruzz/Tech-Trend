@@ -25,17 +25,17 @@ model User {
 }
 
 model Product {
-  product_id   String                 @id @default(uuid())
-  name         String                 @unique
+  product_id   String                @id @default(uuid())
+  name         String                @unique
   description  String
   price        Float
   stock        Int
   category_id  String
-  category     Category               @relation(fields: [category_id], references: [category_id])
+  category     Category              @relation(fields: [category_id], references: [category_id])
   image_url    String
   image_id     String
-  shoppingCart ShoppingCartProducts[]
-  createdAt    DateTime               @default(now())
+  shoppingCart ShoppingCartProduct[]
+  createdAt    DateTime              @default(now())
   updatedAt    DateTime?
 }
 
@@ -49,16 +49,16 @@ model Category {
 }
 
 model ShoppingCart {
-  shopping_cart_id String                 @id @default(uuid())
+  shopping_cart_id String                @id @default(uuid())
   total            Float
-  user_id          String                 @unique
-  user             User                   @relation(fields: [user_id], references: [user_id])
-  products         ShoppingCartProducts[]
-  createdAt        DateTime               @default(now())
+  user_id          String                @unique
+  user             User                  @relation(fields: [user_id], references: [user_id])
+  products         ShoppingCartProduct[]
+  createdAt        DateTime              @default(now())
   updatedAt        DateTime?
 }
 
-model ShoppingCartProducts {
+model ShoppingCartProduct {
   shopping_cart_id String
   shoppingCart     ShoppingCart @relation(fields: [shopping_cart_id], references: [shopping_cart_id])
 
@@ -67,6 +67,9 @@ model ShoppingCartProducts {
 
   quantity Int
   subtotal Int
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 
   @@id([shopping_cart_id, product_id])
 }

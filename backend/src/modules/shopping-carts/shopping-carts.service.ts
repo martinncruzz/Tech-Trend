@@ -33,16 +33,14 @@ export class ShoppingCartsService {
     );
 
     try {
-      const productAdded = await this.prismaService.shoppingCartProducts.create(
-        {
-          data: {
-            shopping_cart_id: userShoppingCart.shopping_cart_id,
-            product_id,
-            quantity,
-            subtotal: product.price * quantity,
-          },
+      const productAdded = await this.prismaService.shoppingCartProduct.create({
+        data: {
+          shopping_cart_id: userShoppingCart.shopping_cart_id,
+          product_id,
+          quantity,
+          subtotal: product.price * quantity,
         },
-      );
+      });
 
       await this.updateCartTotal(productAdded);
 
@@ -55,7 +53,12 @@ export class ShoppingCartsService {
   async getUserShoppingCart(user: User) {
     const userShoppingCart = await this.prismaService.shoppingCart.findUnique({
       where: { user_id: user.user_id },
-      include: { products: { include: { product: true } } },
+      include: {
+        products: {
+          include: { product: true },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
     });
 
     if (!userShoppingCart)
@@ -88,7 +91,7 @@ export class ShoppingCartsService {
 
     try {
       const updatedProduct =
-        await this.prismaService.shoppingCartProducts.update({
+        await this.prismaService.shoppingCartProduct.update({
           where: {
             shopping_cart_id_product_id: {
               product_id: product_id,
@@ -98,6 +101,7 @@ export class ShoppingCartsService {
           data: {
             quantity: (cartItem.quantity += quantity),
             subtotal: (cartItem.subtotal += quantity * product.price),
+            updatedAt: new Date(),
           },
         });
 
@@ -118,7 +122,7 @@ export class ShoppingCartsService {
 
     try {
       const removedProduct =
-        await this.prismaService.shoppingCartProducts.delete({
+        await this.prismaService.shoppingCartProduct.delete({
           where: {
             shopping_cart_id_product_id: {
               product_id: productId,
@@ -184,7 +188,7 @@ export class ShoppingCartsService {
     shoppingCart: ShoppingCart,
   ) {
     const productExists =
-      await this.prismaService.shoppingCartProducts.findUnique({
+      await this.prismaService.shoppingCartProduct.findUnique({
         where: {
           shopping_cart_id_product_id: {
             product_id: productId,
