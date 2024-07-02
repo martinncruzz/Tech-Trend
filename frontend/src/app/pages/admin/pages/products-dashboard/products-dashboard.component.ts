@@ -67,7 +67,10 @@ export class ProductsDashboardComponent implements OnInit {
           this.getAllProducts();
           this.processing.update(() => false);
         },
-        error: (err) => console.log(err),
+        error: (err) => {
+          this.processing.update(() => false);
+          console.log(err);
+        },
       });
   }
 

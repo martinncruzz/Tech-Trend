@@ -119,7 +119,10 @@ export class UsersDashboardComponent implements OnInit {
         this.getAllUsers();
         this.processing.update(() => false);
       },
-      error: (error) => console.log(error),
+      error: (err) => {
+        this.processing.update(() => false);
+        console.log(err);
+      },
     });
   }
 
