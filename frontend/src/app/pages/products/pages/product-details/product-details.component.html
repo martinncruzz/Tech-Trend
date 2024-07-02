@@ -25,6 +25,41 @@
           <span class="text-green-500 font-medium">In Stock</span>
         </div>
 
+        @if (productIdsInCart().includes(productId())) {
+
+        <button
+          (click)="removeProductFromCart()"
+          class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
+          [ngClass]="{ 'bg-red-600': errorMessage() }"
+        >
+          @if (!errorMessage()) {
+          <span
+            class="absolute h-0 w-0 bg-neutral-900 transition-all duration-300 group-hover:h-56 group-hover:w-full"
+          ></span>
+          }
+          <span class="relative flex gap-x-2 items-center"
+            ><svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart-minus"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+              <path d="M12.5 17h-6.5v-14h-2" />
+              <path d="M6 5l14 1l-1 7h-13" />
+              <path d="M16 19h6" />
+            </svg>
+            Remove from Cart</span
+          >
+        </button>
+
+        } @else {
         <form [formGroup]="quantityForm">
           <div
             class="py-2 px-3 rounded-lg bg-neutral-900 border-neutral-700"
@@ -79,6 +114,10 @@
                   </svg>
                 </button>
                 <button
+                  [disabled]="
+                    this.quantityForm.controls['quantity'].value ===
+                    currentProduct()?.stock
+                  "
                   (click)="updateNumberFormValue('quantity', 1)"
                   type="button"
                   class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
@@ -111,6 +150,7 @@
 
         <button
           [disabled]="quantityForm.invalid"
+          (click)="addProductToCart()"
           class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
           [ngClass]="{ 'bg-red-600': errorMessage() }"
         >
@@ -141,6 +181,7 @@
             Add to cart</span
           >
         </button>
+        }
       </div>
     </div>
   </div>
