@@ -9,6 +9,7 @@ import {
   LoginResponse,
   RegisterForm,
   RegisterResponse,
+  ValidRoles,
 } from '../interfaces/auth';
 
 @Injectable({
@@ -19,9 +20,13 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private _isLoggedIn = signal<boolean>(false);
+  private _isAdmin = signal<boolean>(false);
+
   public isLoggedIn = computed(() => this._isLoggedIn());
+  public isAdmin = computed(() => this._isAdmin());
 
   constructor() {
+    this._isLoggedIn.set(!!localStorage.getItem('token'));
     this.checkAuthStatus().subscribe();
   }
 
@@ -57,8 +62,9 @@ export class AuthService {
         headers,
       })
       .pipe(
-        map(() => {
+        map(({ roles }) => {
           this._isLoggedIn.set(true);
+          this._isAdmin.set(this.hasAdminRole(roles));
           return true;
         }),
         catchError(() => {
@@ -73,12 +79,18 @@ export class AuthService {
     localStorage.removeItem('userRoles');
 
     this._isLoggedIn.set(false);
+    this._isAdmin.set(false);
   }
 
-  private setAuthentication(token: string, userRoles: string[]): void {
+  private setAuthentication(token: string, userRoles: ValidRoles[]): void {
     localStorage.setItem('token', token);
     localStorage.setItem('userRoles', JSON.stringify(userRoles));
 
     this._isLoggedIn.set(true);
+    this._isAdmin.set(this.hasAdminRole(userRoles));
+  }
+
+  private hasAdminRole(roles: ValidRoles[]): boolean {
+    return roles.includes(ValidRoles.admin);
   }
 }
