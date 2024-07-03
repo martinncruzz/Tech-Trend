@@ -283,6 +283,7 @@
             >Orders</a
           >
         </div>
+        @if (isLoggedIn() && isAdmin()) {
         <div>
           <a
             class="inline-block text-white hover:text-neutral-300"
@@ -291,6 +292,7 @@
             >Admin</a
           >
         </div>
+        }
 
         <div
           class="md:hidden hs-dropdown [--strategy:static] sm:[--strategy:fixed] [--adaptive:none] sm:[--trigger:hover]"

@@ -24,6 +24,7 @@ export class HeaderComponent implements OnInit {
   private readonly filtersService = inject(FiltersService);
 
   public isLoggedIn = computed(() => this.authService.isLoggedIn());
+  public isAdmin = computed(() => this.authService.isAdmin());
   public categories = signal<Category[]>([]);
 
   constructor() {}
