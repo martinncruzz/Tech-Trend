@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 
@@ -43,8 +43,13 @@ export class CategoriesService {
   }
 
   public createCategory(categoryForm: CategoryForm): Observable<Category> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     return this.http
-      .post<Category>(`${this.backendUrl}/categories`, categoryForm)
+      .post<Category>(`${this.backendUrl}/categories`, categoryForm, {
+        headers,
+      })
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
@@ -52,8 +57,13 @@ export class CategoriesService {
     categoryForm: CategoryForm,
     id: string
   ): Observable<Category> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     return this.http
-      .patch<Category>(`${this.backendUrl}/categories/${id}`, categoryForm)
+      .patch<Category>(`${this.backendUrl}/categories/${id}`, categoryForm, {
+        headers,
+      })
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import {
   GetAllProductsResponse,
@@ -48,20 +48,31 @@ export class ProductsService {
   }
 
   public createProduct(productForm: FormData): Observable<Product> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     return this.http
-      .post<Product>(`${this.backendUrl}/products`, productForm)
+      .post<Product>(`${this.backendUrl}/products`, productForm, { headers })
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
   public updateProduct(productForm: FormData, id: string): Observable<Product> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     return this.http
-      .patch<Product>(`${this.backendUrl}/products/${id}`, productForm)
+      .patch<Product>(`${this.backendUrl}/products/${id}`, productForm, {
+        headers,
+      })
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 
   public deleteProduct(id: string): Observable<boolean> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     return this.http
-      .delete<boolean>(`${this.backendUrl}/products/${id}`)
+      .delete<boolean>(`${this.backendUrl}/products/${id}`, { headers })
       .pipe(catchError((err) => throwError(() => err.error.message)));
   }
 }
