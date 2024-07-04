@@ -4,6 +4,7 @@ import {
   withInMemoryScrolling,
   withViewTransitions,
 } from '@angular/router';
+import { provideHotToastConfig } from '@ngxpert/hot-toast';
 
 import { routes } from './app.routes';
 import {
@@ -22,5 +23,6 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideHttpClient(withInterceptorsFromDi()),
+    provideHotToastConfig({ theme: 'snackbar', dismissible: true }),
   ],
 };
