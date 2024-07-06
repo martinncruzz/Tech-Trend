@@ -75,6 +75,7 @@ export class UsersDashboardComponent implements OnInit {
     this.paginationService.setPagination(1, 5);
     this.filtersService.resetFilters();
     this.getAllUsers();
+    this.resetFormErrors();
   }
 
   public getAllUsers(): void {
