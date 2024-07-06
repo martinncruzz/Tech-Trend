@@ -23,6 +23,11 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideHttpClient(withInterceptorsFromDi()),
-    provideHotToastConfig({ theme: 'snackbar', dismissible: true }),
+    provideHotToastConfig({
+      theme: 'snackbar',
+      dismissible: true,
+      duration: 3000,
+      reverseOrder: true,
+    }),
   ],
 };
