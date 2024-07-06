@@ -7,6 +7,7 @@ import { ShoppingCartsService } from '../../core/services';
 import { CommonModule } from '@angular/common';
 import { CartItemComponent } from './components/cart-item/cart-item.component';
 import { Router } from '@angular/router';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'shopping-carts',
@@ -17,6 +18,7 @@ import { Router } from '@angular/router';
 })
 export class ShoppingCartsComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly hotToastService = inject(HotToastService);
 
   private readonly shoppingCartsService = inject(ShoppingCartsService);
 
@@ -54,8 +56,11 @@ export class ShoppingCartsComponent implements OnInit {
       this.shoppingCartsService
         .removeProductFromCart(this.productToRemoveFromCart())
         .subscribe({
-          next: () => this.getUserShoppingCart(),
-          error: (error) => console.log(error),
+          next: () => {
+            this.getUserShoppingCart();
+            this.hotToastService.info('Product removed from cart');
+          },
+          error: (error) => this.hotToastService.error(error),
         });
     }
   }

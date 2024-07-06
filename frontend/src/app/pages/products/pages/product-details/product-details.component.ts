@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import {
+  AuthService,
   ProductsService,
   ShoppingCartsService,
   ValidatorsService,
@@ -16,6 +17,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { GetShoppingCartResponse } from '../../../../core/interfaces/shopping-carts';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'products-product-details',
@@ -28,7 +30,9 @@ export class ProductDetailsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly hotToastService = inject(HotToastService);
 
+  private readonly authService = inject(AuthService);
   private readonly productsService = inject(ProductsService);
   private readonly shoppingCartsService = inject(ShoppingCartsService);
   private readonly validatorsService = inject(ValidatorsService);
@@ -72,22 +76,38 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   public addProductToCart(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.hotToastService.warning('Please log in first');
+      this.router.navigateByUrl('/auth/login');
+    }
+
     this.shoppingCartsService
       .addProductToCart({
         product_id: this.currentProduct()!.product_id,
         quantity: this.quantityForm.controls['quantity'].value,
       })
       .subscribe({
-        next: () => this.getUserShoppingCart(),
+        next: () => {
+          this.getUserShoppingCart();
+          this.hotToastService.info('Product added to cart');
+        },
         error: (error) => this.errorMessage.set(error),
       });
   }
 
   public removeProductFromCart(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.hotToastService.warning('Please log in first');
+      this.router.navigateByUrl('/auth/login');
+    }
+
     this.shoppingCartsService
       .removeProductFromCart(this.productId())
       .subscribe({
-        next: () => this.getUserShoppingCart(),
+        next: () => {
+          this.getUserShoppingCart();
+          this.hotToastService.info('Product removed from cart');
+        },
         error: (error) => this.errorMessage.set(error),
       });
   }

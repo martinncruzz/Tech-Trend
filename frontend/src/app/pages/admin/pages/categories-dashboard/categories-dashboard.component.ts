@@ -12,6 +12,7 @@ import { PaginationButtons } from '../../../../core/interfaces/pagination';
 import { Category } from '../../../../core/interfaces/categories';
 import { SortBy } from '../../../../core/interfaces/filters';
 import { Product } from '../../../../core/interfaces/products';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'admin-categories-dashboard',
@@ -21,6 +22,8 @@ import { Product } from '../../../../core/interfaces/products';
   styles: ``,
 })
 export class CategoriesDashboardComponent implements OnInit {
+  private readonly hotToastService = inject(HotToastService);
+
   private readonly categoriesService = inject(CategoriesService);
   private readonly productsService = inject(ProductsService);
   private readonly paginationService = inject(PaginationService);
@@ -57,7 +60,7 @@ export class CategoriesDashboardComponent implements OnInit {
         next: ({ items }) => {
           this.products.set(items);
         },
-        error: (err) => console.log(err),
+        error: (error) => this.hotToastService.error(error),
       });
   }
 
@@ -72,7 +75,7 @@ export class CategoriesDashboardComponent implements OnInit {
           this.categories.set(items);
           this.paginationService.setPaginationButtons(!!next, !!prev);
         },
-        error: (error) => console.log(error),
+        error: (error) => this.hotToastService.error(error),
       });
   }
 
@@ -85,9 +88,9 @@ export class CategoriesDashboardComponent implements OnInit {
           this.getAllCategories();
           this.processing.update(() => false);
         },
-        error: (err) => {
+        error: (error) => {
+          this.hotToastService.error(error);
           this.processing.update(() => false);
-          console.log(err);
         },
       });
   }

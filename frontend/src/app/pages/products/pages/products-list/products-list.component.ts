@@ -1,10 +1,11 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { filter, mergeMap, tap } from 'rxjs';
 
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { Product } from '../../../../core/interfaces/products';
 import {
+  AuthService,
   CategoriesService,
   FiltersService,
   PaginationService,
@@ -18,6 +19,7 @@ import {
   GetShoppingCartResponse,
   ShoppingCartForm,
 } from '../../../../core/interfaces/shopping-carts';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'products-products-list',
@@ -27,8 +29,11 @@ import {
   styles: ``,
 })
 export class ProductsListComponent implements OnInit {
+  private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly hotToastService = inject(HotToastService);
 
+  private readonly authService = inject(AuthService);
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly shoppingCartsService = inject(ShoppingCartsService);
@@ -106,7 +111,7 @@ export class ProductsListComponent implements OnInit {
           this.products.set(items);
           this.paginationService.setPaginationButtons(!!next, !!prev);
         },
-        error: (err) => console.log(err),
+        error: (error) => console.log(error),
       });
   }
 
@@ -120,16 +125,27 @@ export class ProductsListComponent implements OnInit {
   }
 
   public updateCart(shoppingCartForm: ShoppingCartForm): void {
+    if (!this.authService.isLoggedIn()) {
+      this.hotToastService.warning('Please log in first');
+      this.router.navigateByUrl('/auth/login');
+    }
+
     const { product_id, quantity } = shoppingCartForm;
 
     if (quantity > 0) {
       this.shoppingCartsService.addProductToCart(shoppingCartForm).subscribe({
-        next: () => this.getUserShoppingCart(),
+        next: () => {
+          this.getUserShoppingCart();
+          this.hotToastService.info('Product added to cart');
+        },
         error: (error) => console.log(error),
       });
     } else {
       this.shoppingCartsService.removeProductFromCart(product_id).subscribe({
-        next: () => this.getUserShoppingCart(),
+        next: () => {
+          this.getUserShoppingCart();
+          this.hotToastService.info('Product removed from cart');
+        },
         error: (error) => console.log(error),
       });
     }

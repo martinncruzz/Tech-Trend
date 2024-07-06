@@ -14,6 +14,7 @@ import {
 } from '../../../../core/services';
 import { Category } from '../../../../core/interfaces/categories';
 import { switchMap } from 'rxjs';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'admin-category-form',
@@ -26,6 +27,7 @@ export class CategoryFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly hotToastService = inject(HotToastService);
 
   private readonly categoriesService = inject(CategoriesService);
   private readonly validatorsService = inject(ValidatorsService);
@@ -56,7 +58,10 @@ export class CategoryFormComponent implements OnInit {
   public createCategory(): void {
     this.categoriesService.createCategory(this.categoryForm.value).subscribe({
       next: () => this.router.navigateByUrl('admin/categories-dashboard'),
-      error: (error) => this.errorMessage.set(error),
+      error: (error) => {
+        this.errorMessage.set(error);
+        this.hotToastService.error(error);
+      },
     });
   }
 
@@ -68,7 +73,10 @@ export class CategoryFormComponent implements OnInit {
       )
       .subscribe({
         next: () => this.router.navigateByUrl('admin/categories-dashboard'),
-        error: (error) => this.errorMessage.set(error),
+        error: (error) => {
+          this.errorMessage.set(error);
+          this.hotToastService.error(error);
+        },
       });
   }
 

@@ -19,6 +19,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { patterns } from '../../../../core/constants';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'admin-users-dashboard',
@@ -35,6 +36,7 @@ import { patterns } from '../../../../core/constants';
 })
 export class UsersDashboardComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
+  private readonly hotToastService = inject(HotToastService);
 
   private readonly usersService = inject(UsersService);
   private readonly paginationService = inject(PaginationService);
@@ -86,7 +88,7 @@ export class UsersDashboardComponent implements OnInit {
           this.users.set(items);
           this.paginationService.setPaginationButtons(!!next, !!prev);
         },
-        error: (error) => console.log(error),
+        error: (error) => this.hotToastService.error(error),
       });
   }
 
@@ -95,7 +97,7 @@ export class UsersDashboardComponent implements OnInit {
 
     this.usersService.getUserById(this.currentUser()!.user_id).subscribe({
       next: (user) => this.updateUserForm.reset(user),
-      error: (error) => console.log(error),
+      error: (error) => this.hotToastService.error(error),
     });
   }
 
@@ -108,7 +110,11 @@ export class UsersDashboardComponent implements OnInit {
           this.getAllUsers();
           this.processing.update(() => false);
         },
-        error: (error) => this.errorMessage.set(error),
+        error: (error) => {
+          this.errorMessage.set(error);
+          this.hotToastService.error(error);
+          this.processing.update(() => false);
+        },
       });
   }
 
@@ -119,9 +125,9 @@ export class UsersDashboardComponent implements OnInit {
         this.getAllUsers();
         this.processing.update(() => false);
       },
-      error: (err) => {
+      error: (error) => {
+        this.hotToastService.error(error);
         this.processing.update(() => false);
-        console.log(err);
       },
     });
   }

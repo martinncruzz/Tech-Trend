@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { PaginationButtons } from '../../../../core/interfaces/pagination';
 import { SearchInputComponent } from '../../../../shared/components/search-input/search-input.component';
 import { SortBy } from '../../../../core/interfaces/filters';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'admin-products-dashboard',
@@ -20,6 +21,8 @@ import { SortBy } from '../../../../core/interfaces/filters';
   styles: ``,
 })
 export class ProductsDashboardComponent implements OnInit {
+  private readonly hotToastService = inject(HotToastService);
+
   private readonly productsService = inject(ProductsService);
   private readonly paginationService = inject(PaginationService);
   private readonly filtersService = inject(FiltersService);
@@ -54,7 +57,7 @@ export class ProductsDashboardComponent implements OnInit {
           this.products.set(items);
           this.paginationService.setPaginationButtons(!!next, !!prev);
         },
-        error: (err) => console.log(err),
+        error: (error) => this.hotToastService.error(error),
       });
   }
 
@@ -67,9 +70,9 @@ export class ProductsDashboardComponent implements OnInit {
           this.getAllProducts();
           this.processing.update(() => false);
         },
-        error: (err) => {
+        error: (error) => {
           this.processing.update(() => false);
-          console.log(err);
+          this.hotToastService.error(error);
         },
       });
   }

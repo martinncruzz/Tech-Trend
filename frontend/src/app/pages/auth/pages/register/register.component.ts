@@ -11,6 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService, ValidatorsService } from '../../../../core/services';
 import { CommonModule } from '@angular/common';
 import { patterns } from '../../../../core/constants';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-register',
@@ -22,6 +23,7 @@ import { patterns } from '../../../../core/constants';
 export class RegisterComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly hotToastService = inject(HotToastService);
 
   private readonly authService = inject(AuthService);
   private readonly validatorsService = inject(ValidatorsService);
@@ -57,7 +59,10 @@ export class RegisterComponent implements OnInit {
 
   public registerUser(): void {
     this.authService.registerUser(this.registerForm.value).subscribe({
-      next: () => this.router.navigateByUrl('auth/login'),
+      next: () => {
+        this.router.navigateByUrl('auth/login');
+        this.hotToastService.success('Registration successful! Welcome aboard');
+      },
       error: (error) => this.errorMessage.set(error),
     });
   }

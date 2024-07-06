@@ -19,6 +19,7 @@ import {
 } from '../../../../core/services';
 import { Product } from '../../../../core/interfaces/products';
 import { Category } from '../../../../core/interfaces/categories';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'admin-product-form',
@@ -31,6 +32,7 @@ export class ProductFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly hotToastService = inject(HotToastService);
 
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
@@ -84,7 +86,10 @@ export class ProductFormComponent implements OnInit {
 
     this.productsService.createProduct(formData).subscribe({
       next: () => this.router.navigateByUrl('admin/products-dashboard'),
-      error: (error) => this.errorMessage.set(error),
+      error: (error) => {
+        this.errorMessage.set(error);
+        this.hotToastService.error(error);
+      },
     });
   }
 
@@ -104,7 +109,10 @@ export class ProductFormComponent implements OnInit {
       .updateProduct(formData, this.currentProduct()!.product_id)
       .subscribe({
         next: () => this.router.navigateByUrl('admin/products-dashboard'),
-        error: (error) => this.errorMessage.set(error),
+        error: (error) => {
+          this.errorMessage.set(error);
+          this.hotToastService.error(error);
+        },
       });
   }
 
@@ -118,7 +126,7 @@ export class ProductFormComponent implements OnInit {
         next: ({ items }) => {
           this.categories.set(items);
         },
-        error: (error) => console.log(error),
+        error: (error) => this.hotToastService.error(error),
       });
   }
 

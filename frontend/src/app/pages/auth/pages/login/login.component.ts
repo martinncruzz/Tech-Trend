@@ -11,6 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService, ValidatorsService } from '../../../../core/services';
 import { CommonModule } from '@angular/common';
 import { patterns } from '../../../../core/constants';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ import { patterns } from '../../../../core/constants';
 export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly hotToastService = inject(HotToastService);
 
   private readonly authService = inject(AuthService);
   private readonly validatorsService = inject(ValidatorsService);
@@ -55,7 +57,10 @@ export class LoginComponent implements OnInit {
 
   public loginUser(): void {
     this.authService.loginUser(this.loginForm.value).subscribe({
-      next: () => this.router.navigateByUrl('/'),
+      next: () => {
+        this.router.navigateByUrl('/');
+        this.hotToastService.success('Log in successful! Welcome back');
+      },
       error: (error) => this.errorMessage.set(error),
     });
   }

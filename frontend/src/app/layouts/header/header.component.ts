@@ -9,6 +9,7 @@ import {
   PaginationService,
 } from '../../core/services';
 import { Category } from '../../core/interfaces/categories';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'layouts-header',
@@ -18,6 +19,8 @@ import { Category } from '../../core/interfaces/categories';
   styles: ``,
 })
 export class HeaderComponent implements OnInit {
+  private readonly hotToastService = inject(HotToastService);
+
   private readonly authService = inject(AuthService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly paginationService = inject(PaginationService);
@@ -49,5 +52,6 @@ export class HeaderComponent implements OnInit {
 
   public logout(): void {
     this.authService.logout();
+    this.hotToastService.success('You have logged out successfully');
   }
 }
