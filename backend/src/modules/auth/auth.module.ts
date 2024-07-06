@@ -8,12 +8,15 @@ import { envs } from 'src/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaModule } from 'src/database/prisma.module';
 import { ShoppingCartsModule } from '../shopping-carts/shopping-carts.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     PrismaModule,
 
     forwardRef(() => ShoppingCartsModule),
+
+    forwardRef(() => UsersModule),
 
     PassportModule.register({
       defaultStrategy: 'jwt',

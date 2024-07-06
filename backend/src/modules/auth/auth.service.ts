@@ -15,6 +15,7 @@ import { LoginUserDto, RegisterUserDto } from './dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { User } from '../users/entities';
 import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,8 @@ export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
     @Inject(forwardRef(() => ShoppingCartsService))
     private readonly shoppingCartsService: ShoppingCartsService,
   ) {}
@@ -30,7 +33,7 @@ export class AuthService {
   async registerUser(registerUserDto: RegisterUserDto) {
     const { email, password, ...userData } = registerUserDto;
 
-    const user = await this.getUserByEmail(email);
+    const user = await this.usersService.getUserByEmail(email);
 
     if (user) throw new BadRequestException('Email already registered');
 
@@ -53,7 +56,7 @@ export class AuthService {
   }
 
   async loginUser(loginUserDto: LoginUserDto) {
-    const user = await this.getUserByEmail(loginUserDto.email);
+    const user = await this.usersService.getUserByEmail(loginUserDto.email);
 
     if (!user) throw new BadRequestException(`Incorrect email or password`);
 
@@ -74,14 +77,6 @@ export class AuthService {
   }
 
   checkAuthStatus(user: User) {
-    return user;
-  }
-
-  private async getUserByEmail(email: string) {
-    const user = await this.prismaService.user.findUnique({
-      where: { email: email },
-    });
-
     return user;
   }
 

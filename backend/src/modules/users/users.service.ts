@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 
 import {
   buildPaginationResponse,
@@ -58,7 +63,12 @@ export class UsersService {
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
-    await this.getUserById(id);
+    const currentUser = await this.getUserById(id);
+
+    if (updateUserDto.email !== currentUser.email) {
+      const user = await this.getUserByEmail(updateUserDto.email);
+      if (user) throw new BadRequestException('Email already registered');
+    }
 
     try {
       const user = await this.prismaService.user.update({
@@ -87,6 +97,14 @@ export class UsersService {
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
+  }
+
+  async getUserByEmail(email: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { email: email },
+    });
+
+    return user;
   }
 
   private buildOrderBy(
