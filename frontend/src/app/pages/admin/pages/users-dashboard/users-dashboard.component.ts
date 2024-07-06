@@ -123,6 +123,7 @@ export class UsersDashboardComponent implements OnInit {
     this.usersService.deleteUser(this.currentUser()!.user_id).subscribe({
       next: () => {
         this.getAllUsers();
+        this.hotToastService.success('User deleted');
         this.processing.update(() => false);
       },
       error: (error) => {

@@ -86,6 +86,7 @@ export class CategoriesDashboardComponent implements OnInit {
       .subscribe({
         next: () => {
           this.getAllCategories();
+          this.hotToastService.success('Category deleted');
           this.processing.update(() => false);
         },
         error: (error) => {

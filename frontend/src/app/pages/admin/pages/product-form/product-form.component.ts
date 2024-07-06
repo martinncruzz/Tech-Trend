@@ -85,7 +85,10 @@ export class ProductFormComponent implements OnInit {
     });
 
     this.productsService.createProduct(formData).subscribe({
-      next: () => this.router.navigateByUrl('admin/products-dashboard'),
+      next: () => {
+        this.router.navigateByUrl('admin/products-dashboard');
+        this.hotToastService.success('Product created successfully');
+      },
       error: (error) => {
         this.errorMessage.set(error);
         this.hotToastService.error(error);
@@ -108,7 +111,10 @@ export class ProductFormComponent implements OnInit {
     this.productsService
       .updateProduct(formData, this.currentProduct()!.product_id)
       .subscribe({
-        next: () => this.router.navigateByUrl('admin/products-dashboard'),
+        next: () => {
+          this.router.navigateByUrl('admin/products-dashboard');
+          this.hotToastService.success('Product updated successfully');
+        },
         error: (error) => {
           this.errorMessage.set(error);
           this.hotToastService.error(error);

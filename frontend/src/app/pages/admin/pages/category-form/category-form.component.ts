@@ -57,7 +57,10 @@ export class CategoryFormComponent implements OnInit {
 
   public createCategory(): void {
     this.categoriesService.createCategory(this.categoryForm.value).subscribe({
-      next: () => this.router.navigateByUrl('admin/categories-dashboard'),
+      next: () => {
+        this.router.navigateByUrl('admin/categories-dashboard');
+        this.hotToastService.success('Category created successfully');
+      },
       error: (error) => {
         this.errorMessage.set(error);
         this.hotToastService.error(error);
@@ -72,7 +75,10 @@ export class CategoryFormComponent implements OnInit {
         this.currentCategory()!.category_id
       )
       .subscribe({
-        next: () => this.router.navigateByUrl('admin/categories-dashboard'),
+        next: () => {
+          this.router.navigateByUrl('admin/categories-dashboard');
+          this.hotToastService.success('Category updated successfully');
+        },
         error: (error) => {
           this.errorMessage.set(error);
           this.hotToastService.error(error);

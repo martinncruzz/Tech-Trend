@@ -68,6 +68,7 @@ export class ProductsDashboardComponent implements OnInit {
       .subscribe({
         next: () => {
           this.getAllProducts();
+          this.hotToastService.success('Product deleted');
           this.processing.update(() => false);
         },
         error: (error) => {
