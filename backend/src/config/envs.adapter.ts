@@ -14,6 +14,9 @@ interface EnvVars {
   CLOUDINARY_NAME: string;
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
+
+  STRIPE_SECRET_KEY: string;
+  STRIPE_ENDPOINT_SECRET: string;
 }
 
 const envsSchema = joi
@@ -30,6 +33,9 @@ const envsSchema = joi
     CLOUDINARY_NAME: joi.string().required(),
     CLOUDINARY_API_KEY: joi.string().required(),
     CLOUDINARY_API_SECRET: joi.string().required(),
+
+    STRIPE_SECRET_KEY: joi.string().required(),
+    STRIPE_ENDPOINT_SECRET: joi.string().required(),
   })
   .unknown(true);
 
@@ -52,4 +58,7 @@ export const envs = {
   CLOUDINARY_NAME: envVars.CLOUDINARY_NAME,
   CLOUDINARY_API_KEY: envVars.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: envVars.CLOUDINARY_API_SECRET,
+
+  STRIPE_SECRET_KEY: envVars.STRIPE_SECRET_KEY,
+  STRIPE_ENDPOINT_SECRET: envVars.STRIPE_ENDPOINT_SECRET,
 };
