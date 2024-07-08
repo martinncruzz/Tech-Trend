@@ -50,6 +50,20 @@ export class ShoppingCartsService {
     }
   }
 
+  async getShoppingCartById(id: string) {
+    const shoppingCart = await this.prismaService.shoppingCart.findUnique({
+      where: { shopping_cart_id: id },
+      include: {
+        products: true,
+      },
+    });
+
+    if (!shoppingCart)
+      throw new NotFoundException(`Cart with id #${id} not found`);
+
+    return shoppingCart;
+  }
+
   async getUserShoppingCart(user: User) {
     const userShoppingCart = await this.prismaService.shoppingCart.findUnique({
       where: { user_id: user.user_id },
@@ -167,35 +181,55 @@ export class ShoppingCartsService {
       await this.prismaService.shoppingCart.create({
         data: { user_id: user.user_id, total: 0 },
       });
+
+      return true;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
+  }
+
+  async emptyCart(shoppingCartId: string) {
+    try {
+      await this.prismaService.$transaction([
+        this.prismaService.shoppingCartProduct.deleteMany({
+          where: { shopping_cart_id: shoppingCartId },
+        }),
+        this.prismaService.shoppingCart.update({
+          where: { shopping_cart_id: shoppingCartId },
+          data: { total: 0 },
+        }),
+      ]);
+
+      return true;
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
   }
 
   async validateShoppingCart(shoppingCartId: string, userId: string) {
-    const shoppingCartExists = await this.prismaService.shoppingCart.findUnique(
-      {
-        where: { shopping_cart_id: shoppingCartId, user_id: userId },
-        include: {
-          products: true,
+    const shoppingCart = await this.prismaService.shoppingCart.findUnique({
+      where: { shopping_cart_id: shoppingCartId, user_id: userId },
+      include: {
+        products: {
+          include: { product: true },
+          orderBy: { createdAt: 'desc' },
         },
       },
-    );
-
-    if (!shoppingCartExists)
-      throw new BadRequestException(`Invalid shopping cart`);
-
-    if (shoppingCartExists.products.length === 0)
-      throw new BadRequestException(`Shopping cart is empty`);
-  }
-
-  private async getShoppingCartById(id: string) {
-    const shoppingCart = await this.prismaService.shoppingCart.findUnique({
-      where: { shopping_cart_id: id },
     });
 
-    if (!shoppingCart)
-      throw new NotFoundException(`Cart with id #${id} not found`);
+    if (!shoppingCart) throw new BadRequestException(`Invalid shopping cart`);
+
+    if (shoppingCart.products.length === 0)
+      throw new BadRequestException(`Shopping cart is empty`);
+
+    await Promise.all(
+      shoppingCart.products.map((product) =>
+        this.productsService.validateProduct(
+          product.product_id,
+          product.quantity,
+        ),
+      ),
+    );
 
     return shoppingCart;
   }
