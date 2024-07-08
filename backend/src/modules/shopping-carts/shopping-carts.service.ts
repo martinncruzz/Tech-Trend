@@ -172,6 +172,17 @@ export class ShoppingCartsService {
     }
   }
 
+  async validateShoppingCart(shoppingCartId: string, userId: string) {
+    const shoppingCartExists = await this.prismaService.shoppingCart.findUnique(
+      {
+        where: { shopping_cart_id: shoppingCartId, user_id: userId },
+      },
+    );
+
+    if (!shoppingCartExists)
+      throw new BadRequestException(`Invalid shopping cart`);
+  }
+
   private async getShoppingCartById(id: string) {
     const shoppingCart = await this.prismaService.shoppingCart.findUnique({
       where: { shopping_cart_id: id },
