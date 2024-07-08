@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { CreateOrderDto } from './dtos/create-order.dto';
-import { UpdateOrderDto } from './dtos/update-order.dto';
+import { Injectable, Logger } from '@nestjs/common';
+import { AddProductsToOrderDto, CreateOrderDto } from './dtos';
+import { PrismaService } from 'src/database/prisma.service';
+import { OrderStatus } from '@prisma/client';
+import { handleDBExceptions } from '../shared/helpers';
 
 @Injectable()
 export class OrdersService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  private readonly logger = new Logger('OrdersService');
+
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async createOrder(createOrderDto: CreateOrderDto) {
+    try {
+      const order = await this.prismaService.order.create({
+        data: { ...createOrderDto, status: OrderStatus.PAID },
+      });
+
+      return order;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 
-  findAll() {
-    return `This action returns all orders`;
-  }
+  async addProductsToOrderDetails(addProductsToOrder: AddProductsToOrderDto) {
+    const { order_id, products } = addProductsToOrder;
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
+    const orderDetails = products.map((productItem) => {
+      return {
+        order_id: order_id,
+        product_id: productItem.product_id,
+        quantity: productItem.quantity,
+        subtotal: productItem.subtotal,
+      };
+    });
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
+    try {
+      await this.prismaService.orderProduct.createMany({
+        data: orderDetails,
+      });
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+      return true;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 }
