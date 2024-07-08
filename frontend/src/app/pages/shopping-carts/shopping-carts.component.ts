@@ -3,7 +3,7 @@ import {
   GetShoppingCartResponse,
   ShoppingCartForm,
 } from '../../core/interfaces/shopping-carts';
-import { ShoppingCartsService } from '../../core/services';
+import { OrdersService, ShoppingCartsService } from '../../core/services';
 import { CommonModule } from '@angular/common';
 import { CartItemComponent } from './components/cart-item/cart-item.component';
 import { Router } from '@angular/router';
@@ -21,6 +21,7 @@ export class ShoppingCartsComponent implements OnInit {
   private readonly hotToastService = inject(HotToastService);
 
   private readonly shoppingCartsService = inject(ShoppingCartsService);
+  private readonly ordersService = inject(OrdersService);
 
   public shoppingCart = signal<GetShoppingCartResponse | undefined>(undefined);
   public productToRemoveFromCart = signal<string>('');
@@ -63,5 +64,16 @@ export class ShoppingCartsComponent implements OnInit {
           error: (error) => this.hotToastService.error(error),
         });
     }
+  }
+
+  public createOrder() {
+    this.hotToastService.loading('Creating order');
+
+    this.ordersService
+      .createOrder(this.shoppingCart()!.shopping_cart_id)
+      .subscribe({
+        next: ({ url }) => (window.location.href = url),
+        error: (error) => console.log(error),
+      });
   }
 }
