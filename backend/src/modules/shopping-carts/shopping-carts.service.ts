@@ -176,11 +176,17 @@ export class ShoppingCartsService {
     const shoppingCartExists = await this.prismaService.shoppingCart.findUnique(
       {
         where: { shopping_cart_id: shoppingCartId, user_id: userId },
+        include: {
+          products: true,
+        },
       },
     );
 
     if (!shoppingCartExists)
       throw new BadRequestException(`Invalid shopping cart`);
+
+    if (shoppingCartExists.products.length === 0)
+      throw new BadRequestException(`Shopping cart is empty`);
   }
 
   private async getShoppingCartById(id: string) {
