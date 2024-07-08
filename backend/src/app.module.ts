@@ -7,9 +7,10 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { ShoppingCartsModule } from './modules/shopping-carts/shopping-carts.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
-  imports: [PrismaModule, SharedModule, UsersModule, ProductsModule, CategoriesModule, ShoppingCartsModule, AuthModule, OrdersModule],
+  imports: [PrismaModule, SharedModule, UsersModule, ProductsModule, CategoriesModule, ShoppingCartsModule, AuthModule, OrdersModule, PaymentsModule],
   controllers: [],
   providers: [],
 })
