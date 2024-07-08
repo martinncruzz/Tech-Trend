@@ -153,6 +153,17 @@ export class ProductsService {
     return product;
   }
 
+  async validateProductIds(productIds: string[]) {
+    const validIds = await this.prismaService.product.findMany({
+      where: {
+        product_id: { in: productIds },
+      },
+    });
+
+    if (validIds.length !== productIds.length)
+      throw new BadRequestException('One or more products are invalid');
+  }
+
   private async getProductByName(name: string) {
     const product = await this.prismaService.product.findUnique({
       where: { name },
