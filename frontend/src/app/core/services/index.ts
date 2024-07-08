@@ -1,6 +1,7 @@
 export * from './auth.service';
 export * from './categories.service';
 export * from './filters.service';
+export * from './orders.service';
 export * from './pagination.service';
 export * from './products.service';
 export * from './shopping-carts.service';
