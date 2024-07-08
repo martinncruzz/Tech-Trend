@@ -144,24 +144,30 @@ export class ProductsService {
     }
   }
 
+  async updateProductStock(productId: string, quantityPurchased: number) {
+    const product = await this.getProductById(productId);
+
+    try {
+      await this.prismaService.product.update({
+        where: { product_id: productId },
+        data: { stock: (product.stock -= quantityPurchased) },
+      });
+
+      return true;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
+  }
+
   async validateProduct(id: string, quantity: number) {
     const product = await this.getProductById(id);
 
     if (product.stock < quantity)
-      throw new BadRequestException(`Quantity cannot exceed available stock`);
+      throw new BadRequestException(
+        `Product "${product.name}" is out of stock`,
+      );
 
     return product;
-  }
-
-  async validateProductIds(productIds: string[]) {
-    const validIds = await this.prismaService.product.findMany({
-      where: {
-        product_id: { in: productIds },
-      },
-    });
-
-    if (validIds.length !== productIds.length)
-      throw new BadRequestException('One or more products are invalid');
   }
 
   private async getProductByName(name: string) {
