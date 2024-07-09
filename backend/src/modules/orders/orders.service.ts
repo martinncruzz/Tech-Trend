@@ -1,8 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AddProductsToOrderDto, CreateOrderDto } from './dtos';
 import { PrismaService } from 'src/database/prisma.service';
-import { OrderStatus } from '@prisma/client';
-import { handleDBExceptions } from '../shared/helpers';
+import { OrderStatus, Prisma } from '@prisma/client';
+import {
+  buildPaginationResponse,
+  getBaseUrl,
+  handleDBExceptions,
+} from '../shared/helpers';
+import { Filters } from '../shared/dtos';
+import { User } from '../users/entities';
+import { SortBy } from '../shared/interfaces/filters';
+import { ResourceType } from '../shared/interfaces/pagination';
 
 @Injectable()
 export class OrdersService {
@@ -43,5 +51,85 @@ export class OrdersService {
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
+  }
+
+  async getAllOrders(params: Filters) {
+    const { page = 1, limit = 10 } = params;
+
+    const orderBy = this.buildOrderBy(params);
+    const where = this.buildWhere(params);
+
+    const [total, orders] = await this.prismaService.$transaction([
+      this.prismaService.order.count({ where }),
+      this.prismaService.order.findMany({
+        orderBy,
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    const baseUrl = getBaseUrl(ResourceType.orders);
+    const paginationResponse = buildPaginationResponse({
+      page,
+      limit,
+      total,
+      baseUrl,
+      items: orders,
+    });
+
+    return paginationResponse;
+  }
+
+  async getOrdersByUser(user: User) {
+    const orders = await this.prismaService.order.findMany({
+      where: { user_id: user.user_id },
+    });
+
+    if (orders.length === 0)
+      throw new NotFoundException(
+        `User with id "${user.user_id}" has not made any order yet`,
+      );
+
+    return orders;
+  }
+
+  async getOrderDetails(id: string) {
+    const order = await this.prismaService.order.findUnique({
+      where: { order_id: id },
+      include: { products: { include: { product: true } } },
+    });
+
+    if (!order) throw new NotFoundException(`Order with id "${id}" not found`);
+
+    return order;
+  }
+
+  private buildOrderBy(
+    params: Filters,
+  ): Prisma.OrderOrderByWithAggregationInput {
+    let orderBy: Prisma.OrderOrderByWithAggregationInput = {};
+
+    switch (params.sortBy) {
+      case SortBy.NEWEST:
+        orderBy = { createdAt: 'desc' };
+        break;
+      case SortBy.OLDEST:
+        orderBy = { createdAt: 'asc' };
+        break;
+      case SortBy.LAST_UPDATED:
+        orderBy = { updatedAt: 'desc' };
+        break;
+    }
+
+    return orderBy;
+  }
+
+  private buildWhere(params: Filters): Prisma.OrderWhereInput {
+    const where: Prisma.OrderWhereInput = {};
+
+    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
+
+    return where;
   }
 }

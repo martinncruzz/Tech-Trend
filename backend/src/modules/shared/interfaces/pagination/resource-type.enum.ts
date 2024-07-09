@@ -1,5 +1,6 @@
 export enum ResourceType {
-  products = 'products',
   categories = 'categories',
+  orders = 'orders',
+  products = 'products',
   users = 'users',
 }
