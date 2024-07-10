@@ -116,7 +116,7 @@ export class PaymentsService {
         break;
 
       default:
-        console.log(`Event ${event.type} not handled`);
+        this.logger.error(`Event ${event.type} not handled`);
     }
 
     return res.status(200).json({ sig });
