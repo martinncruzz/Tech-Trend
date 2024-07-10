@@ -64,6 +64,7 @@ export class OrdersService {
       this.prismaService.order.findMany({
         orderBy,
         where,
+        include: { user: true },
         skip: (page - 1) * limit,
         take: limit,
       }),
