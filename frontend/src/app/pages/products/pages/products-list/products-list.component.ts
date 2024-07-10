@@ -94,7 +94,7 @@ export class ProductsListComponent implements OnInit {
         next: ({ items }) => {
           this.categories.set(items);
         },
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
   }
 
@@ -111,7 +111,7 @@ export class ProductsListComponent implements OnInit {
           this.products.set(items);
           this.paginationService.setPaginationButtons(!!next, !!prev);
         },
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
   }
 
@@ -120,7 +120,7 @@ export class ProductsListComponent implements OnInit {
       next: (shoppingCart) => {
         this.shoppingCart.set(shoppingCart);
       },
-      error: (error) => console.log(error),
+      error: (error) => {},
     });
   }
 
@@ -138,7 +138,7 @@ export class ProductsListComponent implements OnInit {
           this.getUserShoppingCart();
           this.hotToastService.info('Product added to cart');
         },
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
     } else {
       this.shoppingCartsService.removeProductFromCart(product_id).subscribe({
@@ -146,7 +146,7 @@ export class ProductsListComponent implements OnInit {
           this.getUserShoppingCart();
           this.hotToastService.info('Product removed from cart');
         },
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
     }
   }

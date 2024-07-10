@@ -46,7 +46,7 @@ export class HeaderComponent implements OnInit {
         next: ({ items }) => {
           this.categories.set(items);
         },
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
   }
 

@@ -44,7 +44,7 @@ export class ShoppingCartsComponent implements OnInit {
       .updateProductQuantityInCart(shoppingCartForm)
       .subscribe({
         next: () => this.getUserShoppingCart(),
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
   }
 
@@ -73,7 +73,7 @@ export class ShoppingCartsComponent implements OnInit {
       .createOrder(this.shoppingCart()!.shopping_cart_id)
       .subscribe({
         next: ({ url }) => (window.location.href = url),
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
   }
 }

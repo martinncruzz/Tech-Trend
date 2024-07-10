@@ -39,7 +39,7 @@ export class FeaturedProductsComponent implements OnInit {
         next: ({ items }) => {
           this.products.set(items);
         },
-        error: (error) => console.log(error),
+        error: (error) => {},
       });
   }
 }

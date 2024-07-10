@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Order, OrderDetails } from '../../core/interfaces/orders';
 import { OrdersService } from '../../core/services';
 import { CommonModule } from '@angular/common';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'orders',
@@ -11,6 +12,8 @@ import { CommonModule } from '@angular/common';
   styles: ``,
 })
 export class OrdersComponent implements OnInit {
+  private readonly hotToastService = inject(HotToastService);
+
   private readonly ordersService = inject(OrdersService);
 
   public orders = signal<Order[]>([]);
@@ -30,14 +33,14 @@ export class OrdersComponent implements OnInit {
   public getOrdersByUser() {
     this.ordersService.getOrdersByUser().subscribe({
       next: (orders) => this.orders.set(orders),
-      error: (error) => console.log(error),
+      error: (error) => this.hotToastService.error(error),
     });
   }
 
   public getOrderDetails(id: string): void {
     this.ordersService.getOrderDetails(id).subscribe({
       next: (orderDetails) => this.orderDetails.set(orderDetails),
-      error: (error) => console.log(error),
+      error: (error) => this.hotToastService.error(error),
     });
   }
 }

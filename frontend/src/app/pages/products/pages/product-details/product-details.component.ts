@@ -71,7 +71,7 @@ export class ProductDetailsComponent implements OnInit {
   public getUserShoppingCart(): void {
     this.shoppingCartsService.getUserShoppingCart().subscribe({
       next: (shoppingCart) => this.shoppingCart.set(shoppingCart),
-      error: (error) => console.log(error),
+      error: (error) => {},
     });
   }
 
