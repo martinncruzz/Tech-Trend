@@ -27,6 +27,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'orders',
+        canActivate: [isAuthenticatedGuard],
+        loadComponent: () =>
+          import('./pages/orders/orders.component').then(
+            (c) => c.OrdersComponent
+          ),
+      },
+      {
         path: 'auth',
         canActivate: [isNotAuthenticatedGuard],
         loadChildren: () =>

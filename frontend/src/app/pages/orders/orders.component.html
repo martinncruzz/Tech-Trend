@@ -1,0 +1,122 @@
+<div class="min-h-screen p-8">
+  <div class="container mx-auto max-w-4xl flex flex-col items-center">
+    <h1 class="text-3xl font-bold mb-6">Purchase History</h1>
+
+    @if (orders().length === 0) {
+    <div class="p-4 bg-gray-900 rounded-lg w-full max-w-2xl">
+      <p class="text-center text-gray-400">
+        You have not made any purchase yet
+      </p>
+    </div>
+    } @else {
+    <div class="bg-[#0c141c] rounded-lg p-8 shadow-lg w-full">
+      <div class="grid gap-6">
+        @for (order of orders(); track $index) {
+        <div class="grid gap-2">
+          <div
+            class="flex flex-col gap-2 md:gap-0 md:flex-row md:items-center md:justify-between"
+          >
+            <div class="text-lg font-bold">
+              Order #{{ order.order_id.slice(0, 8) }}
+            </div>
+            <div class="text-sm text-muted-foreground">
+              {{ order.createdAt | date : "MM/dd/y - hh:mm a" }}
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="font-medium">Total: {{ order.total | currency }}</div>
+            <button
+              class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:bg-gray-50 hover:text-gray-900 h-9 rounded-md px-3"
+              data-hs-overlay="#order-details"
+              (click)="getOrderDetails(order.order_id)"
+            >
+              View Details
+            </button>
+          </div>
+        </div>
+
+        <hr class="border-white" />
+
+        }
+
+        <div class="flex items-center justify-between">
+          <div class="text-lg font-medium">Total Spent</div>
+          <div class="text-2xl font-bold">{{ totalSpent() | currency }}</div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+
+<div
+  id="order-details"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto"
+>
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-5xl sm:w-full m-3 sm:mx-auto"
+  >
+    <div class="relative flex flex-col shadow-lg rounded-xl bg-neutral-900">
+      <div class="absolute top-2 end-2">
+        <button
+          type="button"
+          class="flex justify-center items-center size-7 text-sm font-semibold rounded-lg border disabled:opacity-50 disabled:pointer-events-none border-transparent hover:bg-neutral-700"
+          data-hs-overlay="#order-details"
+        >
+          <span class="sr-only">Close</span>
+          <svg
+            class="flex-shrink-0 size-4"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-14 text-center overflow-y-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-10 sm:pt-0">
+          @for (product of orderDetails()?.products; track $index) {
+          <div
+            class="flex flex-col border shadow-sm rounded-xl bg-neutral-900 border-neutral-700 shadow-neutral-700/70"
+          >
+            <img
+              [src]="product.product.image_url"
+              [alt]="product.product.name"
+              class="w-full h-48 object-cover rounded-t-lg"
+              style="aspect-ratio: 400/300; object-fit: cover"
+            />
+            <div class="p-4 md:p-5">
+              <h3 class="text-lg font-bold line-clamp-1">
+                {{ product.product.name }}
+              </h3>
+              <div class="flex flex-col items-start gap-1 mt-4">
+                <span class="block text-neutral-400"
+                  >Price: {{ product.product.price | currency }}</span
+                >
+                <span class="block text-neutral-400"
+                  >Quantity: {{ product.quantity }}</span
+                >
+                <span class="block text-neutral-400"
+                  >Subtotal: {{ product.subtotal | currency }}</span
+                >
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+
+        <span class="block mt-4 md:mt-8 font-bold text-lg"
+          >Total: {{ orderDetails()?.total | currency }}</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
