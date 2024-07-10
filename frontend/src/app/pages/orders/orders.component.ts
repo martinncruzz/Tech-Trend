@@ -33,7 +33,7 @@ export class OrdersComponent implements OnInit {
   public getOrdersByUser() {
     this.ordersService.getOrdersByUser().subscribe({
       next: (orders) => this.orders.set(orders),
-      error: (error) => this.hotToastService.error(error),
+      error: (error) => {},
     });
   }
 
