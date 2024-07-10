@@ -1,3 +1,5 @@
+import { User } from '../users';
+
 export interface Order {
   order_id: string;
   user_id: string;
@@ -5,4 +7,5 @@ export interface Order {
   status: string;
   createdAt: Date;
   updatedAt: null;
+  user: User;
 }
