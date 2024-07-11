@@ -170,6 +170,7 @@ export class ProductsListComponent implements OnInit {
       this.currentCategory.update(() => undefined);
     else this.currentCategory.update(() => selectElement.value);
 
+    this.paginationService.setPagination(1, 9);
     this.getAllProducts();
   }
 
