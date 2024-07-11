@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -10,13 +11,14 @@ import {
   getBaseUrl,
   handleDBExceptions,
 } from '../shared/helpers';
-import { Prisma } from '@prisma/client';
+import { Prisma, ValidRoles } from '@prisma/client';
 
 import { Filters } from '../shared/dtos';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { UpdateUserDto } from './dtos';
 import { SortBy } from '../shared/interfaces/filters';
+import { User } from './entities';
 
 @Injectable()
 export class UsersService {
@@ -65,6 +67,8 @@ export class UsersService {
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
     const currentUser = await this.getUserById(id);
 
+    this.validateUserRoles(currentUser);
+
     if (updateUserDto.email !== currentUser.email) {
       const user = await this.getUserByEmail(updateUserDto.email);
       if (user) throw new BadRequestException('Email already registered');
@@ -85,8 +89,12 @@ export class UsersService {
     }
   }
 
-  async deleteUser(id: string) {
-    await this.getUserById(id);
+  async deleteUser(id: string, user: User) {
+    if (user.user_id === id)
+      throw new BadRequestException(`You cannot delete yourself`);
+
+    const currentUser = await this.getUserById(id);
+    this.validateUserRoles(currentUser);
 
     try {
       await this.prismaService.user.delete({
@@ -105,6 +113,13 @@ export class UsersService {
     });
 
     return user;
+  }
+
+  private validateUserRoles(user: User) {
+    if (user.roles.includes(ValidRoles.admin))
+      throw new ForbiddenException(
+        `You don't have permissions to edit/delete another administrator`,
+      );
   }
 
   private buildOrderBy(

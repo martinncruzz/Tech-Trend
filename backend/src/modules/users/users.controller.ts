@@ -12,8 +12,9 @@ import {
 import { Filters } from '../shared/dtos';
 import { UpdateUserDto } from './dtos';
 import { UsersService } from './users.service';
-import { Auth } from '../auth/decorators';
+import { Auth, GetUser } from '../auth/decorators';
 import { ValidRoles } from '@prisma/client';
+import { User } from './entities';
 
 @Controller('users')
 export class UsersController {
@@ -42,7 +43,7 @@ export class UsersController {
 
   @Delete(':id')
   @Auth(ValidRoles.admin)
-  deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.deleteUser(id);
+  deleteUser(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: User) {
+    return this.usersService.deleteUser(id, user);
   }
 }
