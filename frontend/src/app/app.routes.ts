@@ -19,6 +19,13 @@ export const routes: Routes = [
           import('./pages/home/home.component').then((c) => c.HomeComponent),
       },
       {
+        path: 'categories',
+        loadComponent: () =>
+          import('./pages/categories/categories.component').then(
+            (c) => c.CategoriesComponent
+          ),
+      },
+      {
         path: 'shopping-cart',
         canActivate: [isAuthenticatedGuard],
         loadComponent: () =>
