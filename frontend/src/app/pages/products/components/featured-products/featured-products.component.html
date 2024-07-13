@@ -22,9 +22,10 @@
         >
           <img
             [src]="product.image_url"
+            [alt]="product.name"
+            [title]="product.name"
             width="300"
             height="200"
-            [alt]="product.name"
             class="rounded-t-lg object-cover w-full h-48"
             style="aspect-ratio: 300 / 200; object-fit: cover"
           />
