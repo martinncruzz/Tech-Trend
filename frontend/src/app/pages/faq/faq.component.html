@@ -1,0 +1,124 @@
+<div class="max-w-[85rem] mx-auto min-h-screen p-8">
+  <div class="max-w-2xl mx-auto text-center mb-10 lg:mb-14">
+    <h2
+      class="text-2xl font-bold md:text-3xl md:leading-tight text-neutral-200"
+    >
+      Frequently Asked Questions
+    </h2>
+  </div>
+
+  <div class="max-w-5xl mx-auto">
+    <div class="grid sm:grid-cols-2 gap-6 md:gap-12">
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          What is the project about?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          Tech-Trend is an e-commerce platform where users can authenticate,
+          browse, filter, search for products, manage their shopping carts, and
+          place orders. Administrators oversee users and orders, and handle the
+          uploading of categories and products.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          What technologies did you use for the project?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          I used TypeScript as the main language. In the frontend, I used
+          Angular, while for the backend I used Nest. The database used is
+          PostgreSQL, managed using the ORM Prisma. Authentication was
+          implemented using JSON Web Tokens (JWT).
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          What cloud services did you use for the project?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          At the moment I only integrated Cloudinary to host the images of the
+          products, I did not opt for AWS S3 because I want to avoid billing
+          problems, and in the case of sending transactional mails, it is in my
+          plans to add a service like Brevo or Resend.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          How can I test the site without registering?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          If you do not wish to register (no mail validation) you can use these
+          test credentials: <span class="font-bold">{{ credentials }}</span
+          >. Note that the user already has orders placed, and his shopping cart
+          is empty initially.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          How can I test the administrative dashboard?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          For security reasons I don't have public credentials for an
+          administrator user, what you would have to do is to go to the project
+          repository and create one in your database.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          How can I test stripe's payment functionality without using my real
+          account?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          Stripe itself provides test cards and accounts. You can find detailed
+          information and test credentials in their
+          <a
+            href="https://docs.stripe.com/testing#use-test-cards"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Stripe Documentation"
+            ariaLabel="Stripe Documentation"
+            class="underline"
+            >documentation</a
+          >.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          How can I contribute to the project?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          You can contribute by going to the
+          <a
+            href="https://github.com/Martinchx/Tech-TrendV2"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Tech-Trend Github Repository"
+            ariaLabel="Tech-Trend Github Repository"
+            class="underline"
+            >project repository</a
+          >
+          and opening a pull request, I'll keep an eye out for any
+          changes/improvements to the site.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-neutral-200">
+          Why didn't you add an email validation at the time of registration?
+        </h3>
+        <p class="mt-2 text-neutral-400">
+          Mainly because mailing systems require a domain for managing
+          transactional emails, and since this is a personal project, I don't
+          plan to buy one. Using my own account could lead to spam issues and
+          potential bans.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
