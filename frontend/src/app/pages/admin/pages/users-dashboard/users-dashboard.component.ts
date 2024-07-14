@@ -18,7 +18,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { patterns } from '../../../../core/constants';
+import { PATTERNS } from '../../../../core/constants';
 import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
@@ -64,7 +64,7 @@ export class UsersDashboardComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(1),
-        Validators.pattern(patterns.email),
+        Validators.pattern(PATTERNS.email),
       ],
     ],
   });

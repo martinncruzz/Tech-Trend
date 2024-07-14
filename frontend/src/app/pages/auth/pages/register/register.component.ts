@@ -10,7 +10,7 @@ import { Router, RouterModule } from '@angular/router';
 
 import { AuthService, ValidatorsService } from '../../../../core/services';
 import { CommonModule } from '@angular/common';
-import { patterns } from '../../../../core/constants';
+import { PATTERNS } from '../../../../core/constants';
 import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
@@ -38,7 +38,7 @@ export class RegisterComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(1),
-        Validators.pattern(patterns.email),
+        Validators.pattern(PATTERNS.email),
       ],
     ],
     password: [
@@ -46,7 +46,7 @@ export class RegisterComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(6),
-        Validators.pattern(patterns.password),
+        Validators.pattern(PATTERNS.password),
       ],
     ],
   });
