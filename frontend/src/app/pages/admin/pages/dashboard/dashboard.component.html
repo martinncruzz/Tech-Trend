@@ -1,99 +1,25 @@
 <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:py-14 mx-auto">
-  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-    <div
-      class="flex flex-col border shadow-sm rounded-xl bg-neutral-800 border-neutral-700"
-    >
-      <div class="p-4 md:p-5">
-        <div class="flex items-center gap-x-2">
-          <p class="text-xs uppercase tracking-wide text-neutral-500">
-            Total users
-          </p>
-          <div class="hs-tooltip">
-            <div class="hs-tooltip-toggle">
-              <svg
-                class="flex-shrink-0 size-4 text-neutral-500"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                <path d="M12 17h.01" />
-              </svg>
-              <span
-                class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 text-xs font-medium text-white rounded shadow-sm bg-neutral-700"
-                role="tooltip"
-              >
-                The number of daily users
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-1 flex items-center gap-x-2">
-          <h3 class="text-xl sm:text-2xl font-medium text-neutral-200">
-            72,540
-          </h3>
-        </div>
-      </div>
+  <div class="flex flex-col gap-10">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <admin-stats-card
+        title="Products registered"
+        [stat]="products().length"
+      />
+      <admin-stats-card
+        title="Categories registered"
+        [stat]="categories().length"
+      />
+      <admin-stats-card title="Orders placed" [stat]="orders().length" />
+      <admin-stats-card title="Users registered" [stat]="users().length" />
     </div>
 
-    <div
-      class="flex flex-col border shadow-sm rounded-xl bg-neutral-800 border-neutral-700"
-    >
-      <div class="p-4 md:p-5">
-        <div class="flex items-center gap-x-2">
-          <p class="text-xs uppercase tracking-wide text-neutral-500">
-            Sessions
-          </p>
-        </div>
-
-        <div class="mt-1 flex items-center gap-x-2">
-          <h3 class="text-xl sm:text-2xl font-medium text-neutral-200">
-            29.4%
-          </h3>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="flex flex-col border shadow-sm rounded-xl bg-neutral-800 border-neutral-700"
-    >
-      <div class="p-4 md:p-5">
-        <div class="flex items-center gap-x-2">
-          <p class="text-xs uppercase tracking-wide text-neutral-500">
-            Avg. Click Rate
-          </p>
-        </div>
-
-        <div class="mt-1 flex items-center gap-x-2">
-          <h3 class="text-xl sm:text-2xl font-medium text-neutral-200">
-            56.8%
-          </h3>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="flex flex-col border shadow-sm rounded-xl bg-neutral-800 border-neutral-700"
-    >
-      <div class="p-4 md:p-5">
-        <div class="flex items-center gap-x-2">
-          <p class="text-xs uppercase tracking-wide text-neutral-500">
-            Pageviews
-          </p>
-        </div>
-
-        <div class="mt-1 flex items-center gap-x-2">
-          <h3 class="text-xl sm:text-2xl font-medium text-neutral-200">
-            92,913
-          </h3>
-        </div>
+    <div>
+      <h1 class="text-4xl font-bold mb-8 text-center">Graphics</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <admin-orders-chart [orders]="orders()" />
+        <admin-users-chart [users]="users()" />
+        <admin-products-chart [products]="products()" />
+        <admin-categories-chart [categories]="categories()" />
       </div>
     </div>
   </div>
