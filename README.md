@@ -1,38 +1,38 @@
 # 🛒 Tech-Trend
 
-Bienvenido a Tech-Trend! Un e-commerce desarrollado con Angular y NestJS. Este proyecto está diseñado para ofrecer una experiencia de compra en línea fluida y eficiente, integrando diversas funcionalidades esenciales para la gestión de productos, usuarios y órdenes.
+Welcome to Tech-Trend! An e-commerce platform developed with Angular and Nest. This project aims to provide a seamless and efficient online shopping experience, integrating various essential features for managing products, users, and orders.
 
 ![image](https://github.com/user-attachments/assets/b7d16805-6104-4c92-bfc9-2af1fcac664d)
 
 > [!IMPORTANT]
-> Cabe recalcar que es un proyecto personal, por lo que todos los productos son de ejemplo, y los pagos no estan vinculados a ninguna cuenta.
+> Please note that this is a personal project; all products are examples, and payments are not linked to any actual accounts.
 
-## 🚀 Tecnologías Utilizadas
+## 🚀 Technologies Used
 
 - **Frontend:** Angular
-- **Backend:** NestJS
-- **Base de Datos:** PostgreSQL
-- **Autenticación:** JWT (JSON Web Tokens)
-- **Servicios Integrados:** Stripe y Cloudinary
+- **Backend:** Nest
+- **Database:** PostgreSQL
+- **Authentication:** JWT (JSON Web Tokens)
+- **Integrated Services:** Stripe and Cloudinary
 
-## ✨ Funcionalidades
+## ✨ Features
 
-- **🔒 Autenticación y Autorización:** Sistema seguro de login y gestión de roles (usuario y administrador).
-- **🛍️ Catálogo de Productos:** Visualización, filtrado y búsqueda de productos.
-- **🛒 Carrito de Compras:** Los usuarios pueden agregar, actualizar y eliminar productos en su carrito.
-- **📦 Gestión de Órdenes:** Realización de órdenes con integración de pago mediante Stripe.
-- **📊 Dashboard Administrativo:** Gestión de productos y categorías, incluyendo la carga de imágenes.
-- **📈 Gráficos y Estadísticas:** Visualización de estadísticas sobre productos, ordenes, usuarios y categorías.
+- **🔒 Authentication and Authorization:** Secure login and role management system (user and admin).
+- **🛍️ Product Catalog:** View, filter, and search products.
+- **🛒 Shopping Cart:** Users can add, update, and remove products from their cart.
+- **📦 Order Management:** Place orders with payment integration via Stripe.
+- **📊 Admin Dashboard:** Manage products and categories, including image uploads.
+- **📈 Charts and Statistics:** View statistics on products, orders, users, and categories.
 
-## 🚧 Próximas Mejoras
+## 🚧 Upcoming Improvements
 
-- **Métodos de Pago:** Adición de métodos de pago como PayPal y MercadoPago.
-- **Valoraciones de Productos:** Sección para que los usuarios valoren los productos.
-- **Productos Destacados:** Mostrar productos destacados basados en valoraciones de usuarios.
+- **Payment Methods:** Add payment methods like PayPal and MercadoPago.
+- **Product Reviews:** Section for users to review products.
+- **Featured Products:** Display featured products based on user reviews.
 
-## ⚙️ Levantar el proyecto en modo de desarrollo
+## ⚙️ Running the Project in Development Mode
 
-1. **Clonar el repositorio:**
+1. **Clone the repository:**
 
    ```bash
    git clone https://github.com/Martinchx/Tech-Trend
@@ -41,15 +41,15 @@ Bienvenido a Tech-Trend! Un e-commerce desarrollado con Angular y NestJS. Este p
 
 2. **Backend:**
 
-   - Navegar al directorio backend:
+   - Navigate to the backend directory:
      ```bash
      cd backend
      ```
-   - Instalar dependencias:
+   - Install dependencies:
      ```bash
      npm install
      ```
-   - Configurar las variables de entorno (`.env`):
+   - Configure environment variables (.env):
 
      ```env
      PORT = 3000
@@ -69,33 +69,34 @@ Bienvenido a Tech-Trend! Un e-commerce desarrollado con Angular y NestJS. Este p
      STRIPE_ENDPOINT_SECRET = your_stripe_endpoint_secret
      ```
 
-   - Levantar contenedor de la base de datos
+   - Start the database container:
      ```bash
      docker compose up -d
      ```
-   - Ejecutar migraciones de Prisma:
+   - Run Prisma migrations:
      ```bash
      npx prisma migrate dev
      ```
-   - Iniciar el servidor:
+   - Start the server:
      ```bash
      npm run start:dev
      ```
 
 3. **Frontend:**
-   - Navegar al directorio frontend:
+
+   - Navigate to the frontend directory:
      ```bash
      cd frontend
      ```
-   - Instalar dependencias:
+   - Install dependencies:
      ```bash
      npm install
      ```
-   - Configurar las variables de entorno (`.env`):
+   - Configure environment variables (.env):
      ```env
      NG_APP_BACKEND_URL = http://localhost:3000/api
      ```
-   - Iniciar la aplicación Angular:
+   - Start the Angular application:
      ```bash
      ng serve
      ```
