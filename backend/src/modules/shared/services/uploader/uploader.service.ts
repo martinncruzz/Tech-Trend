@@ -8,7 +8,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import * as streamifier from 'streamifier';
 
 import { CloudinaryResponse, FOLDER_NAME } from './cloudinary/interfaces';
-import { SharpAdapter } from 'src/config/sharp.adapter';
+import { SharpAdapter } from '../../../../config';
 
 @Injectable()
 export class UploaderService {
