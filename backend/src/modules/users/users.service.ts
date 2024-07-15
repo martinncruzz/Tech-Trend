@@ -19,12 +19,18 @@ import { ResourceType } from '../shared/interfaces/pagination';
 import { UpdateUserDto } from './dtos';
 import { SortBy } from '../shared/interfaces/filters';
 import { User } from './entities';
+import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
+import { OrdersService } from '../orders/orders.service';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger('UsersService');
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly shoppingCartService: ShoppingCartsService,
+    private readonly ordersService: OrdersService,
+  ) {}
 
   async getAllUsers(params: Filters) {
     const { page = 1, limit = 10 } = params;
@@ -93,8 +99,11 @@ export class UsersService {
     if (user.user_id === id)
       throw new BadRequestException(`You cannot delete yourself`);
 
-    const currentUser = await this.getUserById(id);
-    this.validateUserRoles(currentUser);
+    const userToDelete = await this.getUserById(id);
+    this.validateUserRoles(userToDelete);
+
+    await this.shoppingCartService.deleteUserCart(userToDelete);
+    await this.ordersService.deleteUserOrders(userToDelete);
 
     try {
       await this.prismaService.user.delete({

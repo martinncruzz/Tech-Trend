@@ -77,7 +77,7 @@ export class ShoppingCartsService {
 
     if (!userShoppingCart)
       throw new NotFoundException(
-        `User with id ${user.user_id} does not have a shopping cart`,
+        `User with id "${user.user_id}" does not have a shopping cart`,
       );
 
     return userShoppingCart;
@@ -197,6 +197,25 @@ export class ShoppingCartsService {
         this.prismaService.shoppingCart.update({
           where: { shopping_cart_id: shoppingCartId },
           data: { total: 0 },
+        }),
+      ]);
+
+      return true;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
+  }
+
+  async deleteUserCart(user: User) {
+    const shoppingCart = await this.getUserShoppingCart(user);
+
+    try {
+      await this.prismaService.$transaction([
+        this.prismaService.shoppingCartProduct.deleteMany({
+          where: { shopping_cart_id: shoppingCart.shopping_cart_id },
+        }),
+        this.prismaService.shoppingCart.delete({
+          where: { user_id: user.user_id },
         }),
       ]);
 

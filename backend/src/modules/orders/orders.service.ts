@@ -87,11 +87,6 @@ export class OrdersService {
       where: { user_id: user.user_id },
     });
 
-    if (orders.length === 0)
-      throw new NotFoundException(
-        `User with id "${user.user_id}" has not made any order yet`,
-      );
-
     return orders;
   }
 
@@ -104,6 +99,29 @@ export class OrdersService {
     if (!order) throw new NotFoundException(`Order with id "${id}" not found`);
 
     return order;
+  }
+
+  async deleteUserOrders(user: User) {
+    const orders = await this.getOrdersByUser(user);
+
+    console.log(orders)
+
+    try {
+      const result = await this.prismaService.$transaction([
+        this.prismaService.orderProduct.deleteMany({
+          where: { order_id: { in: orders.map((order) => order.order_id) } },
+        }),
+        this.prismaService.order.deleteMany({
+          where: { user_id: user.user_id },
+        }),
+      ]);
+
+      console.log(result);
+
+      return true;
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 
   private buildOrderBy(
