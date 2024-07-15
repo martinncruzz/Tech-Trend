@@ -1,6 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 
-import { PrismaModule } from 'src/database/prisma.module';
+import { PrismaModule } from '../../database/prisma.module';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { CategoriesModule } from '../categories/categories.module';

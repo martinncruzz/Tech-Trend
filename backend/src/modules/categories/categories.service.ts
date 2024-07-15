@@ -15,7 +15,7 @@ import {
   handleDBExceptions,
 } from '../shared/helpers';
 import { Filters } from '../shared/dtos';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { SortBy } from '../shared/interfaces/filters';
 import { ProductsService } from '../products/products.service';

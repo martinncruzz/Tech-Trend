@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { AddProductToCartDto, UpdateProductQuantityInCartDto } from './dtos';
 import { User } from '../users/entities';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { handleDBExceptions } from '../shared/helpers';
 import { ProductsService } from '../products/products.service';
 import { ShoppingCart, ShoppingCartProduct } from './entities';

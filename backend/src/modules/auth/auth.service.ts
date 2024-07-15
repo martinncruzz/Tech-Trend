@@ -12,7 +12,7 @@ import { BcryptAdapter } from '../../config';
 import { handleDBExceptions } from '../shared/helpers';
 import { JwtPayload } from './interfaces';
 import { LoginUserDto, RegisterUserDto } from './dtos';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { User } from '../users/entities';
 import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
 import { UsersService } from '../users/users.service';

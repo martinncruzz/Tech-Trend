@@ -15,7 +15,7 @@ import {
   handleDBExceptions,
 } from '../shared/helpers';
 import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from './dtos';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { SortBy } from '../shared/interfaces/filters';
 import { CategoriesService } from '../categories/categories.service';

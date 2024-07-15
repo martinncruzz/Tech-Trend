@@ -14,7 +14,7 @@ import {
 import { Prisma, ValidRoles } from '@prisma/client';
 
 import { Filters } from '../shared/dtos';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
 import { UpdateUserDto } from './dtos';
 import { SortBy } from '../shared/interfaces/filters';
