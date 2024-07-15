@@ -1,4 +1,4 @@
-import { envs } from 'src/config';
+import { envs } from '../../../config';
 import { PaginationParams, PaginationResponse } from '../interfaces/pagination';
 import { ResourceType } from '../interfaces/pagination/resource-type.enum';
 

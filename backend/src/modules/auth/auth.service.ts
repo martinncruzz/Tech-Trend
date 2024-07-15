@@ -8,7 +8,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ValidRoles } from '@prisma/client';
 
-import { BcryptAdapter } from 'src/config';
+import { BcryptAdapter } from '../../config';
 import { handleDBExceptions } from '../shared/helpers';
 import { JwtPayload } from './interfaces';
 import { LoginUserDto, RegisterUserDto } from './dtos';

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import Stripe from 'stripe';
 
 import { PaymentSessionDto } from './dto';
-import { envs } from 'src/config';
+import { envs } from '../../config';
 import { User } from '../users/entities';
 import { ProductsService } from '../products/products.service';
 import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';

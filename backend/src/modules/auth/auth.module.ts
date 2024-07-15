@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { envs } from 'src/config';
+import { envs } from '../../config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaModule } from 'src/database/prisma.module';
 import { ShoppingCartsModule } from '../shopping-carts/shopping-carts.module';
