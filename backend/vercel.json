@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "npm install && npm run build && npx prisma generate && npx prisma migrate deploy",
   "builds": [
     {
       "src": "src/main.ts",
@@ -12,6 +13,5 @@
       "dest": "src/main.ts",
       "methods": ["GET", "POST", "PUT", "DELETE"]
     }
-  ],
-  "buildCommand": "npm install && npm run build && npx prisma generate && npx prisma migrate deploy"
+  ]
 }
