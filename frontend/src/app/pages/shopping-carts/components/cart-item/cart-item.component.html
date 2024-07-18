@@ -23,7 +23,7 @@
         <button
           type="button"
           class="disabled:opacity-50 disabled:pointer-events-none"
-          [disabled]="productItem().quantity === 1"
+          [disabled]="productItem().quantity === 1 || processing()"
           (click)="updateProductQuantity(-1)"
         >
           <svg
@@ -44,7 +44,15 @@
           class="p-0 w-6 bg-transparent border-0 text-center focus:ring-0"
           >{{ productItem().quantity }}</span
         >
-        <button type="button" (click)="updateProductQuantity(1)">
+        <button
+          type="button"
+          class="disabled:opacity-50 disabled:pointer-events-none"
+          [disabled]="
+            productItem().quantity === productItem().product.stock ||
+            processing()
+          "
+          (click)="updateProductQuantity(1)"
+        >
           <svg
             class="flex-shrink-0 size-3.5"
             width="24"
@@ -65,6 +73,9 @@
 
     <div class="flex items-center">
       <button
+        type="button"
+        class="disabled:opacity-50 disabled:pointer-events-none"
+        [disabled]="processing()"
         (click)="setProductToRemoveFromCart(productItem().product_id)"
         data-hs-overlay="#hs-delete-product-from-cart-modal"
       >

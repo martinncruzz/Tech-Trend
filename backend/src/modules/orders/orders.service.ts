@@ -85,6 +85,7 @@ export class OrdersService {
   async getOrdersByUser(user: User) {
     const orders = await this.prismaService.order.findMany({
       where: { user_id: user.user_id },
+      orderBy: { createdAt: 'desc' },
     });
 
     return orders;
@@ -104,7 +105,7 @@ export class OrdersService {
   async deleteUserOrders(user: User) {
     const orders = await this.getOrdersByUser(user);
 
-    console.log(orders)
+    console.log(orders);
 
     try {
       const result = await this.prismaService.$transaction([

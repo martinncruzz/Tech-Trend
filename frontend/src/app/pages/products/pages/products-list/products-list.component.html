@@ -7,6 +7,7 @@
 
       <div>
         <shared-search-input
+          [disabled]="processing()"
           (onSearch)="searchProduct($event)"
           label="product-search"
           styles="flex h-10 rounded-md border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full bg-gray-800 border-gray-700 text-gray-50 placeholder:text-gray-400"
@@ -19,6 +20,7 @@
       <select
         id="filters"
         class="py-3 px-4 pe-9 block w-full rounded-lg text-sm focus:border-cyan-800 disabled:opacity-50 disabled:pointer-events-none bg-gray-800 border-gray-700 focus:ring-cyan-800"
+        [disabled]="processing()"
         (change)="applyFilter($event)"
       >
         <option disabled>Select a filter</option>
@@ -33,6 +35,7 @@
       <select
         id="categories"
         class="py-3 px-4 pe-9 block w-full rounded-lg text-sm focus:border-cyan-800 disabled:opacity-50 disabled:pointer-events-none bg-gray-800 border-gray-700 focus:ring-cyan-800"
+        [disabled]="processing()"
         (change)="applyCategoryFilter($event)"
       >
         <option disabled>Select a category</option>
@@ -58,6 +61,7 @@
       <products-product-card
         [productsInCart]="productIdsInCart()"
         [product]="product"
+        [processing]="processing()"
         (cartUpdate)="updateCart($event)"
       />
       }
@@ -66,7 +70,7 @@
     <div class="flex items-center justify-center gap-2">
       <button
         (click)="updatePage(-1)"
-        [disabled]="!paginationButtons().prev"
+        [disabled]="!paginationButtons().prev || processing()"
         type="button"
         class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
       >
@@ -88,7 +92,7 @@
 
       <button
         (click)="updatePage(1)"
-        [disabled]="!paginationButtons().next"
+        [disabled]="!paginationButtons().next || processing()"
         type="button"
         class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 hover:bg-neutral-800"
       >

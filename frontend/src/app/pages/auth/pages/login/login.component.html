@@ -121,7 +121,7 @@
             </div>
 
             <button
-              [disabled]="loginForm.invalid"
+              [disabled]="loginForm.invalid || loginForm.disabled"
               type="submit"
               class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
               [ngClass]="{ 'bg-red-600': errorMessage() }"

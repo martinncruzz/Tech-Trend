@@ -26,7 +26,7 @@ export class AppComponent {
       if (event instanceof NavigationEnd) {
         setTimeout(() => {
           window.HSStaticMethods.autoInit();
-        }, 100);
+        }, 2000);
       }
     });
   }

@@ -12,6 +12,7 @@
           @for (productItem of shoppingCart()?.products; track $index) {
           <shopping-carts-cart-item
             [productItem]="productItem"
+            [processing]="processing()"
             (newQuantity)="updateProductQuantity($event)"
             (productToRemoveFromCart)="getProductToRemoveFromCart($event)"
             (productRemovalConfirmation)="removeProductFromCart($event)"
@@ -28,6 +29,7 @@
             Total: {{ shoppingCart()?.total | currency }}
           </h2>
           <button
+            [disabled]="processing()"
             (click)="createOrder()"
             class="inline-flex border hover:bg-gray-50 hover:text-gray-900 items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 rounded-md px-8"
           >

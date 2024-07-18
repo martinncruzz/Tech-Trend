@@ -61,6 +61,8 @@ export class ProductsListComponent implements OnInit {
     this.paginationService.paginationButtons()
   );
 
+  public processing = signal<boolean>(false);
+
   ngOnInit(): void {
     this.filtersService.resetFilters();
     this.paginationService.setPagination(1, 9);
@@ -119,12 +121,15 @@ export class ProductsListComponent implements OnInit {
     this.shoppingCartsService.getUserShoppingCart().subscribe({
       next: (shoppingCart) => {
         this.shoppingCart.set(shoppingCart);
+        this.processing.set(false);
       },
       error: (error) => {},
     });
   }
 
   public updateCart(shoppingCartForm: ShoppingCartForm): void {
+    this.processing.set(true);
+
     if (!this.authService.isLoggedIn()) {
       this.hotToastService.warning('Please log in first');
       this.router.navigateByUrl('/auth/login');
@@ -138,7 +143,7 @@ export class ProductsListComponent implements OnInit {
           this.getUserShoppingCart();
           this.hotToastService.info('Product added to cart');
         },
-        error: (error) => {},
+        error: (error) => this.processing.set(false),
       });
     } else {
       this.shoppingCartsService.removeProductFromCart(product_id).subscribe({
@@ -146,7 +151,7 @@ export class ProductsListComponent implements OnInit {
           this.getUserShoppingCart();
           this.hotToastService.info('Product removed from cart');
         },
-        error: (error) => {},
+        error: (error) => this.processing.set(false),
       });
     }
   }

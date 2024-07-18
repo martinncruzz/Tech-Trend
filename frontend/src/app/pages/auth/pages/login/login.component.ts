@@ -56,12 +56,16 @@ export class LoginComponent implements OnInit {
   }
 
   public loginUser(): void {
+    this.loginForm.disable();
     this.authService.loginUser(this.loginForm.value).subscribe({
       next: () => {
         this.router.navigateByUrl('/');
         this.hotToastService.success('Log in successful! Welcome back');
       },
-      error: (error) => this.errorMessage.set(error),
+      error: (error) => {
+        this.loginForm.enable();
+        this.errorMessage.set(error);
+      },
     });
   }
 

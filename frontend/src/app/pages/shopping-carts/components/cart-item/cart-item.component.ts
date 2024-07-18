@@ -14,9 +14,9 @@ import { CommonModule } from '@angular/common';
 })
 export class CartItemComponent {
   public productItem = input.required<ProductItem>();
+  public processing = input.required<boolean>();
 
   public newQuantity = output<ShoppingCartForm>();
-
   public productToRemoveFromCart = output<string>();
   public productRemovalConfirmation = output<boolean>();
 

@@ -26,6 +26,8 @@ export class ShoppingCartsComponent implements OnInit {
   public shoppingCart = signal<GetShoppingCartResponse | undefined>(undefined);
   public productToRemoveFromCart = signal<string>('');
 
+  public processing = signal<boolean>(false);
+
   constructor() {}
 
   ngOnInit(): void {
@@ -34,17 +36,22 @@ export class ShoppingCartsComponent implements OnInit {
 
   public getUserShoppingCart(): void {
     this.shoppingCartsService.getUserShoppingCart().subscribe({
-      next: (shoppingCart) => this.shoppingCart.set(shoppingCart),
+      next: (shoppingCart) => {
+        this.shoppingCart.set(shoppingCart);
+        this.processing.set(false);
+      },
       error: () => this.router.navigateByUrl('/'),
     });
   }
 
   public updateProductQuantity(shoppingCartForm: ShoppingCartForm): void {
+    this.processing.set(true);
+
     this.shoppingCartsService
       .updateProductQuantityInCart(shoppingCartForm)
       .subscribe({
         next: () => this.getUserShoppingCart(),
-        error: (error) => {},
+        error: (error) => this.processing.set(false),
       });
   }
 
@@ -54,6 +61,8 @@ export class ShoppingCartsComponent implements OnInit {
 
   public removeProductFromCart(confirm: boolean): void {
     if (confirm) {
+      this.processing.set(true);
+
       this.shoppingCartsService
         .removeProductFromCart(this.productToRemoveFromCart())
         .subscribe({
@@ -61,19 +70,23 @@ export class ShoppingCartsComponent implements OnInit {
             this.getUserShoppingCart();
             this.hotToastService.info('Product removed from cart');
           },
-          error: (error) => this.hotToastService.error(error),
+          error: (error) => {
+            this.hotToastService.error(error);
+            this.processing.set(false);
+          },
         });
     }
   }
 
-  public createOrder() {
+  public createOrder(): void {
+    this.processing.set(true);
     this.hotToastService.loading('Creating order');
 
     this.ordersService
       .createOrder(this.shoppingCart()!.shopping_cart_id)
       .subscribe({
         next: ({ url }) => (window.location.href = url),
-        error: (error) => {},
+        error: (error) => this.processing.set(false),
       });
   }
 }
