@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
   styles: ``,
 })
 export class FaqComponent {
-  public credentials: string = 'test@gmail.com:Abc123';
+  public credentials: string = 'johndoe@example.com:Abc123';
 }
