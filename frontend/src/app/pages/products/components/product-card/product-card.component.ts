@@ -14,6 +14,7 @@ import { ShoppingCartForm } from '../../../../core/interfaces/shopping-carts';
 export class ProductCardComponent {
   public product = input.required<Product>();
   public productsInCart = input.required<string[]>();
+  public processing = input.required<boolean>();
 
   public cartUpdate = output<ShoppingCartForm>();
 

@@ -28,11 +28,12 @@
         @if (productIdsInCart().includes(productId())) {
 
         <button
+          [disabled]="processing()"
           (click)="removeProductFromCart()"
           class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
           [ngClass]="{ 'bg-red-600': errorMessage() }"
         >
-          @if (!errorMessage()) {
+          @if (!errorMessage() && !processing()) {
           <span
             class="absolute h-0 w-0 bg-neutral-900 transition-all duration-300 group-hover:h-56 group-hover:w-full"
           ></span>
@@ -85,7 +86,7 @@
                   id="quantity"
                   name="quantity"
                   formControlName="quantity"
-                  class="w-full p-0 bg-transparent border-0 focus:ring-0"
+                  class="w-full p-0 bg-transparent border-0 focus:ring-0 disabled:opacity-50 disabled:pointer-events-none disabled:text-neutral-400"
                   [ngClass]="{
                     'text-red-500': isInvalidField('quantity') || errorMessage()
                   }"
@@ -94,6 +95,7 @@
               </div>
               <div class="flex justify-end items-center gap-x-1.5">
                 <button
+                  [disabled]="quantityForm.disabled"
                   (click)="updateNumberFormValue('quantity', -1)"
                   type="button"
                   class="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border shadow-sm disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800"
@@ -116,7 +118,7 @@
                 <button
                   [disabled]="
                     this.quantityForm.controls['quantity'].value ===
-                    currentProduct()?.stock
+                      currentProduct()?.stock || quantityForm.disabled
                   "
                   (click)="updateNumberFormValue('quantity', 1)"
                   type="button"
@@ -149,12 +151,12 @@
         </form>
 
         <button
-          [disabled]="quantityForm.invalid"
+          [disabled]="quantityForm.invalid || processing()"
           (click)="addProductToCart()"
           class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 font-medium disabled:cursor-not-allowed disabled:bg-neutral-700"
           [ngClass]="{ 'bg-red-600': errorMessage() }"
         >
-          @if (quantityForm.valid && !errorMessage()) {
+          @if (quantityForm.valid && !errorMessage() && !processing()) {
           <span
             class="absolute h-0 w-0 bg-neutral-900 transition-all duration-300 group-hover:h-56 group-hover:w-full"
           ></span>

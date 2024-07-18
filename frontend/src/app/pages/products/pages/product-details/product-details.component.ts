@@ -50,6 +50,8 @@ export class ProductDetailsComponent implements OnInit {
     quantity: [1],
   });
 
+  public processing = signal<boolean>(false);
+
   constructor() {}
 
   ngOnInit(): void {
@@ -70,12 +72,19 @@ export class ProductDetailsComponent implements OnInit {
 
   public getUserShoppingCart(): void {
     this.shoppingCartsService.getUserShoppingCart().subscribe({
-      next: (shoppingCart) => this.shoppingCart.set(shoppingCart),
+      next: (shoppingCart) => {
+        this.shoppingCart.set(shoppingCart);
+        this.quantityForm.enable();
+        this.processing.set(false);
+      },
       error: (error) => {},
     });
   }
 
   public addProductToCart(): void {
+    this.quantityForm.disable();
+    this.processing.set(true);
+
     if (!this.authService.isLoggedIn()) {
       this.hotToastService.warning('Please log in first');
       this.router.navigateByUrl('/auth/login');
@@ -91,7 +100,10 @@ export class ProductDetailsComponent implements OnInit {
           this.getUserShoppingCart();
           this.hotToastService.info('Product added to cart');
         },
-        error: (error) => this.errorMessage.set(error),
+        error: (error) => {
+          this.quantityForm.enable();
+          this.errorMessage.set(error);
+        },
       });
   }
 
@@ -100,6 +112,8 @@ export class ProductDetailsComponent implements OnInit {
       this.hotToastService.warning('Please log in first');
       this.router.navigateByUrl('/auth/login');
     }
+
+    this.processing.set(true);
 
     this.shoppingCartsService
       .removeProductFromCart(this.productId())
@@ -124,12 +138,6 @@ export class ProductDetailsComponent implements OnInit {
 
   public getFieldError(field: string): string | null {
     return this.validatorsService.getFieldError(this.quantityForm, field);
-  }
-
-  private resetFormErrors(): void {
-    this.quantityForm.valueChanges.subscribe(() => {
-      this.errorMessage.set(null);
-    });
   }
 
   private setMaxQuantityValidation(product: Product): void {
