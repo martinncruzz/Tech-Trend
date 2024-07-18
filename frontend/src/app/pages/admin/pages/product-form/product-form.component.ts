@@ -90,6 +90,7 @@ export class ProductFormComponent implements OnInit {
         this.hotToastService.success('Product created successfully');
       },
       error: (error) => {
+        this.productForm.enable();
         this.errorMessage.set(error);
         this.hotToastService.error(error);
       },
