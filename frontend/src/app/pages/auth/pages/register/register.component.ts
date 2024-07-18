@@ -58,12 +58,16 @@ export class RegisterComponent implements OnInit {
   }
 
   public registerUser(): void {
+    this.registerForm.disable();
     this.authService.registerUser(this.registerForm.value).subscribe({
       next: () => {
         this.router.navigateByUrl('auth/login');
         this.hotToastService.success('Registration successful! Welcome aboard');
       },
-      error: (error) => this.errorMessage.set(error),
+      error: (error) => {
+        this.registerForm.enable();
+        this.errorMessage.set(error);
+      },
     });
   }
 
