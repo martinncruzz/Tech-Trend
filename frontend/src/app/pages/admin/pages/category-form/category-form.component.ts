@@ -56,12 +56,15 @@ export class CategoryFormComponent implements OnInit {
   }
 
   public createCategory(): void {
+    this.categoryForm.disable();
+
     this.categoriesService.createCategory(this.categoryForm.value).subscribe({
       next: () => {
         this.router.navigateByUrl('admin/categories-dashboard');
         this.hotToastService.success('Category created successfully');
       },
       error: (error) => {
+        this.categoryForm.enable();
         this.errorMessage.set(error);
         this.hotToastService.error(error);
       },
