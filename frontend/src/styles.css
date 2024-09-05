@@ -7,10 +7,6 @@ html {
   scroll-behavior: smooth;
 }
 
-:root {
-  color-scheme: light dark;
-}
-
 /* Hide buttons in number inputs */
 
 /* Chrome, Safari, Edge, Opera */
