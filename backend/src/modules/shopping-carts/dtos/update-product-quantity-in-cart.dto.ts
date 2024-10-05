@@ -1,4 +1,4 @@
-import { IsNumber, IsUUID, Min } from 'class-validator';
+import { IsNumber, IsUUID } from 'class-validator';
 
 export class UpdateProductQuantityInCartDto {
   @IsUUID()

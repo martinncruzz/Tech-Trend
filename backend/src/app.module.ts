@@ -10,7 +10,17 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
-  imports: [PrismaModule, SharedModule, UsersModule, ProductsModule, CategoriesModule, ShoppingCartsModule, AuthModule, OrdersModule, PaymentsModule],
+  imports: [
+    PrismaModule,
+    SharedModule,
+    UsersModule,
+    ProductsModule,
+    CategoriesModule,
+    ShoppingCartsModule,
+    AuthModule,
+    OrdersModule,
+    PaymentsModule,
+  ],
   controllers: [],
   providers: [],
 })

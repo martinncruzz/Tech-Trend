@@ -8,12 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    SharedModule,
-    forwardRef(() => AuthModule),
-    forwardRef(() => CategoriesModule),
-  ],
+  imports: [PrismaModule, SharedModule, forwardRef(() => AuthModule), forwardRef(() => CategoriesModule)],
   controllers: [ProductsController],
   providers: [ProductsService],
   exports: [ProductsService],

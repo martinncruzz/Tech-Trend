@@ -13,10 +13,7 @@ export class PaymentsController {
 
   @Post('create-payment-session')
   @Auth(ValidRoles.user)
-  createPaymentSession(
-    @Body() paymentSessionDto: PaymentSessionDto,
-    @GetUser() user: User,
-  ) {
+  createPaymentSession(@Body() paymentSessionDto: PaymentSessionDto, @GetUser() user: User) {
     return this.paymentsService.createPaymentSession(paymentSessionDto, user);
   }
 

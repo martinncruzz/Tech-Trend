@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseUUIDPipe,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { ShoppingCartsService } from './shopping-carts.service';
 import { AddProductToCartDto, UpdateProductQuantityInCartDto } from './dtos';
 import { Auth, GetUser } from '../auth/decorators';
@@ -20,14 +11,8 @@ export class ShoppingCartsController {
 
   @Post()
   @Auth(ValidRoles.user)
-  addProductToCart(
-    @Body() addProductToCartDto: AddProductToCartDto,
-    @GetUser() user: User,
-  ) {
-    return this.shoppingCartsService.addProductToCart(
-      addProductToCartDto,
-      user,
-    );
+  addProductToCart(@Body() addProductToCartDto: AddProductToCartDto, @GetUser() user: User) {
+    return this.shoppingCartsService.addProductToCart(addProductToCartDto, user);
   }
 
   @Get()
@@ -42,18 +27,12 @@ export class ShoppingCartsController {
     @Body() updateProductQuantityInCartDto: UpdateProductQuantityInCartDto,
     @GetUser() user: User,
   ) {
-    return this.shoppingCartsService.updateProductQuantityInCart(
-      updateProductQuantityInCartDto,
-      user,
-    );
+    return this.shoppingCartsService.updateProductQuantityInCart(updateProductQuantityInCartDto, user);
   }
 
   @Delete(':productId')
   @Auth(ValidRoles.user)
-  removeProductFromCart(
-    @Param('productId', ParseUUIDPipe) productId: string,
-    @GetUser() user: User,
-  ) {
+  removeProductFromCart(@Param('productId', ParseUUIDPipe) productId: string, @GetUser() user: User) {
     return this.shoppingCartsService.removeProductFromCart(productId, user);
   }
 }

@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseUUIDPipe,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
 
 import { Filters } from '../shared/dtos';
 import { UpdateUserDto } from './dtos';
@@ -34,10 +25,7 @@ export class UsersController {
 
   @Patch(':id')
   @Auth(ValidRoles.admin)
-  updateUser(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(id, updateUserDto);
   }
 

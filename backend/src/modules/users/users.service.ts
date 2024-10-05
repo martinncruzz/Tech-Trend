@@ -1,16 +1,6 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
-import {
-  buildPaginationResponse,
-  getBaseUrl,
-  handleDBExceptions,
-} from '../shared/helpers';
+import { buildPaginationResponse, getBaseUrl, handleDBExceptions } from '../shared/helpers';
 import { Prisma, ValidRoles } from '@prisma/client';
 
 import { Filters } from '../shared/dtos';
@@ -96,8 +86,7 @@ export class UsersService {
   }
 
   async deleteUser(id: string, user: User) {
-    if (user.user_id === id)
-      throw new BadRequestException(`You cannot delete yourself`);
+    if (user.user_id === id) throw new BadRequestException(`You cannot delete yourself`);
 
     const userToDelete = await this.getUserById(id);
     this.validateUserRoles(userToDelete);
@@ -126,14 +115,10 @@ export class UsersService {
 
   private validateUserRoles(user: User) {
     if (user.roles.includes(ValidRoles.admin))
-      throw new ForbiddenException(
-        `You don't have permissions to edit/delete another administrator`,
-      );
+      throw new ForbiddenException(`You don't have permissions to edit/delete another administrator`);
   }
 
-  private buildOrderBy(
-    params: Filters,
-  ): Prisma.UserOrderByWithAggregationInput {
+  private buildOrderBy(params: Filters): Prisma.UserOrderByWithAggregationInput {
     let orderBy: Prisma.UserOrderByWithAggregationInput = {};
 
     switch (params.sortBy) {
@@ -154,8 +139,7 @@ export class UsersService {
   private buildWhere(params: Filters): Prisma.UserWhereInput {
     const where: Prisma.UserWhereInput = {};
 
-    if (params.search)
-      where.email = { contains: params.search, mode: 'insensitive' };
+    if (params.search) where.email = { contains: params.search, mode: 'insensitive' };
     if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
 
     return where;

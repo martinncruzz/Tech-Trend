@@ -2,11 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AddProductsToOrderDto, CreateOrderDto } from './dtos';
 import { PrismaService } from '../../database/prisma.service';
 import { OrderStatus, Prisma } from '@prisma/client';
-import {
-  buildPaginationResponse,
-  getBaseUrl,
-  handleDBExceptions,
-} from '../shared/helpers';
+import { buildPaginationResponse, getBaseUrl, handleDBExceptions } from '../shared/helpers';
 import { Filters } from '../shared/dtos';
 import { User } from '../users/entities';
 import { SortBy } from '../shared/interfaces/filters';
@@ -125,9 +121,7 @@ export class OrdersService {
     }
   }
 
-  private buildOrderBy(
-    params: Filters,
-  ): Prisma.OrderOrderByWithAggregationInput {
+  private buildOrderBy(params: Filters): Prisma.OrderOrderByWithAggregationInput {
     let orderBy: Prisma.OrderOrderByWithAggregationInput = {};
 
     switch (params.sortBy) {

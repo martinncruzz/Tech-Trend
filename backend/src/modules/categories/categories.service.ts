@@ -1,19 +1,8 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  forwardRef,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
-import {
-  buildPaginationResponse,
-  getBaseUrl,
-  handleDBExceptions,
-} from '../shared/helpers';
+import { buildPaginationResponse, getBaseUrl, handleDBExceptions } from '../shared/helpers';
 import { Filters } from '../shared/dtos';
 import { PrismaService } from '../../database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
@@ -79,8 +68,7 @@ export class CategoriesService {
       include: { products: true },
     });
 
-    if (!category)
-      throw new NotFoundException(`Category with id "${id}" not found`);
+    if (!category) throw new NotFoundException(`Category with id "${id}" not found`);
 
     return category;
   }
@@ -88,8 +76,7 @@ export class CategoriesService {
   async updateCategory(id: string, updateCategoryDto: UpdateCategoryDto) {
     const currentCategory = await this.getCategoryById(id);
 
-    if (updateCategoryDto.name !== currentCategory.name)
-      await this.getCategoryByName(updateCategoryDto.name);
+    if (updateCategoryDto.name !== currentCategory.name) await this.getCategoryByName(updateCategoryDto.name);
 
     try {
       const category = await this.prismaService.category.update({
@@ -111,11 +98,7 @@ export class CategoriesService {
 
     try {
       if (category.products.length > 0) {
-        await Promise.all(
-          category.products.map((product) =>
-            this.productsService.deleteProduct(product.product_id),
-          ),
-        );
+        await Promise.all(category.products.map((product) => this.productsService.deleteProduct(product.product_id)));
       }
 
       await this.prismaService.category.delete({
@@ -133,17 +116,12 @@ export class CategoriesService {
       where: { name },
     });
 
-    if (category)
-      throw new BadRequestException(
-        `Category with the name "${name}" already registered`,
-      );
+    if (category) throw new BadRequestException(`Category with the name "${name}" already registered`);
 
     return category;
   }
 
-  private buildOrderBy(
-    params: Filters,
-  ): Prisma.CategoryOrderByWithAggregationInput {
+  private buildOrderBy(params: Filters): Prisma.CategoryOrderByWithAggregationInput {
     let orderBy: Prisma.CategoryOrderByWithAggregationInput = {};
 
     switch (params.sortBy) {
@@ -164,8 +142,7 @@ export class CategoriesService {
   private buildWhere(params: Filters): Prisma.CategoryWhereInput {
     const where: Prisma.CategoryWhereInput = {};
 
-    if (params.search)
-      where.name = { contains: params.search, mode: 'insensitive' };
+    if (params.search) where.name = { contains: params.search, mode: 'insensitive' };
     if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
 
     return where;

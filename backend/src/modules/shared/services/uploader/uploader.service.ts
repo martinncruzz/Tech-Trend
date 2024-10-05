@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 
 import { v2 as cloudinary } from 'cloudinary';
 import * as streamifier from 'streamifier';
@@ -18,20 +14,13 @@ export class UploaderService {
     const optimizedBuffer = await SharpAdapter.optimizeImage(file);
 
     return new Promise<CloudinaryResponse>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: FOLDER_NAME },
-        (error, result) => {
-          if (error) {
-            this.logger.error(error.message);
-            return reject(
-              new InternalServerErrorException(
-                'Error uploading image to Cloudinary',
-              ),
-            );
-          }
-          resolve(result);
-        },
-      );
+      const uploadStream = cloudinary.uploader.upload_stream({ folder: FOLDER_NAME }, (error, result) => {
+        if (error) {
+          this.logger.error(error.message);
+          return reject(new InternalServerErrorException('Error uploading image to Cloudinary'));
+        }
+        resolve(result);
+      });
 
       streamifier.createReadStream(optimizedBuffer).pipe(uploadStream);
     });
@@ -40,20 +29,14 @@ export class UploaderService {
   async deleteFile(image_id: string): Promise<void> {
     try {
       const response = await cloudinary.uploader.destroy(image_id);
-      if (response.result !== 'ok')
-        throw new InternalServerErrorException(
-          'Error deleting image from Cloudinary',
-        );
+      if (response.result !== 'ok') throw new InternalServerErrorException('Error deleting image from Cloudinary');
     } catch (error) {
       this.logger.error(error);
       throw error;
     }
   }
 
-  async updateFile(
-    file: Express.Multer.File,
-    image_id: string,
-  ): Promise<CloudinaryResponse> {
+  async updateFile(file: Express.Multer.File, image_id: string): Promise<CloudinaryResponse> {
     await this.deleteFile(image_id);
     const updatedFile = await this.uploadFile(file);
 

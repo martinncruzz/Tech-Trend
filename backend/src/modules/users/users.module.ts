@@ -8,12 +8,7 @@ import { ShoppingCartsModule } from '../shopping-carts/shopping-carts.module';
 import { OrdersModule } from '../orders/orders.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    ShoppingCartsModule,
-    OrdersModule,
-    forwardRef(() => AuthModule),
-  ],
+  imports: [PrismaModule, ShoppingCartsModule, OrdersModule, forwardRef(() => AuthModule)],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

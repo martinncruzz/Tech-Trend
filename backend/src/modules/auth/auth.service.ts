@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-  forwardRef,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ValidRoles } from '@prisma/client';
 
@@ -60,13 +54,9 @@ export class AuthService {
 
     if (!user) throw new BadRequestException(`Incorrect email or password`);
 
-    const isMatching = BcryptAdapter.compare(
-      loginUserDto.password,
-      user.password,
-    );
+    const isMatching = BcryptAdapter.compare(loginUserDto.password, user.password);
 
-    if (!isMatching)
-      throw new BadRequestException(`Incorrect email or password`);
+    if (!isMatching) throw new BadRequestException(`Incorrect email or password`);
 
     const token = this.generateToken({ user_id: user.user_id });
 

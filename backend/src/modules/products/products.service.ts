@@ -1,19 +1,8 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  forwardRef,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
 
 import { Prisma } from '@prisma/client';
 
-import {
-  buildPaginationResponse,
-  getBaseUrl,
-  handleDBExceptions,
-} from '../shared/helpers';
+import { buildPaginationResponse, getBaseUrl, handleDBExceptions } from '../shared/helpers';
 import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from './dtos';
 import { PrismaService } from '../../database/prisma.service';
 import { ResourceType } from '../shared/interfaces/pagination';
@@ -32,12 +21,8 @@ export class ProductsService {
     private readonly uploaderService: UploaderService,
   ) {}
 
-  async createProduct(
-    createProductDto: CreateProductDto,
-    file: Express.Multer.File,
-  ) {
-    if (!file)
-      throw new BadRequestException(`Image is required to create a product`);
+  async createProduct(createProductDto: CreateProductDto, file: Express.Multer.File) {
+    if (!file) throw new BadRequestException(`Image is required to create a product`);
     await this.getProductByName(createProductDto.name);
     await this.categoriesService.getCategoryById(createProductDto.category_id);
 
@@ -92,27 +77,19 @@ export class ProductsService {
       where: { product_id: id },
     });
 
-    if (!product)
-      throw new NotFoundException(`Product with id "${id}" not found`);
+    if (!product) throw new NotFoundException(`Product with id "${id}" not found`);
 
     return product;
   }
 
-  async updateProduct(
-    id: string,
-    updateProductDto: UpdateProductDto,
-    file?: Express.Multer.File,
-  ) {
+  async updateProduct(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File) {
     const currentProduct = await this.getProductById(id);
 
     if (updateProductDto.name && updateProductDto.name !== currentProduct.name)
       await this.getProductByName(updateProductDto.name);
 
     if (file) {
-      const updatedFile = await this.uploaderService.updateFile(
-        file,
-        currentProduct.image_id,
-      );
+      const updatedFile = await this.uploaderService.updateFile(file, currentProduct.image_id);
 
       updateProductDto.image_url = updatedFile.secure_url;
       updateProductDto.image_id = updatedFile.public_id;
@@ -162,10 +139,7 @@ export class ProductsService {
   async validateProduct(id: string, quantity: number) {
     const product = await this.getProductById(id);
 
-    if (product.stock < quantity)
-      throw new BadRequestException(
-        `Product "${product.name}" is out of stock`,
-      );
+    if (product.stock < quantity) throw new BadRequestException(`Product "${product.name}" is out of stock`);
 
     return product;
   }
@@ -175,17 +149,12 @@ export class ProductsService {
       where: { name },
     });
 
-    if (product)
-      throw new BadRequestException(
-        `Product with the name "${product.name}" already registered`,
-      );
+    if (product) throw new BadRequestException(`Product with the name "${product.name}" already registered`);
 
     return product;
   }
 
-  private buildOrderBy(
-    params: ProductFiltersDto,
-  ): Prisma.ProductOrderByWithAggregationInput {
+  private buildOrderBy(params: ProductFiltersDto): Prisma.ProductOrderByWithAggregationInput {
     let orderBy: Prisma.ProductOrderByWithAggregationInput = {};
 
     switch (params.sortBy) {
@@ -218,8 +187,7 @@ export class ProductsService {
   private buildWhere(params: ProductFiltersDto): Prisma.ProductWhereInput {
     const where: Prisma.ProductWhereInput = {};
 
-    if (params.search)
-      where.name = { contains: params.search, mode: 'insensitive' };
+    if (params.search) where.name = { contains: params.search, mode: 'insensitive' };
     if (params.categoryId) where.category_id = params.categoryId;
     if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
     if (params.status) where.stock = { gt: 0 };

@@ -23,10 +23,7 @@ export class PaymentsService {
   async createPaymentSession(paymentSessionDto: PaymentSessionDto, user: User) {
     const { shopping_cart_id } = paymentSessionDto;
 
-    const shoppingCart = await this.shoppingCartsService.validateShoppingCart(
-      shopping_cart_id,
-      user.user_id,
-    );
+    const shoppingCart = await this.shoppingCartsService.validateShoppingCart(shopping_cart_id, user.user_id);
 
     const lineItems = shoppingCart.products.map((product) => {
       return {
@@ -64,11 +61,7 @@ export class PaymentsService {
     let event: Stripe.Event;
 
     try {
-      event = this.stripe.webhooks.constructEvent(
-        req['rawBody'],
-        sig,
-        endpointSecret,
-      );
+      event = this.stripe.webhooks.constructEvent(req['rawBody'], sig, endpointSecret);
     } catch (err) {
       this.logger.error(err);
       res.status(400).send(`Webhook Error: ${err.message}`);
@@ -80,8 +73,7 @@ export class PaymentsService {
         const checkoutSessionCompleted = event.data.object;
         const { user_id, shopping_cart_id } = checkoutSessionCompleted.metadata;
 
-        const shoppingCart =
-          await this.shoppingCartsService.getShoppingCartById(shopping_cart_id);
+        const shoppingCart = await this.shoppingCartsService.getShoppingCartById(shopping_cart_id);
 
         const order = await this.ordersService.createOrder({
           user_id,
@@ -103,16 +95,11 @@ export class PaymentsService {
 
         await Promise.all(
           shoppingCart.products.map((product) =>
-            this.productsService.updateProductStock(
-              product.product_id,
-              product.quantity,
-            ),
+            this.productsService.updateProductStock(product.product_id, product.quantity),
           ),
         );
 
-        await this.shoppingCartsService.emptyCart(
-          shoppingCart.shopping_cart_id,
-        );
+        await this.shoppingCartsService.emptyCart(shoppingCart.shopping_cart_id);
         break;
 
       default:

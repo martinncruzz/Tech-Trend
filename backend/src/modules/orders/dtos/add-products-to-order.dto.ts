@@ -1,12 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsNumber,
-  IsUUID,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { ArrayMinSize, IsArray, IsNumber, IsUUID, Min, ValidateNested } from 'class-validator';
 
 export class AddProductsToOrderDto {
   @IsUUID()

@@ -30,10 +30,7 @@ export class ProductsController {
       fileFilter: fileFilter,
     }),
   )
-  createProduct(
-    @Body() createProductDto: CreateProductDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
     return this.productsService.createProduct(createProductDto, file);
   }
 
