@@ -1,10 +1,10 @@
 import { BadRequestException, CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ValidRoles } from '@prisma/client';
 import { Observable } from 'rxjs';
+import { ValidRoles } from '@prisma/client';
 
-import { META_ROLES } from '../decorators';
-import { User } from '../../../modules/users/entities';
+import { User } from '../../users';
+import { META_ROLES } from '..';
 
 @Injectable()
 export class UserRoleGuard implements CanActivate {

@@ -1,10 +1,8 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { ValidRoles } from '@prisma/client';
 
-import { Auth, GetUser } from './decorators';
-import { AuthService } from './auth.service';
-import { LoginUserDto, RegisterUserDto } from './dtos';
-import { User } from '../users/entities';
+import { User } from '../users';
+import { Auth, AuthService, GetUser, LoginUserDto, RegisterUserDto } from '.';
 
 @Controller('auth')
 export class AuthController {

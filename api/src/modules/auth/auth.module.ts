@@ -1,31 +1,20 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 import { envs } from '../../config';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { PrismaModule } from '../../database/prisma.module';
-import { ShoppingCartsModule } from '../shopping-carts/shopping-carts.module';
-import { UsersModule } from '../users/users.module';
+import { PrismaModule } from '../../database';
+import { UsersModule } from '../users';
+import { ShoppingCartsModule } from '../shopping-carts';
+import { AuthController, AuthService, JwtStrategy } from '.';
 
 @Module({
   imports: [
     PrismaModule,
-
-    forwardRef(() => ShoppingCartsModule),
-
     forwardRef(() => UsersModule),
-
-    PassportModule.register({
-      defaultStrategy: 'jwt',
-    }),
-
-    JwtModule.register({
-      secret: envs.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
-    }),
+    forwardRef(() => ShoppingCartsModule),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({ secret: envs.JWT_SECRET, signOptions: { expiresIn: '1h' } }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

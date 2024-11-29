@@ -1,15 +1,13 @@
-import { BadRequestException, Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ValidRoles } from '@prisma/client';
 
 import { BcryptAdapter } from '../../config';
-import { handleDBExceptions } from '../shared/helpers';
-import { JwtPayload } from './interfaces';
-import { LoginUserDto, RegisterUserDto } from './dtos';
-import { PrismaService } from '../../database/prisma.service';
-import { User } from '../users/entities';
-import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
-import { UsersService } from '../users/users.service';
+import { PrismaService } from '../../database';
+import { User, UsersService } from '../users';
+import { ShoppingCartsService } from '../shopping-carts';
+import { handleDBExceptions } from '../shared';
+import { JwtPayload, LoginUserDto, RegisterUserDto } from '.';
 
 @Injectable()
 export class AuthService {
@@ -18,8 +16,10 @@ export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
+
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+
     @Inject(forwardRef(() => ShoppingCartsService))
     private readonly shoppingCartsService: ShoppingCartsService,
   ) {}
@@ -28,7 +28,6 @@ export class AuthService {
     const { email, password, ...userData } = registerUserDto;
 
     const user = await this.usersService.getUserByEmail(email);
-
     if (user) throw new BadRequestException('Email already registered');
 
     try {
@@ -51,11 +50,9 @@ export class AuthService {
 
   async loginUser(loginUserDto: LoginUserDto) {
     const user = await this.usersService.getUserByEmail(loginUserDto.email);
-
     if (!user) throw new BadRequestException(`Incorrect email or password`);
 
     const isMatching = BcryptAdapter.compare(loginUserDto.password, user.password);
-
     if (!isMatching) throw new BadRequestException(`Incorrect email or password`);
 
     const token = this.generateToken({ user_id: user.user_id });
