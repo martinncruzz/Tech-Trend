@@ -1,11 +1,9 @@
 import { Controller, Get, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
-
-import { Filters } from '../shared/dtos';
-import { UpdateUserDto } from './dtos';
-import { UsersService } from './users.service';
-import { Auth, GetUser } from '../auth/decorators';
 import { ValidRoles } from '@prisma/client';
-import { User } from './entities';
+
+import { Filters } from '../shared';
+import { Auth, GetUser } from '../auth';
+import { UpdateUserDto, User, UsersService } from '.';
 
 @Controller('users')
 export class UsersController {

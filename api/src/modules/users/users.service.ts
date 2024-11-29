@@ -1,16 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-
-import { buildPaginationResponse, getBaseUrl, handleDBExceptions } from '../shared/helpers';
 import { Prisma, ValidRoles } from '@prisma/client';
 
-import { Filters } from '../shared/dtos';
-import { PrismaService } from '../../database/prisma.service';
-import { ResourceType } from '../shared/interfaces/pagination';
-import { UpdateUserDto } from './dtos';
-import { SortBy } from '../shared/interfaces/filters';
-import { User } from './entities';
-import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
-import { OrdersService } from '../orders/orders.service';
+import { PrismaService } from '../../database';
+import { buildPaginationResponse, Filters, getBaseUrl, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { ShoppingCartsService } from '../shopping-carts';
+import { OrdersService } from '../orders';
+import { UpdateUserDto, User } from '.';
 
 @Injectable()
 export class UsersService {
@@ -39,21 +34,13 @@ export class UsersService {
     ]);
 
     const baseUrl = getBaseUrl(ResourceType.users);
-    const paginationResponse = buildPaginationResponse({
-      page,
-      limit,
-      total,
-      baseUrl,
-      items: users,
-    });
+    const paginationResponse = buildPaginationResponse({ page, limit, total, baseUrl, items: users });
 
     return paginationResponse;
   }
 
   async getUserById(id: string) {
-    const user = await this.prismaService.user.findUnique({
-      where: { user_id: id },
-    });
+    const user = await this.prismaService.user.findUnique({ where: { user_id: id } });
 
     if (!user) throw new NotFoundException(`User with id "${id}" not found`);
 
@@ -73,10 +60,7 @@ export class UsersService {
     try {
       const user = await this.prismaService.user.update({
         where: { user_id: id },
-        data: {
-          ...updateUserDto,
-          updatedAt: new Date(),
-        },
+        data: { ...updateUserDto, updatedAt: new Date() },
       });
 
       return user;
@@ -95,10 +79,7 @@ export class UsersService {
     await this.ordersService.deleteUserOrders(userToDelete);
 
     try {
-      await this.prismaService.user.delete({
-        where: { user_id: id },
-      });
-
+      await this.prismaService.user.delete({ where: { user_id: id } });
       return true;
     } catch (error) {
       handleDBExceptions(error, this.logger);
@@ -106,16 +87,14 @@ export class UsersService {
   }
 
   async getUserByEmail(email: string) {
-    const user = await this.prismaService.user.findUnique({
-      where: { email: email },
-    });
-
+    const user = await this.prismaService.user.findUnique({ where: { email: email } });
     return user;
   }
 
   private validateUserRoles(user: User) {
-    if (user.roles.includes(ValidRoles.admin))
-      throw new ForbiddenException(`You don't have permissions to edit/delete another administrator`);
+    if (user.roles.includes(ValidRoles.admin)) {
+      throw new ForbiddenException(`You don't have permissions to edit or delete another administrator`);
+    }
   }
 
   private buildOrderBy(params: Filters): Prisma.UserOrderByWithAggregationInput {
