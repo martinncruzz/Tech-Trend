@@ -1,10 +1,10 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
-import { AddProductToCartDto, UpdateProductQuantityInCartDto } from './dtos';
-import { User } from '../users/entities';
-import { PrismaService } from '../../database/prisma.service';
-import { handleDBExceptions } from '../shared/helpers';
-import { ProductsService } from '../products/products.service';
-import { ShoppingCart, ShoppingCartProduct } from './entities';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+
+import { PrismaService } from '../../database';
+import { handleDBExceptions } from '../shared';
+import { User } from '../users';
+import { ProductsService } from '../products';
+import { AddProductToCartDto, ShoppingCart, ShoppingCartProduct, UpdateProductQuantityInCartDto } from '.';
 
 @Injectable()
 export class ShoppingCartsService {
@@ -12,14 +12,13 @@ export class ShoppingCartsService {
 
   constructor(
     private readonly prismaService: PrismaService,
-    @Inject(forwardRef(() => ProductsService))
     private readonly productsService: ProductsService,
   ) {}
 
   async addProductToCart(addProductToCartDto: AddProductToCartDto, user: User) {
-    const userShoppingCart = await this.getUserShoppingCart(user);
     const { product_id, quantity } = addProductToCartDto;
 
+    const userShoppingCart = await this.getUserShoppingCart(user);
     const product = await this.productsService.validateProduct(product_id, quantity);
 
     try {
@@ -43,9 +42,7 @@ export class ShoppingCartsService {
   async getShoppingCartById(id: string) {
     const shoppingCart = await this.prismaService.shoppingCart.findUnique({
       where: { shopping_cart_id: id },
-      include: {
-        products: true,
-      },
+      include: { products: true },
     });
 
     if (!shoppingCart) throw new NotFoundException(`Cart with id #${id} not found`);
@@ -56,12 +53,7 @@ export class ShoppingCartsService {
   async getUserShoppingCart(user: User) {
     const userShoppingCart = await this.prismaService.shoppingCart.findUnique({
       where: { user_id: user.user_id },
-      include: {
-        products: {
-          include: { product: true },
-          orderBy: { createdAt: 'desc' },
-        },
-      },
+      include: { products: { include: { product: true }, orderBy: { createdAt: 'desc' } } },
     });
 
     if (!userShoppingCart) throw new NotFoundException(`User with id "${user.user_id}" does not have a shopping cart`);
@@ -70,11 +62,10 @@ export class ShoppingCartsService {
   }
 
   async updateProductQuantityInCart(updateProductQuantityInCartDto: UpdateProductQuantityInCartDto, user: User) {
-    const userShoppingCart = await this.getUserShoppingCart(user);
     const { product_id, quantity } = updateProductQuantityInCartDto;
 
+    const userShoppingCart = await this.getUserShoppingCart(user);
     const product = await this.productsService.validateProduct(product_id, quantity);
-
     const cartItem = await this.validateProductExistenceInCart(product_id, userShoppingCart);
 
     if (cartItem.quantity + quantity === 0) throw new BadRequestException(`Product quantity cannot be 0`);
@@ -82,10 +73,7 @@ export class ShoppingCartsService {
     try {
       const updatedProduct = await this.prismaService.shoppingCartProduct.update({
         where: {
-          shopping_cart_id_product_id: {
-            product_id: product_id,
-            shopping_cart_id: userShoppingCart.shopping_cart_id,
-          },
+          shopping_cart_id_product_id: { product_id: product_id, shopping_cart_id: userShoppingCart.shopping_cart_id },
         },
         data: {
           quantity: (cartItem.quantity += quantity),
@@ -94,10 +82,7 @@ export class ShoppingCartsService {
         },
       });
 
-      await this.updateCartTotal({
-        ...updatedProduct,
-        subtotal: quantity * product.price,
-      });
+      await this.updateCartTotal({ ...updatedProduct, subtotal: quantity * product.price });
 
       return true;
     } catch (error) {
@@ -107,15 +92,13 @@ export class ShoppingCartsService {
 
   async removeProductFromCart(productId: string, user: User) {
     const shoppingCart = await this.getUserShoppingCart(user);
+
     await this.validateProductExistenceInCart(productId, shoppingCart);
 
     try {
       const removedProduct = await this.prismaService.shoppingCartProduct.delete({
         where: {
-          shopping_cart_id_product_id: {
-            product_id: productId,
-            shopping_cart_id: shoppingCart.shopping_cart_id,
-          },
+          shopping_cart_id_product_id: { product_id: productId, shopping_cart_id: shoppingCart.shopping_cart_id },
         },
       });
 
@@ -136,10 +119,7 @@ export class ShoppingCartsService {
     try {
       await this.prismaService.shoppingCart.update({
         where: { shopping_cart_id: shopping_cart_id },
-        data: {
-          total: (shoppingCart.total += subtotal),
-          updatedAt: new Date(),
-        },
+        data: { total: (shoppingCart.total += subtotal), updatedAt: new Date() },
       });
 
       return true;
@@ -150,10 +130,7 @@ export class ShoppingCartsService {
 
   async createCart(user: User) {
     try {
-      await this.prismaService.shoppingCart.create({
-        data: { user_id: user.user_id, total: 0 },
-      });
-
+      await this.prismaService.shoppingCart.create({ data: { user_id: user.user_id, total: 0 } });
       return true;
     } catch (error) {
       handleDBExceptions(error, this.logger);
@@ -163,13 +140,8 @@ export class ShoppingCartsService {
   async emptyCart(shoppingCartId: string) {
     try {
       await this.prismaService.$transaction([
-        this.prismaService.shoppingCartProduct.deleteMany({
-          where: { shopping_cart_id: shoppingCartId },
-        }),
-        this.prismaService.shoppingCart.update({
-          where: { shopping_cart_id: shoppingCartId },
-          data: { total: 0 },
-        }),
+        this.prismaService.shoppingCartProduct.deleteMany({ where: { shopping_cart_id: shoppingCartId } }),
+        this.prismaService.shoppingCart.update({ where: { shopping_cart_id: shoppingCartId }, data: { total: 0 } }),
       ]);
 
       return true;
@@ -186,9 +158,7 @@ export class ShoppingCartsService {
         this.prismaService.shoppingCartProduct.deleteMany({
           where: { shopping_cart_id: shoppingCart.shopping_cart_id },
         }),
-        this.prismaService.shoppingCart.delete({
-          where: { user_id: user.user_id },
-        }),
+        this.prismaService.shoppingCart.delete({ where: { user_id: user.user_id } }),
       ]);
 
       return true;
@@ -200,16 +170,10 @@ export class ShoppingCartsService {
   async validateShoppingCart(shoppingCartId: string, userId: string) {
     const shoppingCart = await this.prismaService.shoppingCart.findUnique({
       where: { shopping_cart_id: shoppingCartId, user_id: userId },
-      include: {
-        products: {
-          include: { product: true },
-          orderBy: { createdAt: 'desc' },
-        },
-      },
+      include: { products: { include: { product: true }, orderBy: { createdAt: 'desc' } } },
     });
 
     if (!shoppingCart) throw new BadRequestException(`Invalid shopping cart`);
-
     if (shoppingCart.products.length === 0) throw new BadRequestException(`Shopping cart is empty`);
 
     await Promise.all(
@@ -224,10 +188,7 @@ export class ShoppingCartsService {
   private async validateProductExistenceInCart(productId: string, shoppingCart: ShoppingCart) {
     const productExists = await this.prismaService.shoppingCartProduct.findUnique({
       where: {
-        shopping_cart_id_product_id: {
-          product_id: productId,
-          shopping_cart_id: shoppingCart.shopping_cart_id,
-        },
+        shopping_cart_id_product_id: { product_id: productId, shopping_cart_id: shoppingCart.shopping_cart_id },
       },
     });
 

@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
-import { ShoppingCartsService } from './shopping-carts.service';
-import { AddProductToCartDto, UpdateProductQuantityInCartDto } from './dtos';
-import { Auth, GetUser } from '../auth/decorators';
-import { User } from '../users/entities';
 import { ValidRoles } from '@prisma/client';
+
+import { User } from '../users';
+import { Auth, GetUser } from '../auth';
+import { AddProductToCartDto, ShoppingCartsService, UpdateProductQuantityInCartDto } from '.';
 
 @Controller('shopping-carts')
 export class ShoppingCartsController {

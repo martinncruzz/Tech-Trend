@@ -1,12 +1,12 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { ShoppingCartsService } from './shopping-carts.service';
-import { ShoppingCartsController } from './shopping-carts.controller';
-import { PrismaModule } from '../../database/prisma.module';
-import { ProductsModule } from '../products/products.module';
-import { AuthModule } from '../auth/auth.module';
+import { forwardRef, Module } from '@nestjs/common';
+
+import { PrismaModule } from '../../database';
+import { AuthModule } from '../auth';
+import { ProductsModule } from '../products';
+import { ShoppingCartsController, ShoppingCartsService } from '.';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => AuthModule), forwardRef(() => ProductsModule)],
+  imports: [PrismaModule, forwardRef(() => AuthModule), ProductsModule],
   controllers: [ShoppingCartsController],
   providers: [ShoppingCartsService],
   exports: [ShoppingCartsService],
