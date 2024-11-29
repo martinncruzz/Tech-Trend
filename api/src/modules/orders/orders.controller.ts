@@ -1,9 +1,10 @@
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
-import { OrdersService } from './orders.service';
-import { Auth, GetUser } from '../auth/decorators';
 import { ValidRoles } from '@prisma/client';
-import { User } from '../users/entities';
-import { Filters } from '../shared/dtos';
+
+import { Filters } from '../shared';
+import { User } from '../users';
+import { Auth, GetUser } from '../auth';
+import { OrdersService } from '.';
 
 @Controller('orders')
 export class OrdersController {
