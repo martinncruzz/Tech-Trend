@@ -1,13 +1,10 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
-import { buildPaginationResponse, getBaseUrl, handleDBExceptions } from '../shared/helpers';
-import { Filters } from '../shared/dtos';
-import { PrismaService } from '../../database/prisma.service';
-import { ResourceType } from '../shared/interfaces/pagination';
-import { SortBy } from '../shared/interfaces/filters';
-import { ProductsService } from '../products/products.service';
+import { PrismaService } from '../../database';
+import { buildPaginationResponse, Filters, getBaseUrl, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { ProductsService } from '../products';
+import { CreateCategoryDto, UpdateCategoryDto } from '.';
 
 @Injectable()
 export class CategoriesService {
@@ -15,6 +12,7 @@ export class CategoriesService {
 
   constructor(
     private readonly prismaService: PrismaService,
+
     @Inject(forwardRef(() => ProductsService))
     private readonly productsService: ProductsService,
   ) {}
@@ -23,10 +21,7 @@ export class CategoriesService {
     await this.getCategoryByName(createCategoryDto.name);
 
     try {
-      const category = await this.prismaService.category.create({
-        data: createCategoryDto,
-      });
-
+      const category = await this.prismaService.category.create({ data: createCategoryDto });
       return category;
     } catch (error) {
       handleDBExceptions(error, this.logger);
@@ -51,13 +46,7 @@ export class CategoriesService {
     ]);
 
     const baseUrl = getBaseUrl(ResourceType.categories);
-    const paginationResponse = buildPaginationResponse({
-      page,
-      limit,
-      total,
-      baseUrl,
-      items: categories,
-    });
+    const paginationResponse = buildPaginationResponse({ page, limit, total, baseUrl, items: categories });
 
     return paginationResponse;
   }
@@ -81,10 +70,7 @@ export class CategoriesService {
     try {
       const category = await this.prismaService.category.update({
         where: { category_id: id },
-        data: {
-          ...updateCategoryDto,
-          updatedAt: new Date(),
-        },
+        data: { ...updateCategoryDto, updatedAt: new Date() },
       });
 
       return category;
@@ -101,9 +87,7 @@ export class CategoriesService {
         await Promise.all(category.products.map((product) => this.productsService.deleteProduct(product.product_id)));
       }
 
-      await this.prismaService.category.delete({
-        where: { category_id: id },
-      });
+      await this.prismaService.category.delete({ where: { category_id: id } });
 
       return true;
     } catch (error) {
@@ -112,9 +96,7 @@ export class CategoriesService {
   }
 
   private async getCategoryByName(name: string) {
-    const category = await this.prismaService.category.findUnique({
-      where: { name },
-    });
+    const category = await this.prismaService.category.findUnique({ where: { name } });
 
     if (category) throw new BadRequestException(`Category with the name "${name}" already registered`);
 
