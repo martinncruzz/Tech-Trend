@@ -1,10 +1,9 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-
 import { v2 as cloudinary } from 'cloudinary';
 import * as streamifier from 'streamifier';
 
-import { CloudinaryResponse, FOLDER_NAME } from './cloudinary/interfaces';
 import { SharpAdapter } from '../../../../config';
+import { CloudinaryResponse, FOLDER_NAME } from '../..';
 
 @Injectable()
 export class UploaderService {

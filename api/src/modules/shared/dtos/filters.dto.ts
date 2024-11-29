@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsOptional, IsString, MinLength, IsEnum } from 'class-validator';
-import { PaginationDto } from './pagination.dto';
-import { SortBy } from '../interfaces/filters';
+
+import { PaginationDto, SortBy } from '..';
 
 export class Filters extends PartialType(PaginationDto) {
   @IsOptional()
