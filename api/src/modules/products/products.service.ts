@@ -1,14 +1,17 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
-
+import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { buildPaginationResponse, getBaseUrl, handleDBExceptions } from '../shared/helpers';
-import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from './dtos';
-import { PrismaService } from '../../database/prisma.service';
-import { ResourceType } from '../shared/interfaces/pagination';
-import { SortBy } from '../shared/interfaces/filters';
-import { CategoriesService } from '../categories/categories.service';
-import { UploaderService } from '../shared/services/uploader/uploader.service';
+import { PrismaService } from '../../database';
+import {
+  buildPaginationResponse,
+  getBaseUrl,
+  handleDBExceptions,
+  ResourceType,
+  SortBy,
+  UploaderService,
+} from '../shared';
+import { CategoriesService } from '../categories';
+import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from '.';
 
 @Injectable()
 export class ProductsService {
@@ -16,13 +19,15 @@ export class ProductsService {
 
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly uploaderService: UploaderService,
+
     @Inject(forwardRef(() => CategoriesService))
     private readonly categoriesService: CategoriesService,
-    private readonly uploaderService: UploaderService,
   ) {}
 
   async createProduct(createProductDto: CreateProductDto, file: Express.Multer.File) {
     if (!file) throw new BadRequestException(`Image is required to create a product`);
+
     await this.getProductByName(createProductDto.name);
     await this.categoriesService.getCategoryById(createProductDto.category_id);
 
@@ -30,11 +35,7 @@ export class ProductsService {
 
     try {
       const product = await this.prismaService.product.create({
-        data: {
-          ...createProductDto,
-          image_url: fileUploaded.secure_url,
-          image_id: fileUploaded.public_id,
-        },
+        data: { ...createProductDto, image_url: fileUploaded.secure_url, image_id: fileUploaded.public_id },
       });
 
       return product;
@@ -61,21 +62,13 @@ export class ProductsService {
     ]);
 
     const baseUrl = getBaseUrl(ResourceType.products);
-    const paginationResponse = buildPaginationResponse({
-      page,
-      limit,
-      total,
-      baseUrl,
-      items: products,
-    });
+    const paginationResponse = buildPaginationResponse({ page, limit, total, baseUrl, items: products });
 
     return paginationResponse;
   }
 
   async getProductById(id: string) {
-    const product = await this.prismaService.product.findUnique({
-      where: { product_id: id },
-    });
+    const product = await this.prismaService.product.findUnique({ where: { product_id: id } });
 
     if (!product) throw new NotFoundException(`Product with id "${id}" not found`);
 
@@ -85,15 +78,16 @@ export class ProductsService {
   async updateProduct(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File) {
     const currentProduct = await this.getProductById(id);
 
-    if (updateProductDto.name && updateProductDto.name !== currentProduct.name)
+    if (updateProductDto.name && updateProductDto.name !== currentProduct.name) {
       await this.getProductByName(updateProductDto.name);
+    }
 
     if (file) {
       const updatedFile = await this.uploaderService.updateFile(file, currentProduct.image_id);
-
       updateProductDto.image_url = updatedFile.secure_url;
       updateProductDto.image_id = updatedFile.public_id;
     }
+
     try {
       const product = await this.prismaService.product.update({
         where: { product_id: id },
@@ -108,13 +102,11 @@ export class ProductsService {
 
   async deleteProduct(id: string) {
     const product = await this.getProductById(id);
+
     await this.uploaderService.deleteFile(product.image_id);
 
     try {
-      await this.prismaService.product.delete({
-        where: { product_id: id },
-      });
-
+      await this.prismaService.product.delete({ where: { product_id: id } });
       return true;
     } catch (error) {
       handleDBExceptions(error, this.logger);
@@ -145,9 +137,7 @@ export class ProductsService {
   }
 
   private async getProductByName(name: string) {
-    const product = await this.prismaService.product.findUnique({
-      where: { name },
-    });
+    const product = await this.prismaService.product.findUnique({ where: { name } });
 
     if (product) throw new BadRequestException(`Product with the name "${product.name}" already registered`);
 

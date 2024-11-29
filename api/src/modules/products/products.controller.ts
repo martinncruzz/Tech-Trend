@@ -11,13 +11,12 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
-
-import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from './dtos';
-import { ProductsService } from './products.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { fileFilter } from '../shared/helpers';
-import { Auth } from '../auth/decorators';
 import { ValidRoles } from '@prisma/client';
+
+import { fileFilter } from '../shared';
+import { Auth } from '../auth';
+import { CreateProductDto, ProductFiltersDto, ProductsService, UpdateProductDto } from '.';
 
 @Controller('products')
 export class ProductsController {
@@ -25,11 +24,7 @@ export class ProductsController {
 
   @Post()
   @Auth(ValidRoles.admin)
-  @UseInterceptors(
-    FileInterceptor('file', {
-      fileFilter: fileFilter,
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
   createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
     return this.productsService.createProduct(createProductDto, file);
   }
@@ -46,11 +41,7 @@ export class ProductsController {
 
   @Patch(':id')
   @Auth(ValidRoles.admin)
-  @UseInterceptors(
-    FileInterceptor('file', {
-      fileFilter: fileFilter,
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
   updateProduct(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,

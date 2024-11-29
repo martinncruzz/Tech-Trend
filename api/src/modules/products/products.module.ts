@@ -1,14 +1,13 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
-import { PrismaModule } from '../../database/prisma.module';
-import { ProductsController } from './products.controller';
-import { ProductsService } from './products.service';
-import { CategoriesModule } from '../categories/categories.module';
-import { SharedModule } from '../shared/shared.module';
-import { AuthModule } from '../auth/auth.module';
+import { PrismaModule } from '../../database';
+import { SharedModule } from '../shared';
+import { AuthModule } from '../auth';
+import { CategoriesModule } from '../categories';
+import { ProductsController, ProductsService } from '.';
 
 @Module({
-  imports: [PrismaModule, SharedModule, forwardRef(() => AuthModule), forwardRef(() => CategoriesModule)],
+  imports: [PrismaModule, SharedModule, AuthModule, forwardRef(() => CategoriesModule)],
   controllers: [ProductsController],
   providers: [ProductsService],
   exports: [ProductsService],
