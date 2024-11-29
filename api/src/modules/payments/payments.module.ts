@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PaymentsService } from './payments.service';
-import { PaymentsController } from './payments.controller';
-import { AuthModule } from '../auth/auth.module';
-import { ProductsModule } from '../products/products.module';
-import { ShoppingCartsModule } from '../shopping-carts/shopping-carts.module';
-import { OrdersModule } from '../orders/orders.module';
+
+import { AuthModule } from '../auth';
+import { ProductsModule } from '../products';
+import { ShoppingCartsModule } from '../shopping-carts';
+import { OrdersModule } from '../orders';
+import { PaymentsController, PaymentsService } from '.';
 
 @Module({
   imports: [AuthModule, ProductsModule, ShoppingCartsModule, OrdersModule],

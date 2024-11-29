@@ -1,11 +1,10 @@
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-
-import { PaymentsService } from './payments.service';
-import { PaymentSessionDto } from './dto';
-import { Auth, GetUser } from '../auth/decorators';
 import { ValidRoles } from '@prisma/client';
-import { User } from '../users/entities';
+
+import { User } from '../users';
+import { Auth, GetUser } from '../auth';
+import { PaymentSessionDto, PaymentsService } from '.';
 
 @Controller('payments')
 export class PaymentsController {

@@ -2,12 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 
-import { PaymentSessionDto } from './dto';
 import { envs } from '../../config';
-import { User } from '../users/entities';
-import { ProductsService } from '../products/products.service';
-import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
-import { OrdersService } from '../orders/orders.service';
+import { User } from '../users';
+import { ProductsService } from '../products';
+import { ShoppingCartsService } from '../shopping-carts';
+import { OrdersService } from '../orders';
+import { PaymentSessionDto } from '.';
 
 @Injectable()
 export class PaymentsService {
@@ -29,10 +29,7 @@ export class PaymentsService {
       return {
         price_data: {
           currency: 'usd',
-          product_data: {
-            name: product.product.name,
-            images: [product.product.image_url],
-          },
+          product_data: { name: product.product.name, images: [product.product.image_url] },
           unit_amount: Math.round(product.product.price * 100),
         },
         quantity: product.quantity,
@@ -64,8 +61,7 @@ export class PaymentsService {
       event = this.stripe.webhooks.constructEvent(req['rawBody'], sig, endpointSecret);
     } catch (err) {
       this.logger.error(err);
-      res.status(400).send(`Webhook Error: ${err.message}`);
-      return;
+      return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     switch (event.type) {
@@ -74,11 +70,7 @@ export class PaymentsService {
         const { user_id, shopping_cart_id } = checkoutSessionCompleted.metadata;
 
         const shoppingCart = await this.shoppingCartsService.getShoppingCartById(shopping_cart_id);
-
-        const order = await this.ordersService.createOrder({
-          user_id,
-          total: shoppingCart.total,
-        });
+        const order = await this.ordersService.createOrder({ user_id, total: shoppingCart.total });
 
         const items = shoppingCart.products.map((productItem) => {
           return {
@@ -88,11 +80,7 @@ export class PaymentsService {
           };
         });
 
-        await this.ordersService.addProductsToOrderDetails({
-          order_id: order.order_id,
-          products: items,
-        });
-
+        await this.ordersService.addProductsToOrderDetails({ order_id: order.order_id, products: items });
         await Promise.all(
           shoppingCart.products.map((product) =>
             this.productsService.updateProductStock(product.product_id, product.quantity),
