@@ -1,6 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
 
-export const fileFilter = (req: Express.Request, file: Express.Multer.File, callback: Function) => {
+export const fileFilter = (
+  req: Express.Request,
+  file: Express.Multer.File,
+  callback: (error: Error | null, acceptFile: boolean) => void,
+) => {
   const fileExtension = file.mimetype.split('/').at(1);
   const validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
 

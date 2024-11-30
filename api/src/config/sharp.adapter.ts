@@ -1,5 +1,7 @@
-const sharp = require('sharp');
+import * as sharp from 'sharp';
 
 export class SharpAdapter {
-  static optimizeImage = async (file: Express.Multer.File) => await sharp(file.buffer).webp().toBuffer();
+  static async optimizeImage(file: Express.Multer.File) {
+    return await sharp(file.buffer).webp().toBuffer();
+  }
 }
