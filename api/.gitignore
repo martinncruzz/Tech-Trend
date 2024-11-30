@@ -1,5 +1,5 @@
 # DB Container
-postgres/
+/postgres
 
 # Compiled Output
 /dist
