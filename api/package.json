@@ -4,7 +4,10 @@
   "author": "Martín Cruz",
   "description": "Backend API for Tech-Trend, supporting the e-commerce platform.",
   "license": "MIT",
-  "private": true,
+  "packageManager": "pnpm@9.14.2",
+  "engines": {
+    "node": "22.x"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Martinchx/Tech-Trend/tree/main/api"
@@ -12,12 +15,8 @@
   "scripts": {
     "postinstall": "pnpm prisma generate",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix"
+    "dev": "nest start --watch",
+    "start": "nest start"
   },
   "dependencies": {
     "@nestjs/common": "10.4.8",
@@ -31,7 +30,6 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.1",
     "cloudinary": "2.5.1",
-    "dotenv": "16.4.5",
     "env-var": "7.5.0",
     "passport": "0.7.0",
     "passport-jwt": "4.0.1",
@@ -47,7 +45,7 @@
     "@types/bcrypt": "5.0.2",
     "@types/express": "5.0.0",
     "@types/multer": "1.4.12",
-    "@types/node": "20.17.6",
+    "@types/node": "22.10.0",
     "@types/passport-jwt": "4.0.1",
     "@types/streamifier": "0.1.2",
     "@typescript-eslint/eslint-plugin": "8.15.0",
