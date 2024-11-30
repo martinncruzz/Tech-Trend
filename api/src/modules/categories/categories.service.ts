@@ -2,7 +2,7 @@ import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundEx
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import { buildPaginationResponse, Filters, getBaseUrl, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { buildBaseUrl, buildPagination, Filters, handleDBExceptions, ResourceType, SortBy } from '../shared';
 import { ProductsService } from '../products';
 import { CreateCategoryDto, UpdateCategoryDto } from '.';
 
@@ -29,7 +29,7 @@ export class CategoriesService {
   }
 
   async getAllCategories(params: Filters) {
-    const { page = 1, limit = 10 } = params;
+    const { page, limit } = params;
 
     const orderBy = this.buildOrderBy(params);
     const where = this.buildWhere(params);
@@ -45,10 +45,10 @@ export class CategoriesService {
       }),
     ]);
 
-    const baseUrl = getBaseUrl(ResourceType.categories);
-    const paginationResponse = buildPaginationResponse({ page, limit, total, baseUrl, items: categories });
+    const baseUrl = buildBaseUrl(ResourceType.categories);
+    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
 
-    return paginationResponse;
+    return { prev, next, categories };
   }
 
   async getCategoryById(id: string) {

@@ -2,14 +2,7 @@ import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundEx
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import {
-  buildPaginationResponse,
-  getBaseUrl,
-  handleDBExceptions,
-  ResourceType,
-  SortBy,
-  UploaderService,
-} from '../shared';
+import { buildBaseUrl, buildPagination, handleDBExceptions, ResourceType, SortBy, UploaderService } from '../shared';
 import { CategoriesService } from '../categories';
 import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from '.';
 
@@ -45,7 +38,7 @@ export class ProductsService {
   }
 
   async getAllProducts(params: ProductFiltersDto) {
-    const { page = 1, limit = 10 } = params;
+    const { page, limit } = params;
 
     const orderBy = this.buildOrderBy(params);
     const where = this.buildWhere(params);
@@ -61,10 +54,10 @@ export class ProductsService {
       }),
     ]);
 
-    const baseUrl = getBaseUrl(ResourceType.products);
-    const paginationResponse = buildPaginationResponse({ page, limit, total, baseUrl, items: products });
+    const baseUrl = buildBaseUrl(ResourceType.products);
+    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
 
-    return paginationResponse;
+    return { prev, next, products };
   }
 
   async getProductById(id: string) {

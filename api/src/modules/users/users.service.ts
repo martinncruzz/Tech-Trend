@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundEx
 import { Prisma, ValidRoles } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import { buildPaginationResponse, Filters, getBaseUrl, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { buildBaseUrl, buildPagination, Filters, handleDBExceptions, ResourceType, SortBy } from '../shared';
 import { ShoppingCartsService } from '../shopping-carts';
 import { OrdersService } from '../orders';
 import { UpdateUserDto, User } from '.';
@@ -18,7 +18,7 @@ export class UsersService {
   ) {}
 
   async getAllUsers(params: Filters) {
-    const { page = 1, limit = 10 } = params;
+    const { page, limit } = params;
 
     const orderBy = this.buildOrderBy(params);
     const where = this.buildWhere(params);
@@ -33,10 +33,10 @@ export class UsersService {
       }),
     ]);
 
-    const baseUrl = getBaseUrl(ResourceType.users);
-    const paginationResponse = buildPaginationResponse({ page, limit, total, baseUrl, items: users });
+    const baseUrl = buildBaseUrl(ResourceType.users);
+    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
 
-    return paginationResponse;
+    return { prev, next, users };
   }
 
   async getUserById(id: string) {

@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrderStatus, Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import { buildPaginationResponse, Filters, getBaseUrl, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { buildBaseUrl, buildPagination, Filters, handleDBExceptions, ResourceType, SortBy } from '../shared';
 import { User } from '../users';
 import { AddProductsToOrderDto, CreateOrderDto } from '.';
 
@@ -42,7 +42,7 @@ export class OrdersService {
   }
 
   async getAllOrders(params: Filters) {
-    const { page = 1, limit = 10 } = params;
+    const { page, limit } = params;
 
     const orderBy = this.buildOrderBy(params);
     const where = this.buildWhere(params);
@@ -58,10 +58,10 @@ export class OrdersService {
       }),
     ]);
 
-    const baseUrl = getBaseUrl(ResourceType.orders);
-    const paginationResponse = buildPaginationResponse({ page, limit, total, baseUrl, items: orders });
+    const baseUrl = buildBaseUrl(ResourceType.orders);
+    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
 
-    return paginationResponse;
+    return { prev, next, orders };
   }
 
   async getOrdersByUser(user: User) {
