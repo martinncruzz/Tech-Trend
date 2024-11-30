@@ -1,3 +1,10 @@
+export enum ResourceType {
+  categories = 'categories',
+  orders = 'orders',
+  products = 'products',
+  users = 'users',
+}
+
 export enum SortBy {
   NEWEST = 'newest',
   OLDEST = 'oldest',
