@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 
@@ -12,7 +12,6 @@ import { PaymentSessionDto } from '.';
 @Injectable()
 export class PaymentsService {
   private readonly stripe = new Stripe(envs.STRIPE_SECRET_KEY);
-  private readonly logger = new Logger('PaymentsService');
 
   constructor(
     private readonly productsService: ProductsService,
@@ -55,14 +54,7 @@ export class PaymentsService {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = envs.STRIPE_ENDPOINT_SECRET;
 
-    let event: Stripe.Event;
-
-    try {
-      event = this.stripe.webhooks.constructEvent(req['rawBody'], sig, endpointSecret);
-    } catch (err) {
-      this.logger.error(err);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+    const event: Stripe.Event = this.stripe.webhooks.constructEvent(req['rawBody'], sig, endpointSecret);
 
     switch (event.type) {
       case 'checkout.session.completed':
@@ -91,7 +83,7 @@ export class PaymentsService {
         break;
 
       default:
-        this.logger.error(`Event ${event.type} not handled`);
+        throw new InternalServerErrorException(`Event ${event.type} not handled`);
     }
 
     return res.status(200).json({ sig });

@@ -26,17 +26,13 @@ export class UploaderService {
   }
 
   async deleteFile(image_id: string): Promise<void> {
-    try {
-      const response = await cloudinary.uploader.destroy(image_id);
-      if (response.result !== 'ok') throw new InternalServerErrorException('Error deleting image from Cloudinary');
-    } catch (error) {
-      this.logger.error(error);
-      throw error;
-    }
+    const response = await cloudinary.uploader.destroy(image_id);
+    if (response.result !== 'ok') throw new InternalServerErrorException('Error deleting image from Cloudinary');
   }
 
   async updateFile(file: Express.Multer.File, image_id: string): Promise<CloudinaryResponse> {
     await this.deleteFile(image_id);
+
     const updatedFile = await this.uploadFile(file);
 
     return updatedFile;

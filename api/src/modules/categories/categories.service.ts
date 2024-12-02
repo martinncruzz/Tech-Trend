@@ -1,15 +1,13 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, Filters, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { buildBaseUrl, buildPagination, Filters, ResourceType, SortBy } from '../shared';
 import { ProductsService } from '../products';
 import { CreateCategoryDto, UpdateCategoryDto } from '.';
 
 @Injectable()
 export class CategoriesService {
-  private readonly logger = new Logger('CategoriesService');
-
   constructor(
     private readonly prismaService: PrismaService,
 
@@ -20,12 +18,9 @@ export class CategoriesService {
   async createCategory(createCategoryDto: CreateCategoryDto) {
     await this.getCategoryByName(createCategoryDto.name);
 
-    try {
-      const category = await this.prismaService.category.create({ data: createCategoryDto });
-      return category;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    const category = await this.prismaService.category.create({ data: createCategoryDto });
+
+    return category;
   }
 
   async getAllCategories(params: Filters) {
@@ -67,32 +62,24 @@ export class CategoriesService {
 
     if (updateCategoryDto.name !== currentCategory.name) await this.getCategoryByName(updateCategoryDto.name);
 
-    try {
-      const category = await this.prismaService.category.update({
-        where: { category_id: id },
-        data: { ...updateCategoryDto, updatedAt: new Date() },
-      });
+    const category = await this.prismaService.category.update({
+      where: { category_id: id },
+      data: { ...updateCategoryDto, updatedAt: new Date() },
+    });
 
-      return category;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return category;
   }
 
   async deleteCategory(id: string) {
     const category = await this.getCategoryById(id);
 
-    try {
-      if (category.products.length > 0) {
-        await Promise.all(category.products.map((product) => this.productsService.deleteProduct(product.product_id)));
-      }
-
-      await this.prismaService.category.delete({ where: { category_id: id } });
-
-      return true;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
+    if (category.products.length > 0) {
+      await Promise.all(category.products.map((product) => this.productsService.deleteProduct(product.product_id)));
     }
+
+    await this.prismaService.category.delete({ where: { category_id: id } });
+
+    return true;
   }
 
   private async getCategoryByName(name: string) {

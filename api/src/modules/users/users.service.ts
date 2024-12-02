@@ -1,16 +1,14 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, ValidRoles } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, Filters, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { buildBaseUrl, buildPagination, Filters, ResourceType, SortBy } from '../shared';
 import { ShoppingCartsService } from '../shopping-carts';
 import { OrdersService } from '../orders';
 import { UpdateUserDto, User } from '.';
 
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger('UsersService');
-
   constructor(
     private readonly prismaService: PrismaService,
     private readonly shoppingCartService: ShoppingCartsService,
@@ -57,16 +55,12 @@ export class UsersService {
       if (user) throw new BadRequestException('Email already registered');
     }
 
-    try {
-      const user = await this.prismaService.user.update({
-        where: { user_id: id },
-        data: { ...updateUserDto, updatedAt: new Date() },
-      });
+    const user = await this.prismaService.user.update({
+      where: { user_id: id },
+      data: { ...updateUserDto, updatedAt: new Date() },
+    });
 
-      return user;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return user;
   }
 
   async deleteUser(id: string, user: User) {
@@ -77,13 +71,9 @@ export class UsersService {
 
     await this.shoppingCartService.deleteUserCart(userToDelete);
     await this.ordersService.deleteUserOrders(userToDelete);
+    await this.prismaService.user.delete({ where: { user_id: id } });
 
-    try {
-      await this.prismaService.user.delete({ where: { user_id: id } });
-      return true;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return true;
   }
 
   async getUserByEmail(email: string) {

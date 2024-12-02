@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ValidRoles } from '@prisma/client';
 
@@ -6,13 +6,10 @@ import { BcryptAdapter } from '../../config';
 import { PrismaService } from '../../database';
 import { User, UsersService } from '../users';
 import { ShoppingCartsService } from '../shopping-carts';
-import { handleDBExceptions } from '../shared';
 import { JwtPayload, LoginUserDto, RegisterUserDto } from '.';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger('AuthService');
-
   constructor(
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
@@ -27,25 +24,21 @@ export class AuthService {
   async registerUser(registerUserDto: RegisterUserDto) {
     const { email, password, ...userData } = registerUserDto;
 
-    const user = await this.usersService.getUserByEmail(email);
-    if (user) throw new BadRequestException('Email already registered');
+    const userExists = await this.usersService.getUserByEmail(email);
+    if (userExists) throw new BadRequestException('Email already registered');
 
-    try {
-      const user = await this.prismaService.user.create({
-        data: {
-          ...userData,
-          email: email.toLowerCase(),
-          password: BcryptAdapter.hash(password),
-          roles: [ValidRoles.user],
-        },
-      });
+    const user = await this.prismaService.user.create({
+      data: {
+        ...userData,
+        email: email.toLowerCase(),
+        password: BcryptAdapter.hash(password),
+        roles: [ValidRoles.user],
+      },
+    });
 
-      await this.shoppingCartsService.createCart(user);
+    await this.shoppingCartsService.createCart(user);
 
-      return user;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return user;
   }
 
   async loginUser(loginUserDto: LoginUserDto) {

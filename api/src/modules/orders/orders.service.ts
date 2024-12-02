@@ -1,24 +1,18 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrderStatus, Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, Filters, handleDBExceptions, ResourceType, SortBy } from '../shared';
+import { buildBaseUrl, buildPagination, Filters, ResourceType, SortBy } from '../shared';
 import { User } from '../users';
 import { AddProductsToOrderDto, CreateOrderDto } from '.';
 
 @Injectable()
 export class OrdersService {
-  private readonly logger = new Logger('OrdersService');
-
   constructor(private readonly prismaService: PrismaService) {}
 
   async createOrder(createOrderDto: CreateOrderDto) {
-    try {
-      const order = await this.prismaService.order.create({ data: { ...createOrderDto, status: OrderStatus.PAID } });
-      return order;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    const order = await this.prismaService.order.create({ data: { ...createOrderDto, status: OrderStatus.PAID } });
+    return order;
   }
 
   async addProductsToOrderDetails(addProductsToOrder: AddProductsToOrderDto) {
@@ -33,12 +27,9 @@ export class OrdersService {
       };
     });
 
-    try {
-      await this.prismaService.orderProduct.createMany({ data: orderDetails });
-      return true;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    await this.prismaService.orderProduct.createMany({ data: orderDetails });
+
+    return true;
   }
 
   async getAllOrders(params: Filters) {
@@ -87,18 +78,14 @@ export class OrdersService {
   async deleteUserOrders(user: User) {
     const orders = await this.getOrdersByUser(user);
 
-    try {
-      await this.prismaService.$transaction([
-        this.prismaService.orderProduct.deleteMany({
-          where: { order_id: { in: orders.map((order) => order.order_id) } },
-        }),
-        this.prismaService.order.deleteMany({ where: { user_id: user.user_id } }),
-      ]);
+    await this.prismaService.$transaction([
+      this.prismaService.orderProduct.deleteMany({
+        where: { order_id: { in: orders.map((order) => order.order_id) } },
+      }),
+      this.prismaService.order.deleteMany({ where: { user_id: user.user_id } }),
+    ]);
 
-      return true;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return true;
   }
 
   private buildOrderBy(params: Filters): Prisma.OrderOrderByWithAggregationInput {

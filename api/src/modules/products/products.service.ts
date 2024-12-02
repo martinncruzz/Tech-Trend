@@ -1,15 +1,13 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, handleDBExceptions, ResourceType, SortBy, UploaderService } from '../shared';
+import { buildBaseUrl, buildPagination, ResourceType, SortBy, UploaderService } from '../shared';
 import { CategoriesService } from '../categories';
 import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from '.';
 
 @Injectable()
 export class ProductsService {
-  private readonly logger = new Logger('ProductsService');
-
   constructor(
     private readonly prismaService: PrismaService,
     private readonly uploaderService: UploaderService,
@@ -26,15 +24,11 @@ export class ProductsService {
 
     const fileUploaded = await this.uploaderService.uploadFile(file);
 
-    try {
-      const product = await this.prismaService.product.create({
-        data: { ...createProductDto, image_url: fileUploaded.secure_url, image_id: fileUploaded.public_id },
-      });
+    const product = await this.prismaService.product.create({
+      data: { ...createProductDto, image_url: fileUploaded.secure_url, image_id: fileUploaded.public_id },
+    });
 
-      return product;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return product;
   }
 
   async getAllProducts(params: ProductFiltersDto) {
@@ -81,44 +75,32 @@ export class ProductsService {
       updateProductDto.image_id = updatedFile.public_id;
     }
 
-    try {
-      const product = await this.prismaService.product.update({
-        where: { product_id: id },
-        data: { ...updateProductDto, updatedAt: new Date() },
-      });
+    const product = await this.prismaService.product.update({
+      where: { product_id: id },
+      data: { ...updateProductDto, updatedAt: new Date() },
+    });
 
-      return product;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return product;
   }
 
   async deleteProduct(id: string) {
     const product = await this.getProductById(id);
 
     await this.uploaderService.deleteFile(product.image_id);
+    await this.prismaService.product.delete({ where: { product_id: id } });
 
-    try {
-      await this.prismaService.product.delete({ where: { product_id: id } });
-      return true;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return true;
   }
 
   async updateProductStock(productId: string, quantityPurchased: number) {
     const product = await this.getProductById(productId);
 
-    try {
-      await this.prismaService.product.update({
-        where: { product_id: productId },
-        data: { stock: (product.stock -= quantityPurchased) },
-      });
+    await this.prismaService.product.update({
+      where: { product_id: productId },
+      data: { stock: (product.stock -= quantityPurchased) },
+    });
 
-      return true;
-    } catch (error) {
-      handleDBExceptions(error, this.logger);
-    }
+    return true;
   }
 
   async validateProduct(id: string, quantity: number) {
