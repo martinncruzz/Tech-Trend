@@ -4,7 +4,7 @@ export * from './services/uploader/cloudinary/interfaces/cloudinary-response.int
 export * from './services/uploader/cloudinary/interfaces/cloudinary.constants';
 export * from './dtos/pagination.dto';
 export * from './dtos/filters.dto';
-export * from './helpers/db-exceptions.handler';
+export * from './exceptions/custom-exception.filter';
 export * from './helpers/file-filter.helper';
 export * from './helpers/base-url.builder';
 export * from './helpers/pagination.builder';
