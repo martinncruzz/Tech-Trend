@@ -60,7 +60,8 @@ export class CategoriesService {
   async updateCategory(id: string, updateCategoryDto: UpdateCategoryDto) {
     const currentCategory = await this.getCategoryById(id);
 
-    if (updateCategoryDto.name !== currentCategory.name) await this.getCategoryByName(updateCategoryDto.name);
+    if (updateCategoryDto.name && updateCategoryDto.name !== currentCategory.name)
+      await this.getCategoryByName(updateCategoryDto.name);
 
     const category = await this.prismaService.category.update({
       where: { category_id: id },

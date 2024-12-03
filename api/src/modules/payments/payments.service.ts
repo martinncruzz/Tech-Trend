@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, RawBodyRequest } from '@nestjs/common';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 
@@ -7,7 +7,7 @@ import { User } from '../users';
 import { ProductsService } from '../products';
 import { ShoppingCartsService } from '../shopping-carts';
 import { OrdersService } from '../orders';
-import { PaymentSessionDto } from '.';
+import { CheckoutSessionMetadata, PaymentSessionDto } from '.';
 
 @Injectable()
 export class PaymentsService {
@@ -50,16 +50,35 @@ export class PaymentsService {
     };
   }
 
-  async stripeWebhook(req: Request, res: Response) {
+  async stripeWebhook(req: RawBodyRequest<Request>, res: Response) {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = envs.STRIPE_ENDPOINT_SECRET;
 
-    const event: Stripe.Event = this.stripe.webhooks.constructEvent(req['rawBody'], sig, endpointSecret);
+    if (!sig) {
+      throw new InternalServerErrorException('Missing Stripe signature header');
+    }
+
+    if (!req.rawBody) {
+      throw new InternalServerErrorException('Missing rawBody in request');
+    }
+
+    const event: Stripe.Event = this.stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
 
     switch (event.type) {
       case 'checkout.session.completed':
-        const checkoutSessionCompleted = event.data.object;
+        const checkoutSessionCompleted = event.data.object as Stripe.Checkout.Session & {
+          metadata: CheckoutSessionMetadata;
+        };
+
+        if (!checkoutSessionCompleted.metadata) {
+          throw new InternalServerErrorException('Metadata is missing in the Stripe event');
+        }
+
         const { user_id, shopping_cart_id } = checkoutSessionCompleted.metadata;
+
+        if (!user_id || !shopping_cart_id) {
+          throw new InternalServerErrorException('Required metadata fields are missing');
+        }
 
         const shoppingCart = await this.shoppingCartsService.getShoppingCartById(shopping_cart_id);
         const order = await this.ordersService.createOrder({ user_id, total: shoppingCart.total });

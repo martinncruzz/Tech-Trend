@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ValidRoles } from '@prisma/client';
 
@@ -17,7 +17,7 @@ export class PaymentsController {
   }
 
   @Post('webhook')
-  async stripeWebhook(@Req() req: Request, @Res() res: Response) {
+  async stripeWebhook(@Req() req: RawBodyRequest<Request>, @Res() res: Response) {
     return this.paymentsService.stripeWebhook(req, res);
   }
 }

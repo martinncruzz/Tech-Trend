@@ -1,4 +1,4 @@
-import * as sharp from 'sharp';
+const sharp = require('sharp');
 
 export class SharpAdapter {
   static async optimizeImage(file: Express.Multer.File) {

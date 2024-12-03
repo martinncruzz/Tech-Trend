@@ -50,7 +50,7 @@ export class UsersService {
 
     this.validateUserRoles(currentUser);
 
-    if (updateUserDto.email !== currentUser.email) {
+    if (updateUserDto.email && updateUserDto.email !== currentUser.email) {
       const user = await this.getUserByEmail(updateUserDto.email);
       if (user) throw new BadRequestException('Email already registered');
     }

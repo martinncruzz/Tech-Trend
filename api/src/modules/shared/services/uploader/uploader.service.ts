@@ -18,7 +18,7 @@ export class UploaderService {
           this.logger.error(error.message);
           return reject(new InternalServerErrorException('Error uploading image to Cloudinary'));
         }
-        resolve(result);
+        resolve(result!);
       });
 
       streamifier.createReadStream(optimizedBuffer).pipe(uploadStream);
