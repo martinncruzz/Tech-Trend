@@ -1,23 +1,18 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
-import * as streamifier from 'streamifier';
+import streamifier from 'streamifier';
 
-import { SharpAdapter } from '../../../../config';
+import { MediaOptimizerAdapter } from '../../../../config';
 import { CloudinaryResponse, FOLDER_NAME } from '../..';
 
 @Injectable()
 export class UploaderService {
-  private readonly logger = new Logger('UploaderService');
-
   async uploadFile(file: Express.Multer.File): Promise<CloudinaryResponse> {
-    const optimizedBuffer = await SharpAdapter.optimizeImage(file);
+    const optimizedBuffer = await MediaOptimizerAdapter.optimizeImage(file);
 
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream({ folder: FOLDER_NAME }, (error, result) => {
-        if (error) {
-          this.logger.error(error.message);
-          return reject(new InternalServerErrorException('Error uploading image to Cloudinary'));
-        }
+        if (error) return reject(new InternalServerErrorException('Error uploading image to Cloudinary'));
         resolve(result!);
       });
 
