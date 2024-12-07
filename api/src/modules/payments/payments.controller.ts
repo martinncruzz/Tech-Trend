@@ -17,7 +17,7 @@ export class PaymentsController {
   }
 
   @Post('webhook')
-  async stripeWebhook(@Req() req: RawBodyRequest<Request>, @Res() res: Response) {
+  stripeWebhook(@Req() req: RawBodyRequest<Request>, @Res() res: Response) {
     return this.paymentsService.stripeWebhook(req, res);
   }
 }
