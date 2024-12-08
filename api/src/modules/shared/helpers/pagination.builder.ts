@@ -1,6 +1,6 @@
 import { PaginationDto } from '..';
 
-interface PaginationResponse {
+interface PaginationResult {
   prev: string | null;
   next: string | null;
 }
@@ -10,7 +10,7 @@ export function buildPagination(
   total: number,
   baseUrl: string,
   filtersQuery: string = '',
-): PaginationResponse {
+): PaginationResult {
   const { page, limit } = paginationDto;
 
   const prev = page > 1 ? `${baseUrl}?page=${page - 1}&limit=${limit}${filtersQuery}` : null;

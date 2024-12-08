@@ -1,5 +1,4 @@
 export * from './interfaces/enums';
-export * from './interfaces/pagination.interfaces';
 export * from './services/uploader/cloudinary/interfaces/cloudinary-response.interface';
 export * from './services/uploader/cloudinary/interfaces/cloudinary.constants';
 export * from './dtos/pagination.dto';
