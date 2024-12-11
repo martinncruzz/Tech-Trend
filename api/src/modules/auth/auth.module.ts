@@ -1,6 +1,6 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 import { envs } from '../../config';
 import { PrismaModule } from '../../database';
@@ -11,13 +11,12 @@ import { AuthController, AuthService, JwtStrategy } from '.';
 @Module({
   imports: [
     PrismaModule,
-    forwardRef(() => UsersModule),
-    forwardRef(() => ShoppingCartsModule),
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    UsersModule,
+    ShoppingCartsModule,
+    PassportModule,
     JwtModule.register({ secret: envs.JWT_SECRET, signOptions: { expiresIn: '1h' } }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [PassportModule, JwtModule, JwtStrategy],
 })
 export class AuthModule {}
