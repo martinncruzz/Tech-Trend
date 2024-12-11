@@ -44,9 +44,6 @@ importers:
       env-var:
         specifier: 7.5.0
         version: 7.5.0
-      passport:
-        specifier: 0.7.0
-        version: 0.7.0
       passport-jwt:
         specifier: 4.0.1
         version: 4.0.1
