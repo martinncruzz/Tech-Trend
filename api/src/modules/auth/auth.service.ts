@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ValidRoles } from '@prisma/client';
 
@@ -12,13 +12,9 @@ import { JwtPayload, LoginUserDto, RegisterUserDto } from '.';
 export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly jwtService: JwtService,
-
-    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-
-    @Inject(forwardRef(() => ShoppingCartsService))
     private readonly shoppingCartsService: ShoppingCartsService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async registerUser(registerUserDto: RegisterUserDto) {
@@ -61,7 +57,6 @@ export class AuthService {
   }
 
   private generateToken(payload: JwtPayload) {
-    const token = this.jwtService.sign(payload);
-    return token;
+    return this.jwtService.sign(payload);
   }
 }
