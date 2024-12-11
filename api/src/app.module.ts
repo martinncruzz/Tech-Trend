@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from './database';
 import {
   SharedModule,
-  UsersModule,
   AuthModule,
+  UsersModule,
   ProductsModule,
   CategoriesModule,
   ShoppingCartsModule,
@@ -16,8 +16,8 @@ import {
   imports: [
     PrismaModule,
     SharedModule,
-    UsersModule,
     AuthModule,
+    UsersModule,
     ProductsModule,
     CategoriesModule,
     ShoppingCartsModule,
