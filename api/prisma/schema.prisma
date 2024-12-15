@@ -8,8 +8,8 @@ datasource db {
 }
 
 enum UserRoles {
-  ADMIN @map("admin")
   USER  @map("user")
+  ADMIN @map("admin")
 
   @@map("user_roles")
 }
