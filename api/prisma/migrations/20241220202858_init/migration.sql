@@ -25,8 +25,8 @@ CREATE TABLE "products" (
     "description" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "stock" INTEGER NOT NULL,
-    "image_url" TEXT NOT NULL,
     "image_id" TEXT NOT NULL,
+    "image_url" TEXT NOT NULL,
     "category_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE "categories" (
 CREATE TABLE "carts" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "total" DOUBLE PRECISION NOT NULL,
+    "total" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

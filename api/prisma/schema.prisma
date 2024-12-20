@@ -43,8 +43,8 @@ model Product {
   description String
   price       Float
   stock       Int
-  imageUrl    String      @map("image_url")
   imageId     String      @map("image_id")
+  imageUrl    String      @map("image_url")
   categoryId  String      @map("category_id")
   category    Category    @relation(fields: [categoryId], references: [id])
   cartItems   CartItem[]
@@ -72,7 +72,7 @@ model Cart {
   id     String     @id @default(uuid())
   userId String     @unique @map("user_id")
   user   User       @relation(fields: [userId], references: [id])
-  total  Float
+  total  Float      @default(0)
   items  CartItem[]
 
   createdAt DateTime @default(now()) @map("created_at")
