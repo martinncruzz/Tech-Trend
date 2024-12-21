@@ -1,4 +1,4 @@
-import sharp from 'sharp';
+import * as sharp from 'sharp';
 
 export class MediaOptimizerAdapter {
   static optimizeImage(file: Express.Multer.File): Promise<Buffer> {
