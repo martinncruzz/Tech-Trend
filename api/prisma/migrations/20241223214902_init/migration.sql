@@ -10,7 +10,6 @@ CREATE TABLE "users" (
     "fullname" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
     "roles" "user_roles"[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,

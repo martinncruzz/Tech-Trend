@@ -26,7 +26,6 @@ model User {
   fullname String
   email    String      @unique
   password String
-  address  String
   roles    UserRoles[]
   cart     Cart?
   orders   Order[]
