@@ -1,6 +1,11 @@
 export enum UserRoles {
-  ADMIN = 'ADMIN',
   USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
 }
 
 export enum ResourceType {
