@@ -81,12 +81,13 @@ model Cart {
 }
 
 model Order {
-  id     String      @id @default(uuid())
-  userId String      @map("user_id")
-  user   User        @relation(fields: [userId], references: [id])
-  total  Float
-  status OrderStatus @default(PENDING)
-  items  OrderItem[]
+  id         String      @id @default(uuid())
+  userId     String      @map("user_id")
+  user       User        @relation(fields: [userId], references: [id])
+  total      Float
+  status     OrderStatus @default(PENDING)
+  receiptUrl String      @map("receipt_url")
+  items      OrderItem[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

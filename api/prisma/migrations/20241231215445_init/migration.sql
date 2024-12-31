@@ -61,6 +61,7 @@ CREATE TABLE "orders" (
     "user_id" TEXT NOT NULL,
     "total" DOUBLE PRECISION NOT NULL,
     "status" "order_status" NOT NULL DEFAULT 'pending',
+    "receipt_url" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
