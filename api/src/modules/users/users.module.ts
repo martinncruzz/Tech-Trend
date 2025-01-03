@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 
-import { PrismaModule } from '../../database';
-import { ShoppingCartsModule } from '../shopping-carts';
-import { OrdersModule } from '../orders';
-import { UsersController, UsersService } from '.';
+import { CartsModule } from '@modules/carts/carts.module';
+import { OrdersModule } from '@modules/orders/orders.module';
+import { UsersController } from '@modules/users/users.controller';
+import { UsersRepository } from '@modules/users/repositories/users.repository';
+import { UsersRepositoryImpl } from '@modules/users/repositories/users.repository.impl';
+import { UsersService } from '@modules/users/users.service';
 
 @Module({
-  imports: [PrismaModule, ShoppingCartsModule, OrdersModule],
+  imports: [CartsModule, OrdersModule],
   controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService],
+  providers: [UsersService, { provide: UsersRepository, useClass: UsersRepositoryImpl }],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}

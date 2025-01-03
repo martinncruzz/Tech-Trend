@@ -1,116 +1,70 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, ValidRoles } from '@prisma/client';
 
-import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, Filters, ResourceType, SortBy } from '../shared';
-import { ShoppingCartsService } from '../shopping-carts';
-import { OrdersService } from '../orders';
-import { UpdateUserDto, User } from '.';
+import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
+import { buildPagination } from '@modules/shared/helpers/pagination.builder';
+import { CartsService } from '@modules/carts/carts.service';
+import { PaginationDto } from '@modules/shared/dtos/pagination.dto';
+import { ResourceType, UserRoles } from '@modules/shared/interfaces/enums';
+import { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
+import { User } from '@modules/users/entities/user.entity';
+import { UsersRepository } from '@modules/users/repositories/users.repository';
+import { OrdersService } from '@modules/orders/orders.service';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly prismaService: PrismaService,
-    private readonly shoppingCartService: ShoppingCartsService,
+    private readonly usersRepository: UsersRepository,
+    private readonly cartsService: CartsService,
     private readonly ordersService: OrdersService,
   ) {}
 
-  async getAllUsers(params: Filters) {
-    const { page, limit } = params;
+  async getUsers(paginationDto: PaginationDto): Promise<{ prev: string | null; next: string | null; users: User[] }> {
+    const { total, users } = await this.usersRepository.findAll(paginationDto);
 
-    const orderBy = this.buildOrderBy(params);
-    const where = this.buildWhere(params);
-
-    const [total, users] = await this.prismaService.$transaction([
-      this.prismaService.user.count({ where }),
-      this.prismaService.user.findMany({
-        orderBy,
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-    ]);
-
-    const baseUrl = buildBaseUrl(ResourceType.users);
-    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
+    const baseUrl = buildBaseUrl(ResourceType.USERS);
+    const { prev, next } = buildPagination(paginationDto, total, baseUrl);
 
     return { prev, next, users };
   }
 
-  async getUserById(id: string) {
-    const user = await this.prismaService.user.findUnique({ where: { user_id: id } });
+  async getUserById(id: string): Promise<User> {
+    const user = await this.usersRepository.findById(id);
 
     if (!user) throw new NotFoundException(`User with id "${id}" not found`);
 
     return user;
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto) {
-    const currentUser = await this.getUserById(id);
+  async updateUser(id: string, updateUserDto: UpdateUserDto, currentUser: User): Promise<User> {
+    const { fullname, email } = updateUserDto;
 
-    this.validateUserRoles(currentUser);
+    const user = await this.getUserById(id);
 
-    if (updateUserDto.email && updateUserDto.email !== currentUser.email) {
-      const user = await this.getUserByEmail(updateUserDto.email);
-      if (user) throw new BadRequestException('Email already registered');
+    if (currentUser.id !== user.id && user.roles.includes(UserRoles.ADMIN)) {
+      throw new ForbiddenException('You do not have permissions to edit or delete another administrator');
     }
 
-    const user = await this.prismaService.user.update({
-      where: { user_id: id },
-      data: { ...updateUserDto, updatedAt: new Date() },
-    });
+    if (email && email !== user.email) {
+      const userExists = await this.usersRepository.findByEmail(email);
+      if (userExists) throw new BadRequestException('Email already registered');
+    }
 
-    return user;
+    return this.usersRepository.update(id, { fullname, email: email?.toLowerCase().trim() });
   }
 
-  async deleteUser(id: string, user: User) {
-    if (user.user_id === id) throw new BadRequestException(`You cannot delete yourself`);
+  async deleteUser(id: string, currentUser: User): Promise<boolean> {
+    if (currentUser.id === id) throw new BadRequestException('You cannot delete yourself');
 
-    const userToDelete = await this.getUserById(id);
-    this.validateUserRoles(userToDelete);
+    const user = await this.getUserById(id);
 
-    await this.shoppingCartService.deleteUserCart(userToDelete);
-    await this.ordersService.deleteUserOrders(userToDelete);
-    await this.prismaService.user.delete({ where: { user_id: id } });
+    if (user.roles.includes(UserRoles.ADMIN)) {
+      throw new ForbiddenException('You do not have permissions to edit or delete another administrator');
+    }
+
+    await this.cartsService.deleteCartByUserId(id);
+    await this.ordersService.deleteOrdersByUserId(id);
+    await this.usersRepository.delete(id);
 
     return true;
-  }
-
-  async getUserByEmail(email: string) {
-    const user = await this.prismaService.user.findUnique({ where: { email: email } });
-    return user;
-  }
-
-  private validateUserRoles(user: User) {
-    if (user.roles.includes(ValidRoles.admin)) {
-      throw new ForbiddenException(`You don't have permissions to edit or delete another administrator`);
-    }
-  }
-
-  private buildOrderBy(params: Filters): Prisma.UserOrderByWithAggregationInput {
-    let orderBy: Prisma.UserOrderByWithAggregationInput = {};
-
-    switch (params.sortBy) {
-      case SortBy.NEWEST:
-        orderBy = { createdAt: 'desc' };
-        break;
-      case SortBy.OLDEST:
-        orderBy = { createdAt: 'asc' };
-        break;
-      case SortBy.LAST_UPDATED:
-        orderBy = { updatedAt: 'desc' };
-        break;
-    }
-
-    return orderBy;
-  }
-
-  private buildWhere(params: Filters): Prisma.UserWhereInput {
-    const where: Prisma.UserWhereInput = {};
-
-    if (params.search) where.email = { contains: params.search, mode: 'insensitive' };
-    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
-
-    return where;
   }
 }
