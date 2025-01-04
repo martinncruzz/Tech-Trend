@@ -1,3 +1,6 @@
+import { UserRoles } from '@modules/shared/interfaces/enums';
+
 export interface JwtPayload {
-  user_id: string;
+  id: string;
+  roles: UserRoles[];
 }
