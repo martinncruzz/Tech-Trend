@@ -1,8 +1,9 @@
 import { SetMetadata } from '@nestjs/common';
-import { ValidRoles } from '@prisma/client';
 
-export const META_ROLES = 'roles';
+import { UserRoles } from '@modules/shared/interfaces/enums';
 
-export function RoleProtected(...roles: ValidRoles[]) {
-  return SetMetadata(META_ROLES, roles);
+export const METADATA_ROLES_KEY = 'roles';
+
+export function RoleProtected(...roles: UserRoles[]) {
+  return SetMetadata(METADATA_ROLES_KEY, roles);
 }
