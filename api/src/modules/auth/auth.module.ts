@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-import { envs } from '../../config';
-import { PrismaModule } from '../../database';
-import { UsersModule } from '../users';
-import { ShoppingCartsModule } from '../shopping-carts';
-import { AuthController, AuthService, JwtStrategy } from '.';
+import { AuthController } from '@modules/auth/auth.controller';
+import { AuthService } from '@modules/auth/auth.service';
+import { CartsModule } from '@modules/carts/carts.module';
+import { envs } from '@config/adapters/envs.adapter';
+import { JwtStrategy } from '@modules/auth/strategies/jwt.strategy';
+import { UsersModule } from '@modules/users/users.module';
 
 @Module({
   imports: [
-    PrismaModule,
     UsersModule,
-    ShoppingCartsModule,
+    CartsModule,
     PassportModule,
     JwtModule.register({ secret: envs.JWT_SECRET, signOptions: { expiresIn: '1h' } }),
   ],
