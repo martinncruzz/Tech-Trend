@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
 import { PaginationDto } from '@modules/shared/dtos/pagination.dto';
 import { PostgresDatabase } from '@database/postgres/postgres-database';
+import { RegisterUserDto } from '@modules/auth/dtos/register-user.dto';
 import { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
 import { User } from '@modules/users/entities/user.entity';
 import { UserRoles } from '@modules/shared/interfaces/enums';
@@ -36,8 +36,8 @@ export class UsersRepositoryImpl implements UsersRepository {
     return user ? User.fromObject(user) : null;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const createdUser = await this.prisma.user.create({ data: { ...createUserDto, roles: [UserRoles.USER] } });
+  async create(registerUserDto: RegisterUserDto): Promise<User> {
+    const createdUser = await this.prisma.user.create({ data: { ...registerUserDto, roles: [UserRoles.USER] } });
     return User.fromObject(createdUser);
   }
 

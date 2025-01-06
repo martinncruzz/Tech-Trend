@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 
 import { BcryptAdapter } from '@config/adapters/bcrypt.adapter';
 import { CartsRepository } from '@modules/carts/repositories/carts.repository';
-import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
 import { JwtPayload } from '@modules/auth/interfaces/jwt-payload.interface';
 import { LoginUserDto } from '@modules/auth/dtos/login-user.dto';
+import { RegisterUserDto } from '@modules/auth/dtos/register-user.dto';
 import { User } from '@modules/users/entities/user.entity';
 import { UsersRepository } from '@modules/users/repositories/users.repository';
 
@@ -17,8 +17,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async registerUser(createUserDto: CreateUserDto): Promise<User> {
-    const { fullname, email, password } = createUserDto;
+  async registerUser(registerUserDto: RegisterUserDto): Promise<User> {
+    const { fullname, email, password } = registerUserDto;
 
     const userExists = await this.usersRepository.findByEmail(email);
     if (userExists) throw new BadRequestException('Email already registered');
