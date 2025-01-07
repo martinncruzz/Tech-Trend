@@ -1,16 +1,11 @@
-import { PaginationDto } from '..';
-
-interface PaginationResult {
-  prev: string | null;
-  next: string | null;
-}
+import { PaginationDto } from '@modules/shared/dtos/pagination.dto';
 
 export function buildPagination(
   paginationDto: PaginationDto,
   total: number,
   baseUrl: string,
   filtersQuery: string = '',
-): PaginationResult {
+): { prev: string | null; next: string | null } {
   const { page, limit } = paginationDto;
 
   const prev = page > 1 ? `${baseUrl}?page=${page - 1}&limit=${limit}${filtersQuery}` : null;
