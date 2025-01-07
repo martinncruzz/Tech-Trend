@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-import { envs } from '../../../../../config';
-import { CLOUDINARY } from '../../../';
+import { CLOUDINARY } from '@modules/shared/services/uploader/cloudinary/cloudinary.constants';
+import { envs } from '@config/adapters/envs.adapter';
 
 export const CloudinaryProvider = {
   provide: CLOUDINARY,
