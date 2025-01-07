@@ -3,14 +3,14 @@ import { IsInt, IsOptional, IsPositive } from 'class-validator';
 
 export class PaginationDto {
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @IsPositive()
-  @Type(() => Number)
   page: number = 1;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @IsPositive()
-  @Type(() => Number)
   limit: number = 10;
 }
