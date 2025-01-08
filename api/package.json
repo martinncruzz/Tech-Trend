@@ -2,7 +2,7 @@
   "name": "tech-trend-api",
   "version": "1.0.0",
   "author": "Martín Cruz",
-  "description": "Backend API for Tech-Trend, supporting the e-commerce platform.",
+  "description": "API for Tech-Trend's e-commerce platform",
   "license": "MIT",
   "packageManager": "pnpm@9.14.2",
   "engines": {
