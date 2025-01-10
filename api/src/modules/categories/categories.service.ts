@@ -1,120 +1,87 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
-import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, Filters, ResourceType, SortBy } from '../shared';
-import { ProductsService } from '../products';
-import { CreateCategoryDto, UpdateCategoryDto } from '.';
+import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
+import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
+import { buildPagination } from '@modules/shared/helpers/pagination.builder';
+import { CategoriesRepository } from '@modules/categories/repositories/categories.repository';
+import { Category } from '@modules/categories/entities/category.entity';
+import { CategoryFiltersDto } from '@modules/categories/dtos/category-filters.dto';
+import { CreateCategoryDto } from '@modules/categories/dtos/create-category.dto';
+import { ProductsService } from '@modules/products/products.service';
+import { ResourceType } from '@modules/shared/interfaces/enums';
+import { UpdateCategoryDto } from '@modules/categories/dtos/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
   constructor(
-    private readonly prismaService: PrismaService,
+    private readonly categoriesRepository: CategoriesRepository,
 
     @Inject(forwardRef(() => ProductsService))
     private readonly productsService: ProductsService,
   ) {}
 
-  async createCategory(createCategoryDto: CreateCategoryDto) {
-    await this.getCategoryByName(createCategoryDto.name);
+  async getCategories(
+    categoryFiltersDto: CategoryFiltersDto,
+  ): Promise<{ prev: string | null; next: string | null; categories: Category[] }> {
+    const { total, categories } = await this.categoriesRepository.findAll(categoryFiltersDto);
 
-    const category = await this.prismaService.category.create({ data: createCategoryDto });
-
-    return category;
-  }
-
-  async getAllCategories(params: Filters) {
-    const { page, limit } = params;
-
-    const orderBy = this.buildOrderBy(params);
-    const where = this.buildWhere(params);
-
-    const [total, categories] = await this.prismaService.$transaction([
-      this.prismaService.category.count({ where }),
-      this.prismaService.category.findMany({
-        orderBy,
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        include: { products: true },
-      }),
-    ]);
-
-    const baseUrl = buildBaseUrl(ResourceType.categories);
-    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
+    const filtersQuery = buildFiltersQuery(categoryFiltersDto);
+    const baseUrl = buildBaseUrl(ResourceType.CATEGORIES);
+    const { prev, next } = buildPagination(categoryFiltersDto, total, baseUrl, filtersQuery);
 
     return { prev, next, categories };
   }
 
-  async getCategoryById(id: string) {
-    const category = await this.prismaService.category.findUnique({
-      where: { category_id: id },
-      include: { products: true },
-    });
+  async getCategoryById(id: string): Promise<Category> {
+    const category = await this.categoriesRepository.findById(id);
 
     if (!category) throw new NotFoundException(`Category with id "${id}" not found`);
 
     return category;
   }
 
-  async updateCategory(id: string, updateCategoryDto: UpdateCategoryDto) {
-    const currentCategory = await this.getCategoryById(id);
+  async createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
+    const categoryExists = await this.categoriesRepository.findByName(createCategoryDto.name);
 
-    if (updateCategoryDto.name && updateCategoryDto.name !== currentCategory.name)
-      await this.getCategoryByName(updateCategoryDto.name);
+    if (categoryExists) {
+      throw new BadRequestException(`Category with the name "${createCategoryDto.name}" already registered`);
+    }
 
-    const category = await this.prismaService.category.update({
-      where: { category_id: id },
-      data: { ...updateCategoryDto, updatedAt: new Date() },
-    });
-
-    return category;
+    return this.categoriesRepository.create(createCategoryDto);
   }
 
-  async deleteCategory(id: string) {
+  async updateCategory(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
     const category = await this.getCategoryById(id);
 
+    if (updateCategoryDto.name && updateCategoryDto.name !== category.name) {
+      const categoryExists = await this.categoriesRepository.findByName(updateCategoryDto.name);
+
+      if (categoryExists) {
+        throw new BadRequestException(`Category with the name "${updateCategoryDto.name}" already registered`);
+      }
+    }
+
+    return this.categoriesRepository.update(id, updateCategoryDto);
+  }
+
+  async deleteCategory(id: string): Promise<boolean> {
+    const category = await this.getCategoryById(id);
+
+    if (!category.products || category.products.some((product) => !product.id)) {
+      throw new InternalServerErrorException('Category data is incomplete');
+    }
+
     if (category.products.length > 0) {
-      await Promise.all(category.products.map((product) => this.productsService.deleteProduct(product.product_id)));
+      await Promise.all(category.products.map((product) => this.productsService.deleteProduct(product.id!)));
     }
 
-    await this.prismaService.category.delete({ where: { category_id: id } });
-
-    return true;
-  }
-
-  private async getCategoryByName(name: string) {
-    const category = await this.prismaService.category.findUnique({ where: { name } });
-
-    if (category) throw new BadRequestException(`Category with the name "${name}" already registered`);
-
-    return category;
-  }
-
-  private buildOrderBy(params: Filters): Prisma.CategoryOrderByWithAggregationInput {
-    let orderBy: Prisma.CategoryOrderByWithAggregationInput = {};
-
-    switch (params.sortBy) {
-      case SortBy.NEWEST:
-        orderBy = { createdAt: 'desc' };
-        break;
-      case SortBy.OLDEST:
-        orderBy = { createdAt: 'asc' };
-        break;
-      case SortBy.LAST_UPDATED:
-        orderBy = { updatedAt: 'desc' };
-        break;
-    }
-
-    return orderBy;
-  }
-
-  private buildWhere(params: Filters): Prisma.CategoryWhereInput {
-    const where: Prisma.CategoryWhereInput = {};
-
-    if (params.search) where.name = { contains: params.search, mode: 'insensitive' };
-    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
-
-    return where;
+    return this.categoriesRepository.delete(id);
   }
 }
