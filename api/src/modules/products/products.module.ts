@@ -1,14 +1,18 @@
 import { forwardRef, Module } from '@nestjs/common';
 
-import { PrismaModule } from '../../database';
-import { SharedModule } from '../shared';
-import { CategoriesModule } from '../categories';
-import { ProductsController, ProductsService } from '.';
+import { CartsModule } from '@modules/carts/carts.module';
+import { CategoriesModule } from '@modules/categories/categories.module';
+import { OrdersModule } from '@modules/orders/orders.module';
+import { ProductsController } from '@modules/products/products.controller';
+import { ProductsRepository } from '@modules/products/repositories/products.repository';
+import { ProductsRepositoryImpl } from '@modules/products/repositories/products.repository.impl';
+import { ProductsService } from '@modules/products/products.service';
+import { SharedModule } from '@modules/shared/shared.module';
 
 @Module({
-  imports: [PrismaModule, SharedModule, forwardRef(() => CategoriesModule)],
+  imports: [SharedModule, forwardRef(() => CategoriesModule), forwardRef(() => CartsModule), OrdersModule],
   controllers: [ProductsController],
-  providers: [ProductsService],
-  exports: [ProductsService],
+  providers: [ProductsService, { provide: ProductsRepository, useClass: ProductsRepositoryImpl }],
+  exports: [ProductsService, ProductsRepository],
 })
 export class ProductsModule {}

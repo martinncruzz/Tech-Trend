@@ -10,28 +10,25 @@ import {
   ParseUUIDPipe,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ValidRoles } from '@prisma/client';
 
-import { fileFilter } from '../shared';
-import { Auth } from '../auth';
-import { CreateProductDto, ProductFiltersDto, ProductsService, UpdateProductDto } from '.';
+import { Auth } from '@modules/auth/decorators/auth.decorator';
+import { CreateProductDto } from '@modules/products/dtos/create-product.dto';
+import { fileFilter } from '@modules/shared/helpers/file-filter.helper';
+import { ProductFiltersDto } from '@modules/products/dtos/product-filters.dto';
+import { ProductsService } from '@modules/products/products.service';
+import { UpdateProductDto } from '@modules/products/dtos/update-product.dto';
+import { UserRoles } from '@modules/shared/interfaces/enums';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post()
-  @Auth(ValidRoles.admin)
-  @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
-  createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
-    return this.productsService.createProduct(createProductDto, file);
-  }
-
   @Get()
-  getAllProducts(@Query() params: ProductFiltersDto) {
-    return this.productsService.getAllProducts(params);
+  getProducts(@Query() productFiltersDto: ProductFiltersDto) {
+    return this.productsService.getProducts(productFiltersDto);
   }
 
   @Get(':id')
@@ -39,8 +36,16 @@ export class ProductsController {
     return this.productsService.getProductById(id);
   }
 
+  @Post()
+  @Auth(UserRoles.ADMIN)
+  @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
+  createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('File is required to create a product');
+    return this.productsService.createProduct(createProductDto, file);
+  }
+
   @Patch(':id')
-  @Auth(ValidRoles.admin)
+  @Auth(UserRoles.ADMIN)
   @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
   updateProduct(
     @Param('id', ParseUUIDPipe) id: string,
@@ -51,7 +56,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @Auth(ValidRoles.admin)
+  @Auth(UserRoles.ADMIN)
   deleteProduct(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.deleteProduct(id);
   }

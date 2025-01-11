@@ -1,162 +1,93 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 
-import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, ResourceType, SortBy, UploaderService } from '../shared';
-import { CategoriesService } from '../categories';
-import { CreateProductDto, ProductFiltersDto, UpdateProductDto } from '.';
+import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
+import { buildPagination } from '@modules/shared/helpers/pagination.builder';
+import { CartsService } from '@modules/carts/carts.service';
+import { CategoriesService } from '@modules/categories/categories.service';
+import { CreateProductDto } from '@modules/products/dtos/create-product.dto';
+import { OrdersService } from '@modules/orders/orders.service';
+import { Product } from '@modules/products/entities/product.entity';
+import { ProductFiltersDto } from '@modules/products/dtos/product-filters.dto';
+import { ProductsRepository } from '@modules/products/repositories/products.repository';
+import { ResourceType } from '@modules/shared/interfaces/enums';
+import { UpdateProductDto } from '@modules/products/dtos/update-product.dto';
+import { UploaderService } from '@modules/shared/services/uploader/uploader.service';
+import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
 
 @Injectable()
 export class ProductsService {
   constructor(
-    private readonly prismaService: PrismaService,
+    private readonly productsRepository: ProductsRepository,
     private readonly uploaderService: UploaderService,
+    private readonly ordersService: OrdersService,
 
     @Inject(forwardRef(() => CategoriesService))
     private readonly categoriesService: CategoriesService,
+
+    @Inject(forwardRef(() => CartsService))
+    private readonly cartsService: CartsService,
   ) {}
 
-  async createProduct(createProductDto: CreateProductDto, file: Express.Multer.File) {
-    if (!file) throw new BadRequestException(`Image is required to create a product`);
+  async getProducts(
+    productFiltersDto: ProductFiltersDto,
+  ): Promise<{ prev: string | null; next: string | null; products: Product[] }> {
+    const { total, products } = await this.productsRepository.findAll(productFiltersDto);
 
-    await this.getProductByName(createProductDto.name);
-    await this.categoriesService.getCategoryById(createProductDto.category_id);
-
-    const fileUploaded = await this.uploaderService.uploadFile(file);
-
-    const product = await this.prismaService.product.create({
-      data: { ...createProductDto, image_url: fileUploaded.secure_url, image_id: fileUploaded.public_id },
-    });
-
-    return product;
-  }
-
-  async getAllProducts(params: ProductFiltersDto) {
-    const { page, limit } = params;
-
-    const orderBy = this.buildOrderBy(params);
-    const where = this.buildWhere(params);
-
-    const [total, products] = await this.prismaService.$transaction([
-      this.prismaService.product.count({ where }),
-      this.prismaService.product.findMany({
-        orderBy,
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        include: { category: { select: { name: true } } },
-      }),
-    ]);
-
-    const baseUrl = buildBaseUrl(ResourceType.products);
-    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
+    const filtersQuery = buildFiltersQuery(productFiltersDto);
+    const baseUrl = buildBaseUrl(ResourceType.PRODUCTS);
+    const { prev, next } = buildPagination(productFiltersDto, total, baseUrl, filtersQuery);
 
     return { prev, next, products };
   }
 
-  async getProductById(id: string) {
-    const product = await this.prismaService.product.findUnique({ where: { product_id: id } });
+  async getProductById(id: string): Promise<Product> {
+    const product = await this.productsRepository.findById(id);
 
     if (!product) throw new NotFoundException(`Product with id "${id}" not found`);
 
     return product;
   }
 
-  async updateProduct(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File) {
-    const currentProduct = await this.getProductById(id);
+  async createProduct(createProductDto: CreateProductDto, file: Express.Multer.File): Promise<Product> {
+    await this.categoriesService.getCategoryById(createProductDto.categoryId);
 
-    if (updateProductDto.name && updateProductDto.name !== currentProduct.name) {
-      await this.getProductByName(updateProductDto.name);
+    const productExists = await this.productsRepository.findByName(createProductDto.name);
+    if (productExists) throw new BadRequestException(`Product with name "${createProductDto.name}" already exists`);
+
+    const { public_id, secure_url } = await this.uploaderService.uploadFile(file);
+
+    createProductDto.imageId = public_id;
+    createProductDto.imageUrl = secure_url;
+
+    return this.productsRepository.create(createProductDto);
+  }
+
+  async updateProduct(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File): Promise<Product> {
+    const product = await this.getProductById(id);
+
+    if (updateProductDto.name && updateProductDto.name !== product.name) {
+      const productExists = await this.productsRepository.findByName(updateProductDto.name);
+      if (productExists) throw new BadRequestException(`Product with name "${updateProductDto.name}" already exists`);
     }
 
     if (file) {
-      const updatedFile = await this.uploaderService.updateFile(file, currentProduct.image_id);
-      updateProductDto.image_url = updatedFile.secure_url;
-      updateProductDto.image_id = updatedFile.public_id;
+      const { public_id, secure_url } = await this.uploaderService.updateFile(file, product.imageId);
+      updateProductDto.imageId = public_id;
+      updateProductDto.imageUrl = secure_url;
     }
 
-    const product = await this.prismaService.product.update({
-      where: { product_id: id },
-      data: { ...updateProductDto, updatedAt: new Date() },
-    });
-
-    return product;
+    return this.productsRepository.update(id, updateProductDto);
   }
 
-  async deleteProduct(id: string) {
+  async deleteProduct(id: string): Promise<boolean> {
     const product = await this.getProductById(id);
 
-    await this.uploaderService.deleteFile(product.image_id);
-    await this.prismaService.product.delete({ where: { product_id: id } });
+    await Promise.all([
+      this.cartsService.deleteCartItemsByProductId(id),
+      this.ordersService.deleteOrderItemsByProductId(id),
+      this.uploaderService.deleteFile(product.imageId),
+    ]);
 
-    return true;
-  }
-
-  async updateProductStock(productId: string, quantityPurchased: number) {
-    const product = await this.getProductById(productId);
-
-    await this.prismaService.product.update({
-      where: { product_id: productId },
-      data: { stock: (product.stock -= quantityPurchased) },
-    });
-
-    return true;
-  }
-
-  async validateProduct(id: string, quantity: number) {
-    const product = await this.getProductById(id);
-
-    if (product.stock < quantity) throw new BadRequestException(`Product "${product.name}" is out of stock`);
-
-    return product;
-  }
-
-  private async getProductByName(name: string) {
-    const product = await this.prismaService.product.findUnique({ where: { name } });
-
-    if (product) throw new BadRequestException(`Product with the name "${product.name}" already registered`);
-
-    return product;
-  }
-
-  private buildOrderBy(params: ProductFiltersDto): Prisma.ProductOrderByWithAggregationInput {
-    let orderBy: Prisma.ProductOrderByWithAggregationInput = {};
-
-    switch (params.sortBy) {
-      case SortBy.NEWEST:
-        orderBy = { createdAt: 'desc' };
-        break;
-      case SortBy.OLDEST:
-        orderBy = { createdAt: 'asc' };
-        break;
-      case SortBy.LAST_UPDATED:
-        orderBy = { updatedAt: 'desc' };
-        break;
-      case SortBy.PRICE_ASC:
-        orderBy = { price: 'asc' };
-        break;
-      case SortBy.PRICE_DESC:
-        orderBy = { price: 'desc' };
-        break;
-      case SortBy.STOCK_ASC:
-        orderBy = { stock: 'asc' };
-        break;
-      case SortBy.STOCK_DESC:
-        orderBy = { stock: 'desc' };
-        break;
-    }
-
-    return orderBy;
-  }
-
-  private buildWhere(params: ProductFiltersDto): Prisma.ProductWhereInput {
-    const where: Prisma.ProductWhereInput = {};
-
-    if (params.search) where.name = { contains: params.search, mode: 'insensitive' };
-    if (params.categoryId) where.category_id = params.categoryId;
-    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
-    if (params.status) where.stock = { gt: 0 };
-
-    return where;
+    return this.productsRepository.delete(id);
   }
 }
