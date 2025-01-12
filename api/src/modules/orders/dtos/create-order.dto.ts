@@ -1,10 +1,10 @@
-import { IsNumber, IsUUID, Min } from 'class-validator';
-
 export class CreateOrderDto {
-  @IsUUID()
-  user_id: string;
-
-  @IsNumber()
-  @Min(1)
+  userId: string;
   total: number;
+  receiptUrl: string;
+  items: {
+    productId: string;
+    quantity: number;
+    subtotal: number;
+  }[];
 }
