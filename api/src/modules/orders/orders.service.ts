@@ -1,116 +1,76 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { OrderStatus, Prisma } from '@prisma/client';
 
-import { PrismaService } from '../../database';
-import { buildBaseUrl, buildPagination, Filters, ResourceType, SortBy } from '../shared';
-import { User } from '../users';
-import { AddProductsToOrderDto, CreateOrderDto } from '.';
+import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
+import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
+import { buildPagination } from '@modules/shared/helpers/pagination.builder';
+import { CreateOrderDto } from '@modules/orders/dtos/create-order.dto';
+import { Order } from '@modules/orders/entities/order.entity';
+import { OrderFiltersDto } from '@modules/orders/dtos/order-filters.dto';
+import { OrderItemsRepository } from '@modules/orders/repositories/order-items.repository';
+import { OrdersRepository } from '@modules/orders/repositories/orders.repository';
+import { ResourceType } from '@modules/shared/interfaces/enums';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly ordersRepository: OrdersRepository,
+    private readonly orderItemsRepository: OrderItemsRepository,
+  ) {}
 
-  async createOrder(createOrderDto: CreateOrderDto) {
-    const order = await this.prismaService.order.create({ data: { ...createOrderDto, status: OrderStatus.PAID } });
-    return order;
-  }
+  async getOrders(
+    orderFiltersDto: OrderFiltersDto,
+  ): Promise<{ prev: string | null; next: string | null; orders: Order[] }> {
+    const { total, orders } = await this.ordersRepository.findAll(orderFiltersDto);
 
-  async addProductsToOrderDetails(addProductsToOrder: AddProductsToOrderDto) {
-    const { order_id, products } = addProductsToOrder;
-
-    const orderDetails = products.map((productItem) => {
-      return {
-        order_id: order_id,
-        product_id: productItem.product_id,
-        quantity: productItem.quantity,
-        subtotal: productItem.subtotal,
-      };
-    });
-
-    await this.prismaService.orderProduct.createMany({ data: orderDetails });
-
-    return true;
-  }
-
-  async getAllOrders(params: Filters) {
-    const { page, limit } = params;
-
-    const orderBy = this.buildOrderBy(params);
-    const where = this.buildWhere(params);
-
-    const [total, orders] = await this.prismaService.$transaction([
-      this.prismaService.order.count({ where }),
-      this.prismaService.order.findMany({
-        orderBy,
-        where,
-        include: { user: true },
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-    ]);
-
-    const baseUrl = buildBaseUrl(ResourceType.orders);
-    const { prev, next } = buildPagination({ page, limit }, total, baseUrl);
+    const filtersQuery = buildFiltersQuery(orderFiltersDto);
+    const baseUrl = buildBaseUrl(ResourceType.ORDERS);
+    const { prev, next } = buildPagination(orderFiltersDto, total, baseUrl, filtersQuery);
 
     return { prev, next, orders };
   }
 
-  async getOrdersByUser(user: User) {
-    const orders = await this.prismaService.order.findMany({
-      where: { user_id: user.user_id },
-      orderBy: { createdAt: 'desc' },
-    });
+  async getOrdersByUserId(
+    orderFiltersDto: OrderFiltersDto,
+    userId: string,
+  ): Promise<{ prev: string | null; next: string | null; orders: Order[] }> {
+    const { total, orders } = await this.ordersRepository.findAllByUserId(orderFiltersDto, userId);
 
-    return orders;
+    const filtersQuery = buildFiltersQuery(orderFiltersDto);
+    const baseUrl = buildBaseUrl(ResourceType.ORDERS);
+    const { prev, next } = buildPagination(orderFiltersDto, total, baseUrl, filtersQuery);
+
+    return { prev, next, orders };
   }
 
-  async getOrderDetails(id: string) {
-    const order = await this.prismaService.order.findUnique({
-      where: { order_id: id },
-      include: { products: { include: { product: true } } },
-    });
+  async getOrderById(id: string): Promise<Order> {
+    const order = await this.ordersRepository.findById(id);
 
     if (!order) throw new NotFoundException(`Order with id "${id}" not found`);
 
     return order;
   }
 
-  async deleteUserOrders(user: User) {
-    const orders = await this.getOrdersByUser(user);
+  async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
+    const createdOrder = await this.ordersRepository.create(createOrderDto);
+    await this.orderItemsRepository.createMany(createdOrder.id, createOrderDto);
 
-    await this.prismaService.$transaction([
-      this.prismaService.orderProduct.deleteMany({
-        where: { order_id: { in: orders.map((order) => order.order_id) } },
-      }),
-      this.prismaService.order.deleteMany({ where: { user_id: user.user_id } }),
-    ]);
+    return createdOrder;
+  }
 
+  async deleteOrderItemsByProductId(productId: string): Promise<boolean> {
+    await this.orderItemsRepository.deleteManyByProductId(productId);
     return true;
   }
 
-  private buildOrderBy(params: Filters): Prisma.OrderOrderByWithAggregationInput {
-    let orderBy: Prisma.OrderOrderByWithAggregationInput = {};
+  async deleteOrdersByUserId(userId: string): Promise<boolean> {
+    const { orders } = await this.ordersRepository.findAllByUserId({ page: 1, limit: Number.MAX_SAFE_INTEGER }, userId);
+    const orderIds = orders.map((order) => order.id);
 
-    switch (params.sortBy) {
-      case SortBy.NEWEST:
-        orderBy = { createdAt: 'desc' };
-        break;
-      case SortBy.OLDEST:
-        orderBy = { createdAt: 'asc' };
-        break;
-      case SortBy.LAST_UPDATED:
-        orderBy = { updatedAt: 'desc' };
-        break;
+    if (orderIds.length > 0) {
+      await this.orderItemsRepository.deleteManyByOrderIds(orderIds);
+      await this.ordersRepository.deleteManyByUserId(userId);
     }
 
-    return orderBy;
-  }
-
-  private buildWhere(params: Filters): Prisma.OrderWhereInput {
-    const where: Prisma.OrderWhereInput = {};
-
-    if (params.sortBy === SortBy.LAST_UPDATED) where.updatedAt = { not: null };
-
-    return where;
+    return true;
   }
 }

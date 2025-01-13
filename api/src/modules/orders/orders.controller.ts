@@ -1,30 +1,31 @@
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
-import { ValidRoles } from '@prisma/client';
 
-import { Filters } from '../shared';
-import { User } from '../users';
-import { Auth, GetUser } from '../auth';
-import { OrdersService } from '.';
+import { Auth } from '@modules/auth/decorators/auth.decorator';
+import { GetUser } from '@modules/auth/decorators/get-user.decorator';
+import { OrderFiltersDto } from '@modules/orders/dtos/order-filters.dto';
+import { OrdersService } from '@modules/orders/orders.service';
+import { User } from '@modules/users/entities/user.entity';
+import { UserRoles } from '@modules/shared/interfaces/enums';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get()
-  @Auth(ValidRoles.admin)
-  getAllOrders(@Query() params: Filters) {
-    return this.ordersService.getAllOrders(params);
+  @Auth(UserRoles.ADMIN)
+  getOrders(@Query() orderFiltersDto: OrderFiltersDto) {
+    return this.ordersService.getOrders(orderFiltersDto);
   }
 
   @Get('my-orders')
-  @Auth(ValidRoles.user)
-  getOrdersByUser(@GetUser() user: User) {
-    return this.ordersService.getOrdersByUser(user);
+  @Auth(UserRoles.USER)
+  getOrdersByUserId(@Query() orderFiltersDto: OrderFiltersDto, @GetUser() currentUser: User) {
+    return this.ordersService.getOrdersByUserId(orderFiltersDto, currentUser.id);
   }
 
   @Get(':id/details')
-  @Auth(ValidRoles.user)
-  getOrderDetails(@Param('id', ParseUUIDPipe) id: string) {
-    return this.ordersService.getOrderDetails(id);
+  @Auth(UserRoles.USER)
+  getOrderById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.ordersService.getOrderById(id);
   }
 }
