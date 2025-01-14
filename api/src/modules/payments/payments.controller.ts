@@ -1,23 +1,25 @@
-import { Body, Controller, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { ValidRoles } from '@prisma/client';
+import { Body, Controller, Post, RawBodyRequest, Req } from '@nestjs/common';
+import { Request } from 'express';
 
-import { User } from '../users';
-import { Auth, GetUser } from '../auth';
-import { PaymentSessionDto, PaymentsService } from '.';
+import { Auth } from '@modules/auth/decorators/auth.decorator';
+import { GetUser } from '@modules/auth/decorators/get-user.decorator';
+import { PaymentSessionDto } from '@modules/payments/dtos/payment-session.dto';
+import { PaymentsService } from '@modules/payments/payments.service';
+import { User } from '@modules/users/entities/user.entity';
+import { UserRoles } from '@modules/shared/interfaces/enums';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('create-payment-session')
-  @Auth(ValidRoles.user)
-  createPaymentSession(@Body() paymentSessionDto: PaymentSessionDto, @GetUser() user: User) {
-    return this.paymentsService.createPaymentSession(paymentSessionDto, user);
+  @Auth(UserRoles.USER)
+  createPaymentSession(@Body() paymentSessionDto: PaymentSessionDto, @GetUser() currentUser: User) {
+    return this.paymentsService.createPaymentSession(paymentSessionDto, currentUser.id);
   }
 
   @Post('webhook')
-  stripeWebhook(@Req() req: RawBodyRequest<Request>, @Res() res: Response) {
-    return this.paymentsService.stripeWebhook(req, res);
+  stripeWebhook(@Req() req: RawBodyRequest<Request>) {
+    return this.paymentsService.stripeWebhook(req);
   }
 }

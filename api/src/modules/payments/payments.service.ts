@@ -1,13 +1,12 @@
 import { Injectable, InternalServerErrorException, RawBodyRequest } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import Stripe from 'stripe';
 
-import { envs } from '../../config';
-import { User } from '../users';
-import { ProductsService } from '../products';
-import { ShoppingCartsService } from '../shopping-carts';
-import { OrdersService } from '../orders';
-import { CheckoutSessionMetadata, PaymentSessionDto } from '.';
+import { CartsService } from '@modules/carts/carts.service';
+import { envs } from '@config/adapters/envs.adapter';
+import { OrdersService } from '@modules/orders/orders.service';
+import { PaymentSessionDto } from '@modules/payments/dtos/payment-session.dto';
+import { ProductsService } from '@modules/products/products.service';
 
 @Injectable()
 export class PaymentsService {
@@ -15,42 +14,43 @@ export class PaymentsService {
 
   constructor(
     private readonly productsService: ProductsService,
-    private readonly shoppingCartsService: ShoppingCartsService,
+    private readonly cartsService: CartsService,
     private readonly ordersService: OrdersService,
   ) {}
 
-  async createPaymentSession(paymentSessionDto: PaymentSessionDto, user: User) {
-    const { shopping_cart_id } = paymentSessionDto;
+  async createPaymentSession(
+    paymentSessionDto: PaymentSessionDto,
+    userId: string,
+  ): Promise<{ cancelUrl: string | null; successUrl: string | null; url: string | null }> {
+    const { cartId } = paymentSessionDto;
 
-    const shoppingCart = await this.shoppingCartsService.validateShoppingCart(shopping_cart_id, user.user_id);
+    const { items } = await this.cartsService.validateCartForPayment(cartId, userId);
 
-    const lineItems = shoppingCart.products.map((product) => {
-      return {
-        price_data: {
-          currency: 'usd',
-          product_data: { name: product.product.name, images: [product.product.image_url] },
-          unit_amount: Math.round(product.product.price * 100),
-        },
-        quantity: product.quantity,
-      };
-    });
+    const orderItems = items!.map((item) => ({
+      price_data: {
+        currency: 'usd',
+        product_data: { name: item.product!.name!, images: [item.product!.imageUrl!] },
+        unit_amount: Math.round(item.product!.price! * 100),
+      },
+      quantity: item.quantity,
+    }));
 
-    const session = await this.stripe.checkout.sessions.create({
-      line_items: lineItems,
-      metadata: { user_id: user.user_id, shopping_cart_id },
+    const paymentSession = await this.stripe.checkout.sessions.create({
+      payment_intent_data: { metadata: { userId, cartId } },
+      line_items: orderItems,
       mode: 'payment',
       success_url: `${envs.FRONTEND_URL}/orders`,
       cancel_url: `${envs.FRONTEND_URL}/shopping-cart`,
     });
 
     return {
-      url: session.url,
-      success_url: session.success_url,
-      cancel_url: session.cancel_url,
+      cancelUrl: paymentSession.cancel_url,
+      successUrl: paymentSession.success_url,
+      url: paymentSession.url,
     };
   }
 
-  async stripeWebhook(req: RawBodyRequest<Request>, res: Response) {
+  async stripeWebhook(req: RawBodyRequest<Request>): Promise<void> {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = envs.STRIPE_ENDPOINT_SECRET;
 
@@ -65,46 +65,45 @@ export class PaymentsService {
     const event: Stripe.Event = this.stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
 
     switch (event.type) {
-      case 'checkout.session.completed':
-        const checkoutSessionCompleted = event.data.object as Stripe.Checkout.Session & {
-          metadata: CheckoutSessionMetadata;
+      case 'charge.succeeded':
+        const chargeSucceeded = event.data.object;
+        if (!chargeSucceeded.receipt_url) throw new InternalServerErrorException('Missing receipt_url');
+
+        const payload = {
+          stripePaymentId: chargeSucceeded.id,
+          receiptUrl: chargeSucceeded.receipt_url,
+          userId: chargeSucceeded.metadata.userId,
+          cartId: chargeSucceeded.metadata.cartId,
         };
 
-        if (!checkoutSessionCompleted.metadata) {
-          throw new InternalServerErrorException('Metadata is missing in the Stripe event');
-        }
+        const cart = await this.cartsService.validateCartForPayment(payload.cartId, payload.userId);
 
-        const { user_id, shopping_cart_id } = checkoutSessionCompleted.metadata;
+        const orderItems = cart.items!.map((item) => ({
+          productId: item.productId!,
+          quantity: item.quantity!,
+          subtotal: item.subtotal!,
+        }));
 
-        if (!user_id || !shopping_cart_id) {
-          throw new InternalServerErrorException('Required metadata fields are missing');
-        }
-
-        const shoppingCart = await this.shoppingCartsService.getShoppingCartById(shopping_cart_id);
-        const order = await this.ordersService.createOrder({ user_id, total: shoppingCart.total });
-
-        const items = shoppingCart.products.map((productItem) => {
-          return {
-            product_id: productItem.product_id,
-            quantity: productItem.quantity,
-            subtotal: productItem.subtotal,
-          };
+        await this.ordersService.createOrder({
+          userId: payload.userId,
+          items: orderItems,
+          total: cart.total,
+          receiptUrl: payload.receiptUrl,
         });
 
-        await this.ordersService.addProductsToOrderDetails({ order_id: order.order_id, products: items });
         await Promise.all(
-          shoppingCart.products.map((product) =>
-            this.productsService.updateProductStock(product.product_id, product.quantity),
-          ),
+          cart.items!.map(async (item) => {
+            const updatedStock = item.product!.stock! - item.quantity!;
+            await this.productsService.updateProduct(item.productId!, { stock: updatedStock });
+          }),
         );
 
-        await this.shoppingCartsService.emptyCart(shoppingCart.shopping_cart_id);
+        await this.cartsService.deleteCartItems(payload.cartId);
+
         break;
 
       default:
         throw new InternalServerErrorException(`Event ${event.type} not handled`);
     }
-
-    return res.status(200).json({ sig });
   }
 }
