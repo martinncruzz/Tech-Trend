@@ -2,9 +2,9 @@ import { Controller, Get, Body, Patch, Param, Delete, ParseUUIDPipe, Query } fro
 
 import { Auth } from '@modules/auth/decorators/auth.decorator';
 import { GetUser } from '@modules/auth/decorators/get-user.decorator';
-import { PaginationDto } from '@modules/shared/dtos/pagination.dto';
 import { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
 import { User } from '@modules/users/entities/user.entity';
+import { UserFiltersDto } from '@modules/users/dtos/user-filters.dto';
 import { UserRoles } from '@modules/shared/interfaces/enums';
 import { UsersService } from '@modules/users/users.service';
 
@@ -14,8 +14,8 @@ export class UsersController {
 
   @Get()
   @Auth(UserRoles.ADMIN)
-  getUsers(@Query() paginationDto: PaginationDto) {
-    return this.usersService.getUsers(paginationDto);
+  getUsers(@Query() userFiltersDto: UserFiltersDto) {
+    return this.usersService.getUsers(userFiltersDto);
   }
 
   @Get(':id')

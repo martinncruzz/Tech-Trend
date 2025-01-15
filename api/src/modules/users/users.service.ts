@@ -1,14 +1,15 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
+import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
 import { buildPagination } from '@modules/shared/helpers/pagination.builder';
 import { CartsService } from '@modules/carts/carts.service';
-import { PaginationDto } from '@modules/shared/dtos/pagination.dto';
+import { OrdersService } from '@modules/orders/orders.service';
 import { ResourceType, UserRoles } from '@modules/shared/interfaces/enums';
 import { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
 import { User } from '@modules/users/entities/user.entity';
+import { UserFiltersDto } from '@modules/users/dtos/user-filters.dto';
 import { UsersRepository } from '@modules/users/repositories/users.repository';
-import { OrdersService } from '@modules/orders/orders.service';
 
 @Injectable()
 export class UsersService {
@@ -18,11 +19,12 @@ export class UsersService {
     private readonly ordersService: OrdersService,
   ) {}
 
-  async getUsers(paginationDto: PaginationDto): Promise<{ prev: string | null; next: string | null; users: User[] }> {
-    const { total, users } = await this.usersRepository.findAll(paginationDto);
+  async getUsers(userFiltersDto: UserFiltersDto): Promise<{ prev: string | null; next: string | null; users: User[] }> {
+    const { total, users } = await this.usersRepository.findAll(userFiltersDto);
 
+    const filtersQuery = buildFiltersQuery(userFiltersDto);
     const baseUrl = buildBaseUrl(ResourceType.USERS);
-    const { prev, next } = buildPagination(paginationDto, total, baseUrl);
+    const { prev, next } = buildPagination(userFiltersDto, total, baseUrl, filtersQuery);
 
     return { prev, next, users };
   }
