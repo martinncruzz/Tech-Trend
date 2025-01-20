@@ -47,7 +47,14 @@ export class AuthService {
     return { token };
   }
 
-  async checkSession(currentUser: User): Promise<User> {
+  handleOAuthLogin(currentUser: User): { token: string } {
+    const payload: JwtPayload = { id: currentUser.id, roles: currentUser.roles };
+    const token = this.jwtService.sign(payload);
+
+    return { token };
+  }
+
+  checkSession(currentUser: User): User {
     return currentUser;
   }
 }

@@ -6,7 +6,6 @@ import { GetUser } from '@modules/auth/decorators/get-user.decorator';
 import { LoginUserDto } from '@modules/auth/dtos/login-user.dto';
 import { RegisterUserDto } from '@modules/auth/dtos/register-user.dto';
 import { User } from '@modules/users/entities/user.entity';
-import { UserRoles } from '@modules/shared/interfaces/enums';
 
 @Controller('auth')
 export class AuthController {
@@ -22,8 +21,28 @@ export class AuthController {
     return this.authService.loginUser(loginUserDto);
   }
 
+  @Auth({ strategy: 'google' })
+  @Get('google/redirect')
+  redirectToGoogle() {}
+
+  @Auth({ strategy: 'google' })
+  @Get('google/callback')
+  handleGoogleCallback(@GetUser() currentUser: User) {
+    return this.authService.handleOAuthLogin(currentUser);
+  }
+
+  @Auth({ strategy: 'facebook' })
+  @Get('facebook/redirect')
+  redirectToFacebook() {}
+
+  @Auth({ strategy: 'facebook' })
+  @Get('facebook/callback')
+  handleFacebookCallback(@GetUser() currentUser: User) {
+    return this.authService.handleOAuthLogin(currentUser);
+  }
+
   @Get('check-session')
-  @Auth(UserRoles.USER)
+  @Auth()
   checkSession(@GetUser() currentUser: User) {
     return this.authService.checkSession(currentUser);
   }
