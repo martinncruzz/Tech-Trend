@@ -5,18 +5,18 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { envs } from '@config/adapters/envs.adapter';
 import { JwtPayload } from '@modules/auth/interfaces/jwt-payload.interface';
 import { User } from '@modules/users/entities/user.entity';
-import { UsersService } from '@modules/users/users.service';
+import { UsersRepository } from '@modules/users/repositories/users.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly usersService: UsersService) {
+  constructor(private readonly usersRepository: UsersRepository) {
     super({ jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: envs.JWT_SECRET });
   }
 
   async validate(payload: JwtPayload): Promise<User> {
     const { id } = payload;
 
-    const user = await this.usersService.getUserById(id);
+    const user = await this.usersRepository.findById(id);
     if (!user) throw new UnauthorizedException('Invalid token');
 
     return user;
