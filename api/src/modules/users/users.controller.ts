@@ -13,19 +13,19 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   getUsers(@Query() userFiltersDto: UserFiltersDto) {
     return this.usersService.getUsers(userFiltersDto);
   }
 
   @Get(':id')
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   getUserById(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.getUserById(id);
   }
 
   @Patch(':id')
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -35,7 +35,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   deleteUser(@Param('id', ParseUUIDPipe) id: string, @GetUser() currentUser: User) {
     return this.usersService.deleteUser(id, currentUser);
   }

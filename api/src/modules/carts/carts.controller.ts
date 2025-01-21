@@ -5,32 +5,31 @@ import { CartItemDto } from '@modules/carts/dtos/cart-item.dto';
 import { CartsService } from '@modules/carts/carts.service';
 import { GetUser } from '@modules/auth/decorators/get-user.decorator';
 import { User } from '@modules/users/entities/user.entity';
-import { UserRoles } from '@modules/shared/interfaces/enums';
 
 @Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
   @Get()
-  @Auth(UserRoles.USER)
+  @Auth()
   getCartByUserId(@GetUser() currentUser: User) {
     return this.cartsService.getCartByUserId(currentUser.id);
   }
 
   @Post()
-  @Auth(UserRoles.USER)
+  @Auth()
   addItem(@Body() cartItemDto: CartItemDto, @GetUser() currentUser: User) {
     return this.cartsService.addItem(cartItemDto, currentUser.id);
   }
 
   @Patch()
-  @Auth(UserRoles.USER)
+  @Auth()
   updateItem(@Body() cartItemDto: CartItemDto, @GetUser() currentUser: User) {
     return this.cartsService.updateItem(cartItemDto, currentUser.id);
   }
 
   @Delete('item/:productId')
-  @Auth(UserRoles.USER)
+  @Auth()
   removeItem(@Param('productId', ParseUUIDPipe) productId: string, @GetUser() currentUser: User) {
     return this.cartsService.removeItem(productId, currentUser.id);
   }

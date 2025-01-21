@@ -6,14 +6,13 @@ import { GetUser } from '@modules/auth/decorators/get-user.decorator';
 import { PaymentSessionDto } from '@modules/payments/dtos/payment-session.dto';
 import { PaymentsService } from '@modules/payments/payments.service';
 import { User } from '@modules/users/entities/user.entity';
-import { UserRoles } from '@modules/shared/interfaces/enums';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('create-payment-session')
-  @Auth(UserRoles.USER)
+  @Auth()
   createPaymentSession(@Body() paymentSessionDto: PaymentSessionDto, @GetUser() currentUser: User) {
     return this.paymentsService.createPaymentSession(paymentSessionDto, currentUser.id);
   }

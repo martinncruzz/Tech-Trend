@@ -12,19 +12,19 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get()
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   getOrders(@Query() orderFiltersDto: OrderFiltersDto) {
     return this.ordersService.getOrders(orderFiltersDto);
   }
 
   @Get('my-orders')
-  @Auth(UserRoles.USER)
+  @Auth()
   getOrdersByUserId(@Query() orderFiltersDto: OrderFiltersDto, @GetUser() currentUser: User) {
     return this.ordersService.getOrdersByUserId(orderFiltersDto, currentUser.id);
   }
 
   @Get(':id/details')
-  @Auth(UserRoles.USER)
+  @Auth()
   getOrderById(@Param('id', ParseUUIDPipe) id: string) {
     return this.ordersService.getOrderById(id);
   }

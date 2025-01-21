@@ -37,7 +37,7 @@ export class ProductsController {
   }
 
   @Post()
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
   createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('File is required to create a product');
@@ -45,7 +45,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
   updateProduct(
     @Param('id', ParseUUIDPipe) id: string,
@@ -56,7 +56,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   deleteProduct(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.deleteProduct(id);
   }

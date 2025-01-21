@@ -22,19 +22,19 @@ export class CategoriesController {
   }
 
   @Post()
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   createCategory(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.createCategory(createCategoryDto);
   }
 
   @Patch(':id')
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   updateCategory(@Param('id', ParseUUIDPipe) id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.updateCategory(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  @Auth(UserRoles.ADMIN)
+  @Auth({ roles: [UserRoles.ADMIN] })
   deleteCategory(@Param('id', ParseUUIDPipe) id: string) {
     return this.categoriesService.deleteCategory(id);
   }
