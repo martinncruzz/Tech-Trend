@@ -13,7 +13,7 @@ async function bootstrap() {
   await PostgresDatabase.connect();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
 
-  app.enableCors({ origin: envs.FRONTEND_URL });
+  app.enableCors({ origin: envs.WEB_APP_URL });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
   app.useGlobalFilters(new CustomExceptionFilter());

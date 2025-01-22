@@ -39,8 +39,8 @@ export class PaymentsService {
       payment_intent_data: { metadata: { userId, cartId } },
       line_items: orderItems,
       mode: 'payment',
-      success_url: `${envs.FRONTEND_URL}/orders`,
-      cancel_url: `${envs.FRONTEND_URL}/shopping-cart`,
+      success_url: `${envs.WEB_APP_URL}/orders`,
+      cancel_url: `${envs.WEB_APP_URL}/shopping-cart`,
     });
 
     return {
