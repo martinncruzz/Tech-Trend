@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const envsSchema = z.object({
   PORT: z.coerce.number().int().positive('PORT must be a positive integer'),
-  FRONTEND_URL: z.string().url('FRONTEND_URL must be a valid URL'),
-  BACKEND_URL: z.string().url('BACKEND_URL must be a valid URL'),
+  API_BASE_URL: z.string().url('API_BASE_URL must be a valid URL'),
+  WEB_APP_URL: z.string().url('WEB_APP_URL must be a valid URL'),
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid URL'),
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
   OAUTH_DEFAULT_PASSWORD: z.string().min(1, 'OAUTH_DEFAULT_PASSWORD is required'),
