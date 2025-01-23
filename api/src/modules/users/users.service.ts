@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
+import { BcryptAdapter } from '@config/adapters/bcrypt.adapter';
 import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
 import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
 import { buildPagination } from '@modules/shared/helpers/pagination.builder';
@@ -38,7 +39,7 @@ export class UsersService {
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto, currentUser: User): Promise<User> {
-    const { fullname, email } = updateUserDto;
+    const { fullname, email, password } = updateUserDto;
 
     const user = await this.getUserById(id);
 
@@ -51,7 +52,11 @@ export class UsersService {
       if (userExists) throw new BadRequestException('Email already registered');
     }
 
-    return this.usersRepository.update(id, { fullname, email: email?.toLowerCase().trim() });
+    return this.usersRepository.update(id, {
+      fullname,
+      email: email?.toLowerCase().trim(),
+      ...(password && { password: BcryptAdapter.hash(password) }),
+    });
   }
 
   async deleteUser(id: string, currentUser: User): Promise<boolean> {
