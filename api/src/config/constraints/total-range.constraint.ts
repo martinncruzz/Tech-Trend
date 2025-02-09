@@ -1,6 +1,6 @@
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
 
-@ValidatorConstraint({ name: 'totalRange', async: false })
+@ValidatorConstraint({ name: 'TotalRange', async: false })
 export class TotalRangeConstraint implements ValidatorConstraintInterface {
   validate(_value: any, args: ValidationArguments): boolean {
     const object = args.object as any;
