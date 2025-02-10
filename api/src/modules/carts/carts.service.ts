@@ -102,7 +102,7 @@ export class CartsService {
   async deleteCartItems(id: string): Promise<boolean> {
     const cart = await this.getCartById(id);
 
-    await this.cartItemsRepository.deleteAllByCartId(cart.id);
+    await this.cartItemsRepository.deleteManyByCartId(cart.id);
     await this.cartsRepository.update(cart.id, { total: 0 });
 
     return true;
@@ -123,7 +123,7 @@ export class CartsService {
   async deleteCartByUserId(userId: string): Promise<boolean> {
     const cart = await this.getCartByUserId(userId);
 
-    await this.cartItemsRepository.deleteAllByCartId(cart.id);
+    await this.cartItemsRepository.deleteManyByCartId(cart.id);
     await this.cartsRepository.deleteByUserId(userId);
 
     return true;

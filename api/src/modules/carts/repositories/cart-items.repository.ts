@@ -8,5 +8,5 @@ export abstract class CartItemsRepository {
   abstract create(createCartItemDto: CreateCartItemDto): Promise<CartItem>;
   abstract update(id: string, updateCartItemDto: UpdateCartItemDto): Promise<CartItem>;
   abstract delete(id: string): Promise<boolean>;
-  abstract deleteAllByCartId(cartId: string): Promise<boolean>;
+  abstract deleteManyByCartId(cartId: string): Promise<boolean>;
 }

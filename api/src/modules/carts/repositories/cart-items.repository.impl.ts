@@ -35,7 +35,7 @@ export class CartItemsRepositoryImpl implements CartItemsRepository {
     return true;
   }
 
-  async deleteAllByCartId(cartId: string): Promise<boolean> {
+  async deleteManyByCartId(cartId: string): Promise<boolean> {
     await this.prisma.cartItem.deleteMany({ where: { cartId } });
     return true;
   }
