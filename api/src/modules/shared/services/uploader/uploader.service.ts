@@ -27,9 +27,6 @@ export class UploaderService {
 
   async updateFile(file: Express.Multer.File, imageId: string): Promise<UploadApiResponse | UploadApiErrorResponse> {
     await this.deleteFile(imageId);
-
-    const updatedFile = await this.uploadFile(file);
-
-    return updatedFile;
+    return this.uploadFile(file);
   }
 }
