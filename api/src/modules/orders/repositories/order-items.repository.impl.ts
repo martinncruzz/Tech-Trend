@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { OrderItemsRepository } from '@modules/orders/repositories/order-items.repository';
-import { PostgresDatabase } from '@database/postgres/postgres-database';
-import { CreateOrderDto } from '@modules/orders/dtos/create-order.dto';
-import { OrderItem } from '@modules/orders/entities/order-item.entity';
+import { OrderItemsRepository } from '../../../modules/orders/repositories/order-items.repository';
+import { PostgresDatabase } from '../../../database/postgres/postgres-database';
+import { CreateOrderDto } from '../../../modules/orders/dtos/create-order.dto';
+import { OrderItem } from '../../../modules/orders/entities/order-item.entity';
 
 @Injectable()
 export class OrderItemsRepositoryImpl implements OrderItemsRepository {

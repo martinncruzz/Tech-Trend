@@ -1,6 +1,6 @@
-import { CartItem } from '@modules/carts/entities/cart-item.entity';
-import { CreateCartItemDto } from '@modules/carts/dtos/create-cart-item.dto';
-import { UpdateCartItemDto } from '@modules/carts/dtos/update-cart-item.dto';
+import { CartItem } from '../../../modules/carts/entities/cart-item.entity';
+import { CreateCartItemDto } from '../../../modules/carts/dtos/create-cart-item.dto';
+import { UpdateCartItemDto } from '../../../modules/carts/dtos/update-cart-item.dto';
 
 export abstract class CartItemsRepository {
   abstract findAllByProductId(productId: string): Promise<CartItem[]>;

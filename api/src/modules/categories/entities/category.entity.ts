@@ -1,8 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
 
-import { CategorySchema } from '@config/schemas/category.schema';
-import { Product } from '@modules/products/entities/product.entity';
-import { ValidatorAdapter } from '@config/adapters/validator.adapter';
+import { CategorySchema } from '../../../config/schemas/category.schema';
+import { Product } from '../../../modules/products/entities/product.entity';
+import { ValidatorAdapter } from '../../../config/adapters/validator.adapter';
 
 export class Category {
   constructor(

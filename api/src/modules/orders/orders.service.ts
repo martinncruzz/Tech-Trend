@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
-import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
-import { buildPagination } from '@modules/shared/helpers/pagination.builder';
-import { CreateOrderDto } from '@modules/orders/dtos/create-order.dto';
-import { Order } from '@modules/orders/entities/order.entity';
-import { OrderFiltersDto } from '@modules/orders/dtos/order-filters.dto';
-import { OrderItemsRepository } from '@modules/orders/repositories/order-items.repository';
-import { OrdersRepository } from '@modules/orders/repositories/orders.repository';
-import { ResourceType } from '@modules/shared/interfaces/enums';
+import { buildBaseUrl } from '../../modules/shared/helpers/base-url.builder';
+import { buildFiltersQuery } from '../../modules/shared/helpers/filters-query.builder';
+import { buildPagination } from '../../modules/shared/helpers/pagination.builder';
+import { CreateOrderDto } from '../../modules/orders/dtos/create-order.dto';
+import { Order } from '../../modules/orders/entities/order.entity';
+import { OrderFiltersDto } from '../../modules/orders/dtos/order-filters.dto';
+import { OrderItemsRepository } from '../../modules/orders/repositories/order-items.repository';
+import { OrdersRepository } from '../../modules/orders/repositories/orders.repository';
+import { ResourceType } from '../../modules/shared/interfaces/enums';
 
 @Injectable()
 export class OrdersService {

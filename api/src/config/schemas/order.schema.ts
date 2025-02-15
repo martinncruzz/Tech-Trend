@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { Order } from '@modules/orders/entities/order.entity';
-import { OrderItem } from '@modules/orders/entities/order-item.entity';
-import { OrderStatus } from '@modules/shared/interfaces/enums';
-import { PartialProductSchema } from '@config/schemas/product.schema';
-import { PartialUserSchema } from '@config/schemas/user.schema';
+import { Order } from '../../modules/orders/entities/order.entity';
+import { OrderItem } from '../../modules/orders/entities/order-item.entity';
+import { OrderStatus } from '../../modules/shared/interfaces/enums';
+import { PartialProductSchema } from '../../config/schemas/product.schema';
+import { PartialUserSchema } from '../../config/schemas/user.schema';
 
 export const OrderStatusSchema = z.nativeEnum(OrderStatus);
 

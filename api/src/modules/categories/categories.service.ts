@@ -7,16 +7,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
-import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
-import { buildPagination } from '@modules/shared/helpers/pagination.builder';
-import { CategoriesRepository } from '@modules/categories/repositories/categories.repository';
-import { Category } from '@modules/categories/entities/category.entity';
-import { CategoryFiltersDto } from '@modules/categories/dtos/category-filters.dto';
-import { CreateCategoryDto } from '@modules/categories/dtos/create-category.dto';
-import { ProductsService } from '@modules/products/products.service';
-import { ResourceType } from '@modules/shared/interfaces/enums';
-import { UpdateCategoryDto } from '@modules/categories/dtos/update-category.dto';
+import { buildBaseUrl } from '../../modules/shared/helpers/base-url.builder';
+import { buildFiltersQuery } from '../../modules/shared/helpers/filters-query.builder';
+import { buildPagination } from '../../modules/shared/helpers/pagination.builder';
+import { CategoriesRepository } from '../../modules/categories/repositories/categories.repository';
+import { Category } from '../../modules/categories/entities/category.entity';
+import { CategoryFiltersDto } from '../../modules/categories/dtos/category-filters.dto';
+import { CreateCategoryDto } from '../../modules/categories/dtos/create-category.dto';
+import { ProductsService } from '../../modules/products/products.service';
+import { ResourceType } from '../../modules/shared/interfaces/enums';
+import { UpdateCategoryDto } from '../../modules/categories/dtos/update-category.dto';
 
 @Injectable()
 export class CategoriesService {

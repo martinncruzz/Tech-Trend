@@ -1,10 +1,10 @@
 import { InternalServerErrorException } from '@nestjs/common';
 
-import { OrderItem } from '@modules/orders/entities/order-item.entity';
-import { OrderSchema } from '@config/schemas/order.schema';
-import { OrderStatus } from '@modules/shared/interfaces/enums';
-import { User } from '@modules/users/entities/user.entity';
-import { ValidatorAdapter } from '@config/adapters/validator.adapter';
+import { OrderItem } from '../../../modules/orders/entities/order-item.entity';
+import { OrderSchema } from '../../../config/schemas/order.schema';
+import { OrderStatus } from '../../../modules/shared/interfaces/enums';
+import { User } from '../../../modules/users/entities/user.entity';
+import { ValidatorAdapter } from '../../../config/adapters/validator.adapter';
 
 export class Order {
   constructor(

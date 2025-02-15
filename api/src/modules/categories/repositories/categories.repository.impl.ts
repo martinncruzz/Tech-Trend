@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { CategoriesRepository } from '@modules/categories/repositories/categories.repository';
-import { Category } from '@modules/categories/entities/category.entity';
-import { CategoryFiltersDto } from '@modules/categories/dtos/category-filters.dto';
-import { CreateCategoryDto } from '@modules/categories/dtos/create-category.dto';
-import { PostgresDatabase } from '@database/postgres/postgres-database';
-import { UpdateCategoryDto } from '@modules/categories/dtos/update-category.dto';
+import { CategoriesRepository } from '../../../modules/categories/repositories/categories.repository';
+import { Category } from '../../../modules/categories/entities/category.entity';
+import { CategoryFiltersDto } from '../../../modules/categories/dtos/category-filters.dto';
+import { CreateCategoryDto } from '../../../modules/categories/dtos/create-category.dto';
+import { PostgresDatabase } from '../../../database/postgres/postgres-database';
+import { UpdateCategoryDto } from '../../../modules/categories/dtos/update-category.dto';
 
 @Injectable()
 export class CategoriesRepositoryImpl implements CategoriesRepository {

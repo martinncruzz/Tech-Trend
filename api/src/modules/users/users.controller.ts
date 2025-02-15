@@ -1,12 +1,12 @@
 import { Controller, Get, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
 
-import { Auth } from '@modules/auth/decorators/auth.decorator';
-import { GetUser } from '@modules/auth/decorators/get-user.decorator';
-import { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
-import { User } from '@modules/users/entities/user.entity';
-import { UserFiltersDto } from '@modules/users/dtos/user-filters.dto';
-import { UserRoles } from '@modules/shared/interfaces/enums';
-import { UsersService } from '@modules/users/users.service';
+import { Auth } from '../../modules/auth/decorators/auth.decorator';
+import { GetUser } from '../../modules/auth/decorators/get-user.decorator';
+import { UpdateUserDto } from '../../modules/users/dtos/update-user.dto';
+import { User } from '../../modules/users/entities/user.entity';
+import { UserFiltersDto } from '../../modules/users/dtos/user-filters.dto';
+import { UserRoles } from '../../modules/shared/interfaces/enums';
+import { UsersService } from '../../modules/users/users.service';
 
 @Controller('users')
 export class UsersController {

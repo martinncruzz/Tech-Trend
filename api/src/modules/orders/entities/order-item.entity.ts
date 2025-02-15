@@ -1,9 +1,9 @@
 import { InternalServerErrorException } from '@nestjs/common';
 
-import { Order } from '@modules/orders/entities/order.entity';
-import { OrderItemSchema } from '@config/schemas/order.schema';
-import { Product } from '@modules/products/entities/product.entity';
-import { ValidatorAdapter } from '@config/adapters/validator.adapter';
+import { Order } from '../../../modules/orders/entities/order.entity';
+import { OrderItemSchema } from '../../../config/schemas/order.schema';
+import { Product } from '../../../modules/products/entities/product.entity';
+import { ValidatorAdapter } from '../../../config/adapters/validator.adapter';
 
 export class OrderItem {
   constructor(

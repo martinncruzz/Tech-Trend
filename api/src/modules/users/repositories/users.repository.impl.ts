@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
-import { PostgresDatabase } from '@database/postgres/postgres-database';
-import { RegisterUserDto } from '@modules/auth/dtos/register-user.dto';
-import { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
-import { User } from '@modules/users/entities/user.entity';
-import { UserFiltersDto } from '@modules/users/dtos/user-filters.dto';
-import { UserRoles } from '@modules/shared/interfaces/enums';
-import { UsersRepository } from '@modules/users/repositories/users.repository';
+import { PostgresDatabase } from '../../../database/postgres/postgres-database';
+import { RegisterUserDto } from '../../../modules/auth/dtos/register-user.dto';
+import { UpdateUserDto } from '../../../modules/users/dtos/update-user.dto';
+import { User } from '../../../modules/users/entities/user.entity';
+import { UserFiltersDto } from '../../../modules/users/dtos/user-filters.dto';
+import { UserRoles } from '../../../modules/shared/interfaces/enums';
+import { UsersRepository } from '../../../modules/users/repositories/users.repository';
 
 @Injectable()
 export class UsersRepositoryImpl implements UsersRepository {

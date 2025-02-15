@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Patch, Body, Delete, Param, ParseUUIDPipe } from '@nestjs/common';
 
-import { Auth } from '@modules/auth/decorators/auth.decorator';
-import { CartItemDto } from '@modules/carts/dtos/cart-item.dto';
-import { CartsService } from '@modules/carts/carts.service';
-import { GetUser } from '@modules/auth/decorators/get-user.decorator';
-import { User } from '@modules/users/entities/user.entity';
+import { Auth } from '../../modules/auth/decorators/auth.decorator';
+import { CartItemDto } from '../../modules/carts/dtos/cart-item.dto';
+import { CartsService } from '../../modules/carts/carts.service';
+import { GetUser } from '../../modules/auth/decorators/get-user.decorator';
+import { User } from '../../modules/users/entities/user.entity';
 
 @Controller('carts')
 export class CartsController {

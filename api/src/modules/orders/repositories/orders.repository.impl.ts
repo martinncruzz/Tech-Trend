@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateOrderDto } from '@modules/orders/dtos/create-order.dto';
-import { Order } from '@modules/orders/entities/order.entity';
-import { OrderFiltersDto } from '@modules/orders/dtos/order-filters.dto';
-import { OrdersRepository } from '@modules/orders/repositories/orders.repository';
-import { OrderStatus } from '@modules/shared/interfaces/enums';
-import { PostgresDatabase } from '@database/postgres/postgres-database';
+import { CreateOrderDto } from '../../../modules/orders/dtos/create-order.dto';
+import { Order } from '../../../modules/orders/entities/order.entity';
+import { OrderFiltersDto } from '../../../modules/orders/dtos/order-filters.dto';
+import { OrdersRepository } from '../../../modules/orders/repositories/orders.repository';
+import { OrderStatus } from '../../../modules/shared/interfaces/enums';
+import { PostgresDatabase } from '../../../database/postgres/postgres-database';
 
 @Injectable()
 export class OrdersRepositoryImpl implements OrdersRepository {

@@ -1,10 +1,10 @@
 import { InternalServerErrorException } from '@nestjs/common';
 
-import { Cart } from '@modules/carts/entities/cart.entity';
-import { Order } from '@modules/orders/entities/order.entity';
-import { UserRoles } from '@modules/shared/interfaces/enums';
-import { UserSchema } from '@config/schemas/user.schema';
-import { ValidatorAdapter } from '@config/adapters/validator.adapter';
+import { Cart } from '../../../modules/carts/entities/cart.entity';
+import { Order } from '../../../modules/orders/entities/order.entity';
+import { UserRoles } from '../../../modules/shared/interfaces/enums';
+import { UserSchema } from '../../../config/schemas/user.schema';
+import { ValidatorAdapter } from '../../../config/adapters/validator.adapter';
 
 export class User {
   constructor(

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { Cart } from '@modules/carts/entities/cart.entity';
-import { CartItem } from '@modules/carts/entities/cart-item.entity';
-import { PartialProductSchema } from '@config/schemas/product.schema';
-import { PartialUserSchema } from '@config/schemas/user.schema';
+import { Cart } from '../../modules/carts/entities/cart.entity';
+import { CartItem } from '../../modules/carts/entities/cart-item.entity';
+import { PartialProductSchema } from '../../config/schemas/product.schema';
+import { PartialUserSchema } from '../../config/schemas/user.schema';
 
 export const BaseCartItemSchema = z.object({
   id: z.string().uuid(),

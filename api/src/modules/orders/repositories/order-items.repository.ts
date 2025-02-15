@@ -1,5 +1,5 @@
-import { CreateOrderDto } from '@modules/orders/dtos/create-order.dto';
-import { OrderItem } from '@modules/orders/entities/order-item.entity';
+import { CreateOrderDto } from '../../../modules/orders/dtos/create-order.dto';
+import { OrderItem } from '../../../modules/orders/entities/order-item.entity';
 
 export abstract class OrderItemsRepository {
   abstract createMany(orderId: string, createOrderDto: CreateOrderDto): Promise<OrderItem[]>;

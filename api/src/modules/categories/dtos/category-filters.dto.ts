@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional, IsString, MinLength, Validate } from 'class-validator';
 
-import { PaginationDto } from '@modules/shared/dtos/pagination.dto';
-import { SortByOrderConstraint } from '@config/constraints/sort-by-order.constraint';
+import { PaginationDto } from '../../../modules/shared/dtos/pagination.dto';
+import { SortByOrderConstraint } from '../../../config/constraints/sort-by-order.constraint';
 
 export class CategoryFiltersDto extends PaginationDto {
   @IsOptional()

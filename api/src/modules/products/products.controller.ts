@@ -14,13 +14,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { Auth } from '@modules/auth/decorators/auth.decorator';
-import { CreateProductDto } from '@modules/products/dtos/create-product.dto';
-import { fileFilter } from '@modules/shared/helpers/file-filter.helper';
-import { ProductFiltersDto } from '@modules/products/dtos/product-filters.dto';
-import { ProductsService } from '@modules/products/products.service';
-import { UpdateProductDto } from '@modules/products/dtos/update-product.dto';
-import { UserRoles } from '@modules/shared/interfaces/enums';
+import { Auth } from '../../modules/auth/decorators/auth.decorator';
+import { CreateProductDto } from '../../modules/products/dtos/create-product.dto';
+import { fileFilter } from '../../modules/shared/helpers/file-filter.helper';
+import { ProductFiltersDto } from '../../modules/products/dtos/product-filters.dto';
+import { ProductsService } from '../../modules/products/products.service';
+import { UpdateProductDto } from '../../modules/products/dtos/update-product.dto';
+import { UserRoles } from '../../modules/shared/interfaces/enums';
 
 @Controller('products')
 export class ProductsController {

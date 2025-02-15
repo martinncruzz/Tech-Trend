@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { Cart } from '@modules/carts/entities/cart.entity';
-import { CartsRepository } from '@modules/carts/repositories/carts.repository';
-import { CreateCartDto } from '@modules/carts/dtos/create-cart.dto';
-import { PostgresDatabase } from '@database/postgres/postgres-database';
-import { UpdateCartDto } from '@modules/carts/dtos/update-cart.dto';
+import { Cart } from '../../../modules/carts/entities/cart.entity';
+import { CartsRepository } from '../../../modules/carts/repositories/carts.repository';
+import { CreateCartDto } from '../../../modules/carts/dtos/create-cart.dto';
+import { PostgresDatabase } from '../../../database/postgres/postgres-database';
+import { UpdateCartDto } from '../../../modules/carts/dtos/update-cart.dto';
 
 @Injectable()
 export class CartsRepositoryImpl implements CartsRepository {

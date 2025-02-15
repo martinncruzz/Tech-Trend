@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsPositive, IsString, IsUUID, MinLength, Validate } from 'class-validator';
 
-import { PaginationDto } from '@modules/shared/dtos/pagination.dto';
-import { PriceRangeConstraint } from '@config/constraints/price-range.constraint';
-import { SortByOrderConstraint } from '@config/constraints/sort-by-order.constraint';
+import { PaginationDto } from '../../../modules/shared/dtos/pagination.dto';
+import { PriceRangeConstraint } from '../../../config/constraints/price-range.constraint';
+import { SortByOrderConstraint } from '../../../config/constraints/sort-by-order.constraint';
 
 export class ProductFiltersDto extends PaginationDto {
   @IsOptional()

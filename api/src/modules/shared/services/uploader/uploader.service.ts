@@ -2,8 +2,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { v2 as cloudinary, UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import * as streamifier from 'streamifier';
 
-import { FOLDER_NAME } from '@modules/shared/services/uploader/cloudinary/cloudinary.constants';
-import { MediaOptimizerAdapter } from '@config/adapters/media-optimizer.adapter';
+import { FOLDER_NAME } from '../../../../modules/shared/services/uploader/cloudinary/cloudinary.constants';
+import { MediaOptimizerAdapter } from '../../../../config/adapters/media-optimizer.adapter';
 
 @Injectable()
 export class UploaderService {

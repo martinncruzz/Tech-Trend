@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { PartialCartSchema } from '@config/schemas/cart.schema';
-import { PartialOrderSchema } from '@config/schemas/order.schema';
-import { User } from '@modules/users/entities/user.entity';
-import { UserRoles } from '@modules/shared/interfaces/enums';
+import { PartialCartSchema } from '../../config/schemas/cart.schema';
+import { PartialOrderSchema } from '../../config/schemas/order.schema';
+import { User } from '../../modules/users/entities/user.entity';
+import { UserRoles } from '../../modules/shared/interfaces/enums';
 
 export const UserRolesSchema = z.nativeEnum(UserRoles);
 

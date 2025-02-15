@@ -1,6 +1,6 @@
-import { CreateOrderDto } from '@modules/orders/dtos/create-order.dto';
-import { Order } from '@modules/orders/entities/order.entity';
-import { OrderFiltersDto } from '@modules/orders/dtos/order-filters.dto';
+import { CreateOrderDto } from '../../../modules/orders/dtos/create-order.dto';
+import { Order } from '../../../modules/orders/entities/order.entity';
+import { OrderFiltersDto } from '../../../modules/orders/dtos/order-filters.dto';
 
 export abstract class OrdersRepository {
   abstract findAll(orderFiltersDto: OrderFiltersDto): Promise<{ total: number; orders: Order[] }>;

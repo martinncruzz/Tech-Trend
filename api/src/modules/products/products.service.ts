@@ -1,18 +1,18 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
-import { buildPagination } from '@modules/shared/helpers/pagination.builder';
-import { CartsService } from '@modules/carts/carts.service';
-import { CategoriesService } from '@modules/categories/categories.service';
-import { CreateProductDto } from '@modules/products/dtos/create-product.dto';
-import { OrdersService } from '@modules/orders/orders.service';
-import { Product } from '@modules/products/entities/product.entity';
-import { ProductFiltersDto } from '@modules/products/dtos/product-filters.dto';
-import { ProductsRepository } from '@modules/products/repositories/products.repository';
-import { ResourceType } from '@modules/shared/interfaces/enums';
-import { UpdateProductDto } from '@modules/products/dtos/update-product.dto';
-import { UploaderService } from '@modules/shared/services/uploader/uploader.service';
-import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
+import { buildBaseUrl } from '../../modules/shared/helpers/base-url.builder';
+import { buildPagination } from '../../modules/shared/helpers/pagination.builder';
+import { CartsService } from '../../modules/carts/carts.service';
+import { CategoriesService } from '../../modules/categories/categories.service';
+import { CreateProductDto } from '../../modules/products/dtos/create-product.dto';
+import { OrdersService } from '../../modules/orders/orders.service';
+import { Product } from '../../modules/products/entities/product.entity';
+import { ProductFiltersDto } from '../../modules/products/dtos/product-filters.dto';
+import { ProductsRepository } from '../../modules/products/repositories/products.repository';
+import { ResourceType } from '../../modules/shared/interfaces/enums';
+import { UpdateProductDto } from '../../modules/products/dtos/update-product.dto';
+import { UploaderService } from '../../modules/shared/services/uploader/uploader.service';
+import { buildFiltersQuery } from '../../modules/shared/helpers/filters-query.builder';
 
 @Injectable()
 export class ProductsService {

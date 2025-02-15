@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateProductDto } from '@modules/products/dtos/create-product.dto';
-import { PostgresDatabase } from '@database/postgres/postgres-database';
-import { Product } from '@modules/products/entities/product.entity';
-import { ProductFiltersDto } from '@modules/products/dtos/product-filters.dto';
-import { ProductsRepository } from '@modules/products/repositories/products.repository';
-import { UpdateProductDto } from '@modules/products/dtos/update-product.dto';
+import { CreateProductDto } from '../../../modules/products/dtos/create-product.dto';
+import { PostgresDatabase } from '../../../database/postgres/postgres-database';
+import { Product } from '../../../modules/products/entities/product.entity';
+import { ProductFiltersDto } from '../../../modules/products/dtos/product-filters.dto';
+import { ProductsRepository } from '../../../modules/products/repositories/products.repository';
+import { UpdateProductDto } from '../../../modules/products/dtos/update-product.dto';
 
 @Injectable()
 export class ProductsRepositoryImpl implements ProductsRepository {

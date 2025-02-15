@@ -1,16 +1,16 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
-import { BcryptAdapter } from '@config/adapters/bcrypt.adapter';
-import { buildBaseUrl } from '@modules/shared/helpers/base-url.builder';
-import { buildFiltersQuery } from '@modules/shared/helpers/filters-query.builder';
-import { buildPagination } from '@modules/shared/helpers/pagination.builder';
-import { CartsService } from '@modules/carts/carts.service';
-import { OrdersService } from '@modules/orders/orders.service';
-import { ResourceType, UserRoles } from '@modules/shared/interfaces/enums';
-import { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
-import { User } from '@modules/users/entities/user.entity';
-import { UserFiltersDto } from '@modules/users/dtos/user-filters.dto';
-import { UsersRepository } from '@modules/users/repositories/users.repository';
+import { BcryptAdapter } from '../../config/adapters/bcrypt.adapter';
+import { buildBaseUrl } from '../../modules/shared/helpers/base-url.builder';
+import { buildFiltersQuery } from '../../modules/shared/helpers/filters-query.builder';
+import { buildPagination } from '../../modules/shared/helpers/pagination.builder';
+import { CartsService } from '../../modules/carts/carts.service';
+import { OrdersService } from '../../modules/orders/orders.service';
+import { ResourceType, UserRoles } from '../../modules/shared/interfaces/enums';
+import { UpdateUserDto } from '../../modules/users/dtos/update-user.dto';
+import { User } from '../../modules/users/entities/user.entity';
+import { UserFiltersDto } from '../../modules/users/dtos/user-filters.dto';
+import { UsersRepository } from '../../modules/users/repositories/users.repository';
 
 @Injectable()
 export class UsersService {

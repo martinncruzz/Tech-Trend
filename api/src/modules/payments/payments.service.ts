@@ -2,11 +2,11 @@ import { Injectable, InternalServerErrorException, RawBodyRequest } from '@nestj
 import { Request } from 'express';
 import Stripe from 'stripe';
 
-import { CartsService } from '@modules/carts/carts.service';
-import { envs } from '@config/adapters/envs.adapter';
-import { OrdersService } from '@modules/orders/orders.service';
-import { PaymentSessionDto } from '@modules/payments/dtos/payment-session.dto';
-import { ProductsService } from '@modules/products/products.service';
+import { CartsService } from '../../modules/carts/carts.service';
+import { envs } from '../../config/adapters/envs.adapter';
+import { OrdersService } from '../../modules/orders/orders.service';
+import { PaymentSessionDto } from '../../modules/payments/dtos/payment-session.dto';
+import { ProductsService } from '../../modules/products/products.service';
 
 @Injectable()
 export class PaymentsService {

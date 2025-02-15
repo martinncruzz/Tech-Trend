@@ -1,6 +1,6 @@
-import { Cart } from '@modules/carts/entities/cart.entity';
-import { CreateCartDto } from '@modules/carts/dtos/create-cart.dto';
-import { UpdateCartDto } from '@modules/carts/dtos/update-cart.dto';
+import { Cart } from '../../../modules/carts/entities/cart.entity';
+import { CreateCartDto } from '../../../modules/carts/dtos/create-cart.dto';
+import { UpdateCartDto } from '../../../modules/carts/dtos/update-cart.dto';
 
 export abstract class CartsRepository {
   abstract findById(id: string): Promise<Cart | null>;

@@ -1,9 +1,9 @@
 import { InternalServerErrorException } from '@nestjs/common';
 
-import { Cart } from '@modules/carts/entities/cart.entity';
-import { CartItemSchema } from '@config/schemas/cart.schema';
-import { Product } from '@modules/products/entities/product.entity';
-import { ValidatorAdapter } from '@config/adapters/validator.adapter';
+import { Cart } from '../../../modules/carts/entities/cart.entity';
+import { CartItemSchema } from '../../../config/schemas/cart.schema';
+import { Product } from '../../../modules/products/entities/product.entity';
+import { ValidatorAdapter } from '../../../config/adapters/validator.adapter';
 
 export class CartItem {
   constructor(

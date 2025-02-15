@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { Category } from '@modules/categories/entities/category.entity';
-import { PartialProductSchema } from '@config/schemas/product.schema';
+import { Category } from '../../modules/categories/entities/category.entity';
+import { PartialProductSchema } from '../../config/schemas/product.schema';
 
 export const BaseCategorySchema = z.object({
   id: z.string().uuid(),

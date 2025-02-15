@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
 
-import { Auth } from '@modules/auth/decorators/auth.decorator';
-import { CategoriesService } from '@modules/categories/categories.service';
-import { CategoryFiltersDto } from '@modules/categories/dtos/category-filters.dto';
-import { CreateCategoryDto } from '@modules/categories/dtos/create-category.dto';
-import { UpdateCategoryDto } from '@modules/categories/dtos/update-category.dto';
-import { UserRoles } from '@modules/shared/interfaces/enums';
+import { Auth } from '../../modules/auth/decorators/auth.decorator';
+import { CategoriesService } from '../../modules/categories/categories.service';
+import { CategoryFiltersDto } from '../../modules/categories/dtos/category-filters.dto';
+import { CreateCategoryDto } from '../../modules/categories/dtos/create-category.dto';
+import { UpdateCategoryDto } from '../../modules/categories/dtos/update-category.dto';
+import { UserRoles } from '../../modules/shared/interfaces/enums';
 
 @Controller('categories')
 export class CategoriesController {
